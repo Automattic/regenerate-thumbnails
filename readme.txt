@@ -34,7 +34,7 @@ Then just visit your admin area and activate the plugin.
 
 ###Plugin Usage###
 
-Visit Manage -> Thumbnails to get started.
+Visit Tools -> Regen. Thumbnails to get started.
 
 **See Also:** ["Installing Plugins" article on the WP Codex](http://codex.wordpress.org/Managing_Plugins#Installing_Plugins)
 
