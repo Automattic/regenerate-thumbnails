@@ -3,6 +3,7 @@ Contributors: Viper007Bond
 Donate link: http://www.viper007bond.com/donate/
 Tags: thumbnail, thumbnails
 Requires at least: 2.5
+Tested up to: 2.7
 Stable tag: trunk
 
 Allows you to regenerate all attachment thumbnails in just one-click.
@@ -38,6 +39,10 @@ Visit Manage -> Thumbnails to get started.
 **See Also:** ["Installing Plugins" article on the WP Codex](http://codex.wordpress.org/Managing_Plugins#Installing_Plugins)
 
 == ChangeLog ==
+
+**Version 1.1.0**
+
+* WordPress 2.7 updates -- code + UI. Thanks to jdub and Patrick F.
 
 **Version 1.0.0**
 

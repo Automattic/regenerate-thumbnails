@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate all thumbnails after changing the thumbnail sizes.
-Version:      1.0.0
+Version:      1.1.0
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -42,7 +42,7 @@ class RegenerateThumbnails {
 
 	// Register the management page
 	function AddAdminMenu() {
-		add_management_page( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), __( 'Thumbnails', 'regenerate-thumbnails' ), 'manage_options', 'regenerate-thumbnails', array(&$this, 'ManagementPage') );
+		add_management_page( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), __( 'Regen. Thumbnails', 'regenerate-thumbnails' ), 'manage_options', 'regenerate-thumbnails', array(&$this, 'ManagementPage') );
 	}
 
 
@@ -70,7 +70,14 @@ class RegenerateThumbnails {
 			$rt_starttime = $rt_starttime[1] + $rt_starttime[0];
 
 			// Get all image attachments
-			$attachments = get_children( 'post_type=attachment&post_mime_type=image' );
+			$attachments =& get_children( array(
+								'post_type' => 'attachment',
+								'post_mime_type' => 'image',
+								'numberposts' => -1,
+								'post_status' => null,
+								'post_parent' => null, // any parent
+								'output' => 'object',
+							) );
 
 			// Check for results
 			if ( FALSE === $attachments ) {
@@ -136,7 +143,13 @@ class RegenerateThumbnails {
 		// No button click? Display the form.
 		else {
 ?>
-	<p><?php printf( __( "After you've changed either of the thumbnail dimensions on the <a href='%s'>miscellaneous settings page</a>, click the button below to regenerate all thumbnails (both the small and medium sizes) for all attachments. The old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails'), 'options-misc.php' ); ?></p>
+	<p><?php
+
+	$optionsmisc_url = ( function_exists('admin_url') ) ? admin_url('options-misc.php') : 'options-misc.php';
+
+	printf( __( "After you've changed either of the thumbnail dimensions on the <a href='%s'>miscellaneous settings page</a>, click the button below to regenerate all thumbnails (both the small and medium sizes) for all attachments. The old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails'), $optionsmisc_url );
+	
+	?></p>
 
 	<p><?php _e( "This process is not reversible, although you can just change your thumbnail dimensions to old values and click the button again if you don't like the results.", 'regenerate-thumbnails'); ?></p>
 
