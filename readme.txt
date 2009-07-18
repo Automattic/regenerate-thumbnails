@@ -3,7 +3,7 @@ Contributors: Viper007Bond
 Donate link: http://www.viper007bond.com/donate/
 Tags: thumbnail, thumbnails
 Requires at least: 2.5
-Tested up to: 2.7
+Tested up to: 2.8
 Stable tag: trunk
 
 Allows you to regenerate all attachment thumbnails in just one-click.
