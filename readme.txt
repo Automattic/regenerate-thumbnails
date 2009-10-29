@@ -30,6 +30,10 @@ Visit Tools -> Regen. Thumbnails to get started.
 
 **See Also:** ["Installing Plugins" article on the WP Codex](http://codex.wordpress.org/Managing_Plugins#Installing_Plugins)
 
+== Screenshots ==
+
+1. The plugin at work.
+
 == ChangeLog ==
 
 **Version 2.0.0**
