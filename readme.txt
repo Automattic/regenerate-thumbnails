@@ -2,15 +2,15 @@
 Contributors: Viper007Bond
 Donate link: http://www.viper007bond.com/donate/
 Tags: thumbnail, thumbnails
-Requires at least: 2.5
-Tested up to: 2.8
+Requires at least: 2.6
+Tested up to: 2.9
 Stable tag: trunk
 
-Allows you to regenerate all attachment thumbnails in just one-click.
+Allows you to regenerate all thumbnails after changing the thumbnail sizes.
 
 == Description ==
 
-With just one click, Regenerate Thumbnails will allow you to regenerate both sized thumbnails for all attachments. This is very handy if you've changed either of your thumbnail dimensions (via Settings -> Miscellaneous) after uploading images.
+Regenerate Thumbnails allows you to regenerate the thumbnails for all of your image attachments. This is very handy if you've changed any of your thumbnail dimensions (via Settings -> Media) after previously uploading images.
 
 == Installation ==
 
@@ -22,14 +22,6 @@ To upgrade from a previous version of this plugin, delete the entire folder and 
 
 Extract all files from the ZIP file, making sure to keep the file structure intact, and then upload it to `/wp-content/plugins/`.
 
-This should result in the following file structure:
-
-`- wp-content
-    - plugins
-        - regenerate-thumbnails
-            | readme.txt
-            | regenerate-thumbnails.php`
-
 Then just visit your admin area and activate the plugin.
 
 ###Plugin Usage###
@@ -39,6 +31,10 @@ Visit Tools -> Regen. Thumbnails to get started.
 **See Also:** ["Installing Plugins" article on the WP Codex](http://codex.wordpress.org/Managing_Plugins#Installing_Plugins)
 
 == ChangeLog ==
+
+**Version 2.0.0**
+
+* Recoded from scratch. Now uses an AJAX request per attachment to do the resizing. No more PHP maximum execution time errors or anything like that. Also features a pretty progress bar to let the user know how it's going.
 
 **Version 1.1.0**
 

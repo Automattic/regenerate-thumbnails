@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate all thumbnails after changing the thumbnail sizes.
-Version:      1.1.0
+Version:      2.0.0
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -32,26 +32,41 @@ class RegenerateThumbnails {
 
 	// Plugin initialization
 	function RegenerateThumbnails() {
-		// Load up the localization file if we're using WordPress in a different language
-		// Place it in this plugin's folder and name it "regenerate-thumbnails-[value in wp-config].mo"
-		load_plugin_textdomain( 'regenerate-thumbnails', FALSE, '/regenerate-thumbnails' );
+		if ( !function_exists('admin_url') )
+			return false;
 
-		add_action( 'admin_menu', array(&$this, 'AddAdminMenu') );
+		// Load up the localization file if we're using WordPress in a different language
+		// Place it in this plugin's "localization" folder and name it "regenerate-thumbnails-[value in wp-config].mo"
+		load_plugin_textdomain( 'regenerate-thumbnails', false, '/regenerate-thumbnails/localization' );
+
+		add_action( 'admin_menu', array(&$this, 'add_admin_menu') );
+		add_action( 'admin_enqueue_scripts', array(&$this, 'admin_enqueues') );
+		add_action( 'wp_ajax_regeneratethumbnail', array(&$this, 'ajax_process_image') );
 	}
 
 
 	// Register the management page
-	function AddAdminMenu() {
-		add_management_page( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), __( 'Regen. Thumbnails', 'regenerate-thumbnails' ), 'manage_options', 'regenerate-thumbnails', array(&$this, 'ManagementPage') );
+	function add_admin_menu() {
+		add_management_page( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), __( 'Regen. Thumbnails', 'regenerate-thumbnails' ), 'manage_options', 'regenerate-thumbnails', array(&$this, 'regenerate_interface') );
+	}
+
+
+	// Enqueue the needed Javascript and CSS
+	function admin_enqueues( $hook_suffix ) {
+		if ( 'tools_page_regenerate-thumbnails' != $hook_suffix )
+			return;
+
+		wp_enqueue_script( 'jquery-ui-progressbar', plugins_url( 'jquery-ui/ui.progressbar.js', __FILE__ ), array('jquery-ui-core'), '1.7.2' );
+		wp_enqueue_style( 'jquery-ui-regenthumbs', plugins_url( 'jquery-ui/redmond/jquery-ui-1.7.2.custom.css', __FILE__ ), array(), '1.7.2' );
 	}
 
 
 	// The user interface plus thumbnail regenerator
-	function ManagementPage() { ?>
+	function regenerate_interface() { ?>
 
 <div id="message" class="updated fade" style="display:none"></div>
 
-<div class="wrap">
+<div class="wrap regenthumbs">
 	<h2><?php _e('Regenerate Thumbnails', 'regenerate-thumbnails'); ?></h2>
 
 <?php
@@ -63,76 +78,73 @@ class RegenerateThumbnails {
 				wp_die( __('Cheatin&#8217; uh?') );
 
 			// Form nonce check
-			check_admin_referer('regenerate-thumbnails');
-
-			// Record start time
-			$rt_starttime = explode(' ', microtime() );
-			$rt_starttime = $rt_starttime[1] + $rt_starttime[0];
+			//check_admin_referer( 'regenerate-thumbnails' );
 
 			// Get all image attachments
-			$attachments =& get_children( array(
+			$images =& get_children( array(
 								'post_type' => 'attachment',
 								'post_mime_type' => 'image',
 								'numberposts' => -1,
-								'post_status' => null,
+								'post_status' => 'inherit',
 								'post_parent' => null, // any parent
 								'output' => 'object',
 							) );
 
-			// Check for results
-			if ( FALSE === $attachments ) {
-				echo '	<p>' . __( "No attachments were found. Go upload some!", 'regenerate-thumbnails' ) . "</p>\n\n";
+			// Make sure there are images to process
+			if ( !$images ) {
+				echo '	<p>' . sprintf( __( "Unable to find any images. Are you sure <a href='%s'>some exist</a>?", 'regenerate-thumbnails' ), admin_url('upload.php?post_mime_type=image') ) . "</p>\n\n";
 			}
 
-			// Valid results, process them
+			// Valid results
 			else {
-				echo '	<p>' . __( "Please be patient while all thumbnails are regenerated. This can take a while if your server is slow (cheap hosting) or if you have many attachments. Do not navigate away from this page until this script is done or all thumbnails won't be resized. You will be notified when all regenerating is completed.", 'regenerate-thumbnails' ) . "</p>\n\n";
+				echo '	<p>' . __( "Please be patient while all thumbnails are regenerated. This can take a while if your server is slow (cheap hosting) or if you have many images. Do not navigate away from this page until this script is done or all thumbnails won't be resized. You will be notified via this page when all regenerating is completed.", 'regenerate-thumbnails' ) . '</p>';
 
-				// Find out the path to the upload directory (so we can hide it)
-				$upload = wp_upload_dir();
-				$uploadpath = $upload['basedir'];
+				// Generate the list of IDs
+				$ids = array();
+				foreach ( $images as $image )
+					$ids[] = $image->ID;
+				$ids = implode( ',', $ids );
 
-				// Output progress so far to browser
-				$this->flush();
-
-				// Loop through each attachment
-				$count = 0;
-				echo "	<ol>\n";
-				foreach ( $attachments as $attachment ) {
-					$fullsizepath = get_attached_file( $attachment->ID );
-
-					// If the file exists, regenerate thumbnail and update attachment metadata in all one go
-					if ( FALSE !== $fullsizepath && @file_exists($fullsizepath) ) {
-						// Start the execution time limit over but only allow 30 seconds for the image to be resized.
-						// This is a better solution than just doing set_time_limit( 0 ); in my opinion.
-						set_time_limit( 30 );
-
-						wp_update_attachment_metadata( $attachment->ID, wp_generate_attachment_metadata( $attachment->ID, $fullsizepath ) );
-
-						echo '		<li>' . str_replace( $uploadpath, '', $fullsizepath ) . " processed.</code></li>\n";
-						$count++;
-					}
-
-					// Output progress so far to browser
-					$this->flush();
-				}
-				echo "	</ol>\n\n";
-
-				// Calculate time taken
-				$rt_endtime = explode(' ', microtime() );
-				$rt_endtime = $rt_endtime[1] + $rt_endtime[0];
-				$rt_timetotal = number_format_i18n( $rt_endtime - $rt_starttime, 3 );
-
-				// Output the fallback for no-JS users
-				echo '	<p><noscript>' . sprintf( __( 'All done! Processed %d attachments in %s seconds.', 'regenerate-thumbnails' ), $count, $rt_timetotal ) . "</noscript></p>\n\n";
-
-				// Output the Javascript to show the success box
+				$count = count( $images );
 ?>
+
+
+	<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'regenerate-thumbnails' ) ?></em></p></noscript>
+
+	<div id="regenthumbsbar" style="position:relative;height:25px;">
+		<div id="regenthumbsbar-percent" style="position:absolute;left:50%;top:50%;width:50px;margin-left:-25px;height:25px;margin-top:-9px;font-weight:bold;text-align:center;"></div>
+	</div>
+
 	<script type="text/javascript">
 	// <![CDATA[
-		jQuery(document).ready(function() {
-			jQuery("#message").html("<p><strong><?php echo js_escape( sprintf( __( 'All done! Processed %d attachments in %s seconds.', 'regenerate-thumbnails' ), $count, $rt_timetotal ) ); ?></strong></p>");
-			jQuery("#message").show();
+		jQuery(document).ready(function($){
+			var i;
+			var rt_images = [<?php echo $ids; ?>];
+			var rt_total = rt_images.length;
+			var rt_count = 1;
+			var rt_percent = 0;
+
+			$("#regenthumbsbar").progressbar();
+			$("#regenthumbsbar-percent").html( "0%" );
+
+			function RegenThumbs( id ) {
+				$.post( "admin-ajax.php", { action: "regeneratethumbnail", id: id }, function() {
+					rt_percent = ( rt_count / rt_total ) * 100;
+					$("#regenthumbsbar").progressbar( "value", rt_percent );
+					$("#regenthumbsbar-percent").html( Math.round(rt_percent) + "%" );
+					rt_count = rt_count + 1;
+
+					if ( rt_images.length ) {
+						RegenThumbs( rt_images.shift() );
+					} else {
+						$("#message").html("<p><strong><?php echo js_escape( sprintf( __( 'All done! Processed %d images.', 'regenerate-thumbnails' ), $count ) ); ?></strong></p>");
+						$("#message").show();
+					}
+
+				});
+			}
+
+			RegenThumbs( rt_images.shift() );
 		});
 	// ]]>
 	</script>
@@ -143,21 +155,19 @@ class RegenerateThumbnails {
 		// No button click? Display the form.
 		else {
 ?>
-	<p><?php
+	<p><?php printf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your blog. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a>. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails'), admin_url('options-media.php') ); ?></p>
 
-	$optionsmisc_url = ( function_exists('admin_url') ) ? admin_url('options-misc.php') : 'options-misc.php';
+	<p><?php _e( "This process is not reversible, although you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails'); ?></p>
 
-	printf( __( "After you've changed either of the thumbnail dimensions on the <a href='%s'>miscellaneous settings page</a>, click the button below to regenerate all thumbnails (both the small and medium sizes) for all attachments. The old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails'), $optionsmisc_url );
-	
-	?></p>
-
-	<p><?php _e( "This process is not reversible, although you can just change your thumbnail dimensions to old values and click the button again if you don't like the results.", 'regenerate-thumbnails'); ?></p>
+	<p><?php _e( "To begin, just press the button below.", 'regenerate-thumbnails'); ?></p>
 
 	<form method="post" action="">
 <?php wp_nonce_field('regenerate-thumbnails') ?>
 
 
-	<p><input type="submit" class="button" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
+	<p><input type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
+
+	<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'regenerate-thumbnails' ) ?></em></p></noscript>
 
 	</form>
 <?php
@@ -169,14 +179,35 @@ class RegenerateThumbnails {
 	}
 
 
-	// Outputs all HTML up to this point to the browser
-	function flush() {
-		ob_flush();
-		flush();
+	// Process a single image ID (this is an AJAX handler)
+	function ajax_process_image() {
+		if ( !current_user_can( 'manage_options' ) )
+			die('-1');
+
+		$id = (int) $_REQUEST['id'];
+
+		if ( empty($id) )
+			die('-1');
+
+		$fullsizepath = get_attached_file( $id );
+
+		if ( false === $fullsizepath || !file_exists($fullsizepath) )
+			die('-1');
+
+		set_time_limit( 60 );
+
+		if ( wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $fullsizepath ) ) )
+			die('1');
+		else
+			die('-1');
 	}
 }
 
-// Start this plugin once all other plugins are fully loaded
-add_action( 'plugins_loaded', create_function( '', 'global $RegenerateThumbnails; $RegenerateThumbnails = new RegenerateThumbnails();' ) );
+// Start up this plugin
+add_action( 'init', 'RegenerateThumbnails' );
+function RegenerateThumbnails() {
+	global $RegenerateThumbnails;
+	$RegenerateThumbnails = new RegenerateThumbnails();
+}
 
 ?>
