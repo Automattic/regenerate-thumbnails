@@ -36,6 +36,10 @@ Visit Tools -> Regen. Thumbnails to get started.
 
 == ChangeLog ==
 
+**Version 2.0.1**
+
+* I accidentally left a `check_admin_referer()` (nonce check) commented out.
+
 **Version 2.0.0**
 
 * Recoded from scratch. Now uses an AJAX request per attachment to do the resizing. No more PHP maximum execution time errors or anything like that. Also features a pretty progress bar to let the user know how it's going.

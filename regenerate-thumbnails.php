@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate all thumbnails after changing the thumbnail sizes.
-Version:      2.0.0
+Version:      2.0.1
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -78,7 +78,7 @@ class RegenerateThumbnails {
 				wp_die( __('Cheatin&#8217; uh?') );
 
 			// Form nonce check
-			//check_admin_referer( 'regenerate-thumbnails' );
+			check_admin_referer( 'regenerate-thumbnails' );
 
 			// Get all image attachments
 			$images =& get_children( array(
