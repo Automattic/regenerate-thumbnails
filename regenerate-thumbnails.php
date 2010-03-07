@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate all thumbnails after changing the thumbnail sizes.
-Version:      2.0.1
+Version:      2.0.2
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -62,7 +62,10 @@ class RegenerateThumbnails {
 
 
 	// The user interface plus thumbnail regenerator
-	function regenerate_interface() { ?>
+	function regenerate_interface() {
+		global $wpdb;
+
+		?>
 
 <div id="message" class="updated fade" style="display:none"></div>
 
@@ -81,6 +84,7 @@ class RegenerateThumbnails {
 			check_admin_referer( 'regenerate-thumbnails' );
 
 			// Get all image attachments
+			/*
 			$images =& get_children( array(
 								'post_type' => 'attachment',
 								'post_mime_type' => 'image',
@@ -89,9 +93,13 @@ class RegenerateThumbnails {
 								'post_parent' => null, // any parent
 								'output' => 'object',
 							) );
+			*/
+
+			// Just query for the ID to reduce memory usage
+			$images = $wpdb->get_results( "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%'" );
 
 			// Make sure there are images to process
-			if ( !$images ) {
+			if ( empty($images) ) {
 				echo '	<p>' . sprintf( __( "Unable to find any images. Are you sure <a href='%s'>some exist</a>?", 'regenerate-thumbnails' ), admin_url('upload.php?post_mime_type=image') ) . "</p>\n\n";
 			}
 

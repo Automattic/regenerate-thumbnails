@@ -36,18 +36,22 @@ Visit Tools -> Regen. Thumbnails to get started.
 
 == ChangeLog ==
 
-**Version 2.0.1**
+= Version 2.0.2 =
+
+* Directly query the database to only fetch what the plugin needs (the attachment ID). This will reduce the memory required as it's not storing the whole row for each attachment.
+
+= Version 2.0.1 =
 
 * I accidentally left a `check_admin_referer()` (nonce check) commented out.
 
-**Version 2.0.0**
+= Version 2.0.0 =
 
 * Recoded from scratch. Now uses an AJAX request per attachment to do the resizing. No more PHP maximum execution time errors or anything like that. Also features a pretty progress bar to let the user know how it's going.
 
-**Version 1.1.0**
+= Version 1.1.0 =
 
 * WordPress 2.7 updates -- code + UI. Thanks to jdub and Patrick F.
 
-**Version 1.0.0**
+= Version 1.0.0 =
 
 * Initial release.
