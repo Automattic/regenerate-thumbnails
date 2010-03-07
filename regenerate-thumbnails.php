@@ -95,7 +95,7 @@ class RegenerateThumbnails {
 							) );
 			*/
 
-			// Just query for the ID to reduce memory usage
+			// Just query for the IDs only to reduce memory usage
 			$images = $wpdb->get_results( "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%'" );
 
 			// Make sure there are images to process
