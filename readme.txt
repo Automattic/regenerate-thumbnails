@@ -36,6 +36,10 @@ Visit Tools -> Regen. Thumbnails to get started.
 
 == ChangeLog ==
 
+= Version 2.0.3 =
+
+* Switch out deprecated function call.
+
 = Version 2.0.2 =
 
 * Directly query the database to only fetch what the plugin needs (the attachment ID). This will reduce the memory required as it's not storing the whole row for each attachment.
