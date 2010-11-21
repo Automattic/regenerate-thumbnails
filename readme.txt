@@ -36,6 +36,18 @@ Visit Tools -> Regen. Thumbnails to get started.
 
 == ChangeLog ==
 
+= Version 2.1.0 =
+
+Lots of new features!
+
+* Thanks to a lot of jQuery help from [Boris Schapira](http://borisschapira.com/), a failed image regeneration will no longer stop the whole process.
+* The results of each image regeneration is now outputted. You can easily see which images were successfully regenerated and which failed. Was inspired by a concept by Boris.
+* There is now a button on the regeneration page that will allow you to abort resizing images for any reason. Based on code by Boris.
+* You can now regenerate single images from the Media page. The link to do so will show up in the actions list when you hover over the row.
+* You can now bulk regenerate multiple from the Media page. Check the boxes and then select "Regenerate Thumbnails" form the "Bulk Actions" dropdown. WordPress 3.1+ only.
+* The total time that the regeneration process took is now displayed in the final status message.
+* jQuery UI Progressbar version upgraded.
+
 = Version 2.0.3 =
 
 * Switch out deprecated function call.
