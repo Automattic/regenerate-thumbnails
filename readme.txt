@@ -31,6 +31,13 @@ See the [screenshots tab](http://wordpress.org/extend/plugins/regenerate-thumbna
 
 == ChangeLog ==
 
+= Version 2.1.2 =
+
+* When regenerating all images, newest images are done first rather than the oldest.
+* Fixed a bug with regeneration error reporting in some browsers. Thanks to pete-sch for reporting the error.
+* Supress PHP errors in the AJAX handler to avoid sending an invalid JSON response. Thanks to pete-sch for reporting the error.
+* Better and more detailed error reporting for when `wp_generate_attachment_metadata()` fails.
+
 = Version 2.1.1 =
 
 * Clean up the wording a bit to better match the new features and just be easier to understand.

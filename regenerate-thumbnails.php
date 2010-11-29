@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate all thumbnails after changing the thumbnail sizes.
-Version:      2.1.1
+Version:      2.1.2
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -144,7 +144,7 @@ class RegenerateThumbnails {
 				// Directly querying the database is normally frowned upon, but all
 				// of the API functions will return the full post objects which will
 				// suck up lots of memory. This is best, just not as future proof.
-				if ( ! $images = $wpdb->get_results( "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%' ORDER BY ID" ) ) {
+				if ( ! $images = $wpdb->get_results( "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%' ORDER BY ID DESC" ) ) {
 					echo '	<p>' . sprintf( __( "Unable to find any images. Are you sure <a href='%s'>some exist</a>?", 'regenerate-thumbnails' ), admin_url( 'upload.php?post_mime_type=image' ) ) . "</p></div>";
 					return;
 				}
@@ -273,7 +273,7 @@ class RegenerateThumbnails {
 							RegenThumbsFinishUp();
 						}
 					},
-					error: function() {
+					error: function( response ) {
 						RegenThumbsUpdateStatus( id, false, response );
 
 						if ( rt_images.length && rt_continue ) {
@@ -339,9 +339,13 @@ class RegenerateThumbnails {
 		if ( false === $fullsizepath || ! file_exists( $fullsizepath ) )
 			$this->die_json_error_msg( $image->ID, sprintf( __( 'The originally uploaded image file cannot be found at %s', 'regenerate-thumbnails' ), '<code>' . esc_html( $fullsizepath ) . '</code>' ) );
 
-		set_time_limit( 900 );
+		set_time_limit( 900 ); // 5 minutes per image should be PLENTY, lol
+		error_reporting( 0 ); // Don't break the JSON result
 
 		$metadata = wp_generate_attachment_metadata( $image->ID, $fullsizepath );
+
+		if ( is_wp_error( $metadata ) )
+			$this->die_json_error_msg( $image->ID, $metadata->get_error_message() );
 		if ( empty( $metadata ) )
 			$this->die_json_error_msg( $image->ID, __( 'Unknown failure reason.', 'regenerate-thumbnails' ) );
 
