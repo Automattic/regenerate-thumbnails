@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate all thumbnails after changing the thumbnail sizes.
-Version:      2.1.2
+Version:      2.1.3
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -323,6 +323,8 @@ class RegenerateThumbnails {
 
 	// Process a single image ID (this is an AJAX handler)
 	function ajax_process_image() {
+		@error_reporting( 0 ); // Don't break the JSON result
+
 		header( 'Content-type: application/json' );
 
 		$id = (int) $_REQUEST['id'];
@@ -339,8 +341,7 @@ class RegenerateThumbnails {
 		if ( false === $fullsizepath || ! file_exists( $fullsizepath ) )
 			$this->die_json_error_msg( $image->ID, sprintf( __( 'The originally uploaded image file cannot be found at %s', 'regenerate-thumbnails' ), '<code>' . esc_html( $fullsizepath ) . '</code>' ) );
 
-		set_time_limit( 900 ); // 5 minutes per image should be PLENTY, lol
-		error_reporting( 0 ); // Don't break the JSON result
+		@set_time_limit( 900 ); // 5 minutes per image should be PLENTY
 
 		$metadata = wp_generate_attachment_metadata( $image->ID, $fullsizepath );
 

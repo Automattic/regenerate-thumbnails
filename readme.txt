@@ -31,6 +31,10 @@ See the [screenshots tab](http://wordpress.org/extend/plugins/regenerate-thumbna
 
 == ChangeLog ==
 
+= Version 2.1.3 =
+
+* Move the `error_reporting()` call in the AJAX handler to the beginning so that we're more sure that no PHP errors are outputted. Some hosts disable usage of `set_time_limit()` and calling it was causing a PHP warning to be outputted.
+
 = Version 2.1.2 =
 
 * When regenerating all images, newest images are done first rather than the oldest.
