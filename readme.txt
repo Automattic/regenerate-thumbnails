@@ -12,7 +12,7 @@ Allows you to regenerate your thumbnails after changing the thumbnail sizes.
 
 Regenerate Thumbnails allows you to regenerate the thumbnails for your image attachments. This is very handy if you've changed any of your thumbnail dimensions (via Settings -> Media) after previously uploading images or have changed to a theme with different featured post image dimensions.
 
-You can either regenerate the thumbnails for all image uploads, individual image uploads, or specific multiple image uploads (WordPress 3.1+ only).
+You can either regenerate the thumbnails for all image uploads, individual image uploads, or specific multiple image uploads.
 
 See the [screenshots tab](http://wordpress.org/extend/plugins/regenerate-thumbnails/screenshots/) for more details.
 
@@ -27,9 +27,13 @@ See the [screenshots tab](http://wordpress.org/extend/plugins/regenerate-thumbna
 
 1. The plugin at work regenerating thumbnails
 2. You can resize single images by hovering over their row in the Media Library
-2. You can resize specific multiples images using the checkboxes and the "Bulk Actions" dropdown (WordPress 3.1+ only)
+2. You can resize specific multiples images using the checkboxes and the "Bulk Actions" dropdown
 
 == ChangeLog ==
+
+= Version 2.2.0 =
+
+* Changes to the Bulk Action functionality were made shortly before the release of WordPress 3.1 which broke the way I implemented the specific multiple image regeneration feature. This version adds to the Bulk Action menu using Javascript as that's the only way to do it currently.
 
 = Version 2.1.3 =
 

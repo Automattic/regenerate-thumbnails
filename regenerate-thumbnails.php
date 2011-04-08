@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate all thumbnails after changing the thumbnail sizes.
-Version:      2.1.3
+Version:      2.2.0
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -44,7 +44,8 @@ class RegenerateThumbnails {
 		add_action( 'admin_enqueue_scripts',                   array( &$this, 'admin_enqueues' ) );
 		add_action( 'wp_ajax_regeneratethumbnail',             array( &$this, 'ajax_process_image' ) );
 		add_filter( 'media_row_actions',                       array( &$this, 'add_media_row_action' ), 10, 2 );
-		add_filter( 'bulk_actions-upload',                     array( &$this, 'add_bulk_actions' ), 99 );
+		//add_filter( 'bulk_actions-upload',                     array( &$this, 'add_bulk_actions' ), 99 ); // A last minute change to 3.1 makes this no longer work
+		add_action( 'admin_head-upload.php',          array( &$this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_regenerate_thumbnails', array( &$this, 'bulk_action_handler' ) );
 	}
 
@@ -99,14 +100,26 @@ class RegenerateThumbnails {
 	}
 
 
+	// Add new items to the Bulk Actions using Javascript
+	// A last minute change to the "bulk_actions-xxxxx" filter in 3.1 made it not possible to add items using that
+	function add_bulk_actions_via_javascript() { ?>
+		<script type="text/javascript">
+			jQuery(document).ready(function($){
+				$('select[name^="action"] option:last-child').before('<option value="bulk_regenerate_thumbnails"><?php echo esc_attr( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) ); ?></option>');
+			});
+		</script>
+<?php
+	}
+
+
 	// Handles the bulk actions POST
 	function bulk_action_handler() {
 		check_admin_referer( 'bulk-media' );
 
-		if ( empty( $_POST['media'] ) && is_array( $_POST['media'] ) )
+		if ( empty( $_REQUEST['media'] ) || ! is_array( $_REQUEST['media'] ) )
 			return;
 
-		$ids = implode( ',', array_map( 'intval', $_POST['media'] ) );
+		$ids = implode( ',', array_map( 'intval', $_REQUEST['media'] ) );
 
 		// Can't use wp_nonce_url() as it escapes HTML entities
 		wp_redirect( add_query_arg( '_wpnonce', wp_create_nonce( 'regenerate-thumbnails' ), admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $ids ) ) );
