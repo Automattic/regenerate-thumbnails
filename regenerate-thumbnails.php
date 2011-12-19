@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate all thumbnails after changing the thumbnail sizes.
-Version:      2.2.0
+Version:      2.2.1
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -33,9 +33,6 @@ class RegenerateThumbnails {
 
 	// Plugin initialization
 	function RegenerateThumbnails() {
-		if ( ! function_exists( 'admin_url' ) )
-			return false;
-
 		// Load up the localization file if we're using WordPress in a different language
 		// Place it in this plugin's "localization" folder and name it "regenerate-thumbnails-[value in wp-config].mo"
 		load_plugin_textdomain( 'regenerate-thumbnails', false, '/regenerate-thumbnails/localization' );
@@ -45,8 +42,9 @@ class RegenerateThumbnails {
 		add_action( 'wp_ajax_regeneratethumbnail',             array( &$this, 'ajax_process_image' ) );
 		add_filter( 'media_row_actions',                       array( &$this, 'add_media_row_action' ), 10, 2 );
 		//add_filter( 'bulk_actions-upload',                     array( &$this, 'add_bulk_actions' ), 99 ); // A last minute change to 3.1 makes this no longer work
-		add_action( 'admin_head-upload.php',          array( &$this, 'add_bulk_actions_via_javascript' ) );
-		add_action( 'admin_action_bulk_regenerate_thumbnails', array( &$this, 'bulk_action_handler' ) );
+		add_action( 'admin_head-upload.php',                   array( &$this, 'add_bulk_actions_via_javascript' ) );
+		add_action( 'admin_action_bulk_regenerate_thumbnails', array( &$this, 'bulk_action_handler' ) ); // Top drowndown
+		add_action( 'admin_action_-1',                         array( &$this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
 	}
 
 
@@ -115,6 +113,9 @@ class RegenerateThumbnails {
 	// Handles the bulk actions POST
 	function bulk_action_handler() {
 		check_admin_referer( 'bulk-media' );
+
+		if ( empty( $_REQUEST['action'] ) || ( 'bulk_regenerate_thumbnails' != $_REQUEST['action'] && 'bulk_regenerate_thumbnails' != $_REQUEST['action2'] ) )
+			return;
 
 		if ( empty( $_REQUEST['media'] ) || ! is_array( $_REQUEST['media'] ) )
 			return;

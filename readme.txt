@@ -31,6 +31,10 @@ See the [screenshots tab](http://wordpress.org/extend/plugins/regenerate-thumbna
 
 == ChangeLog ==
 
+= Version 2.2.1 =
+
+* Fix the bottom bulk action dropdown. Thanks Stefan for pointing out the issue!
+
 = Version 2.2.0 =
 
 * Changes to the Bulk Action functionality were made shortly before the release of WordPress 3.1 which broke the way I implemented the specific multiple image regeneration feature. This version adds to the Bulk Action menu using Javascript as that's the only way to do it currently.
@@ -86,3 +90,8 @@ Lots of new features!
 = Version 1.0.0 =
 
 * Initial release.
+
+== Upgrade Notice ==
+
+= 2.2.1 =
+Fix the bottom bulk action dropdown. Thanks Stefan for pointing out the issue!
