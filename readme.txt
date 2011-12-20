@@ -31,6 +31,10 @@ See the [screenshots tab](http://wordpress.org/extend/plugins/regenerate-thumbna
 
 == ChangeLog ==
 
+= Version 2.2.2 =
+
+* Don't check the nonce until we're sure that the action called was for this plugin. Fixes lots of "Are you sure you want to do this?" error messages.
+
 = Version 2.2.1 =
 
 * Fix the bottom bulk action dropdown. Thanks Stefan for pointing out the issue!
@@ -92,6 +96,9 @@ Lots of new features!
 * Initial release.
 
 == Upgrade Notice ==
+
+= 2.2.2 =
+Fixes lots of "Are you sure you want to do this?" error messages.
 
 = 2.2.1 =
 Fix the bottom bulk action dropdown. Thanks Stefan for pointing out the issue!
