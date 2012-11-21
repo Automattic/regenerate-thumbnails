@@ -374,6 +374,7 @@ class RegenerateThumbnails {
 			add_filter( 'intermediate_image_sizes', array( &$this, 'intermediate_image_sizes' ) );
 
 		foreach ( $ids as $id ) {
+			timer_start();
 			$image = get_post( $id );
 
 			if ( ! $image || 'attachment' != $image->post_type || 'image/' != substr( $image->post_mime_type, 0, 6 ) ) {
