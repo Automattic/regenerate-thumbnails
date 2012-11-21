@@ -247,13 +247,13 @@ class RegenerateThumbnails {
 				if ( success ) {
 					rt_successes = rt_successes + 1;
 					$("#regenthumbs-debug-successcount").html(rt_successes);
-					$("#regenthumbs-debuglist").append("<li>" + response.success + "</li>");
+					// $("#regenthumbs-debuglist").append("<li class='success'>" + response.success + "</li>");
 				}
 				else {
 					rt_errors = rt_errors + 1;
 					rt_failedlist = rt_failedlist + ',' + id;
 					$("#regenthumbs-debug-failurecount").html(rt_errors);
-					$("#regenthumbs-debuglist").append("<li>" + response.error + "</li>");
+					$("#regenthumbs-debuglist").append("<li class='error'>" + response.error + "</li>");
 				}
 			}
 
