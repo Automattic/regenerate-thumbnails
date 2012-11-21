@@ -39,7 +39,7 @@ class RegenerateThumbnails {
 
 		add_action( 'admin_menu',                              array( &$this, 'add_admin_menu' ) );
 		add_action( 'admin_enqueue_scripts',                   array( &$this, 'admin_enqueues' ) );
-		add_action( 'wp_ajax_regeneratethumbnail',             array( &$this, 'ajax_process_image' ) );
+		add_action( 'wp_ajax_regeneratethumbnail',             array( &$this, 'ajax_process_images' ) );
 		add_filter( 'media_row_actions',                       array( &$this, 'add_media_row_action' ), 10, 2 );
 		//add_filter( 'bulk_actions-upload',                     array( &$this, 'add_bulk_actions' ), 99 ); // A last minute change to 3.1 makes this no longer work
 		add_action( 'admin_head-upload.php',                   array( &$this, 'add_bulk_actions_via_javascript' ) );
@@ -211,6 +211,8 @@ class RegenerateThumbnails {
 		jQuery(document).ready(function($){
 			var i;
 			var rt_images = [<?php echo $ids; ?>];
+			var rt_bulk = <?php echo ( isset( $_POST['per_post'] ) ) ? (int) $_POST['per_post'] : '1' ?>;
+			var rt_sizes = <?php echo ( isset( $_POST['sizes'] ) ) ? json_encode( $_POST['sizes'] ) : 'false' ?>;
 			var rt_total = rt_images.length;
 			var rt_count = 1;
 			var rt_percent = 0;
@@ -245,13 +247,13 @@ class RegenerateThumbnails {
 				if ( success ) {
 					rt_successes = rt_successes + 1;
 					$("#regenthumbs-debug-successcount").html(rt_successes);
-					$("#regenthumbs-debuglist").append("<li>" + response.success + "</li>");
+					// $("#regenthumbs-debuglist").append("<li class='success'>" + response.success + "</li>");
 				}
 				else {
 					rt_errors = rt_errors + 1;
 					rt_failedlist = rt_failedlist + ',' + id;
 					$("#regenthumbs-debug-failurecount").html(rt_errors);
-					$("#regenthumbs-debuglist").append("<li>" + response.error + "</li>");
+					$("#regenthumbs-debuglist").append("<li class='error'>" + response.error + "</li>");
 				}
 			}
 
@@ -273,31 +275,33 @@ class RegenerateThumbnails {
 			}
 
 			// Regenerate a specified image via AJAX
-			function RegenThumbs( id ) {
+			function RegenThumbs( ids ) {
 				$.ajax({
 					type: 'POST',
 					url: ajaxurl,
-					data: { action: "regeneratethumbnail", id: id },
-					success: function( response ) {
-						if ( response.success ) {
-							RegenThumbsUpdateStatus( id, true, response );
-						}
-						else {
-							RegenThumbsUpdateStatus( id, false, response );
-						}
+					data: { action: "regeneratethumbnail", ids: ids, sizes: rt_sizes },
+					success: function( responses ) {
+						$.each(responses, function(index, response) {
+						  	if ( response.success ) {
+								RegenThumbsUpdateStatus( response.id, true, response );
+							}
+							else {
+								RegenThumbsUpdateStatus( response.id, false, response );
+							}
+						});
 
 						if ( rt_images.length && rt_continue ) {
-							RegenThumbs( rt_images.shift() );
+							RegenThumbs( rt_images.splice(0,rt_bulk) );
 						}
 						else {
 							RegenThumbsFinishUp();
 						}
 					},
 					error: function( response ) {
-						RegenThumbsUpdateStatus( id, false, response );
+						RegenThumbsUpdateStatus( response.id, false, response );
 
 						if ( rt_images.length && rt_continue ) {
-							RegenThumbs( rt_images.shift() );
+							RegenThumbs( rt_images.splice(0,rt_bulk) );
 						} 
 						else {
 							RegenThumbsFinishUp();
@@ -306,7 +310,7 @@ class RegenerateThumbnails {
 				});
 			}
 
-			RegenThumbs( rt_images.shift() );
+			RegenThumbs( rt_images.splice(0,rt_bulk) );
 		});
 	// ]]>
 	</script>
@@ -327,6 +331,21 @@ class RegenerateThumbnails {
 
 	<p><?php _e( 'To begin, just press the button below.', 'regenerate-thumbnails '); ?></p>
 
+	<p>
+		<label for="per_post">Bulk Quantity</label><br />
+		<input type="text" name="per_post" value="10" id="per_post" />
+	</p>
+
+	<p>
+		<label>Sizes</label>
+		<?php
+		$image_sizes = get_intermediate_image_sizes();
+		foreach ( $image_sizes as $size ) :
+		?>
+		<br /><label><input type="checkbox" name="sizes[]" value="<?php echo $size ?>" checked="checked" /> <?php echo $size; ?></label>
+		<?php endforeach; ?>
+	</p>
+
 	<p><input type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
 
 	<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'regenerate-thumbnails' ) ?></em></p></noscript>
@@ -340,46 +359,72 @@ class RegenerateThumbnails {
 <?php
 	}
 
+	function intermediate_image_sizes( $arr ) {
+		return $_POST['sizes'];
+	}
 
-	// Process a single image ID (this is an AJAX handler)
-	function ajax_process_image() {
+	function ajax_process_images() {
 		@error_reporting( 0 ); // Don't break the JSON result
 
 		header( 'Content-type: application/json' );
 
-		$id = (int) $_REQUEST['id'];
-		$image = get_post( $id );
+		$ids = $_REQUEST['ids'];
+		$response = array();
+		if ( isset( $_POST['sizes'] ) && is_array( $_POST['sizes'] ) )
+			add_filter( 'intermediate_image_sizes', array( &$this, 'intermediate_image_sizes' ) );
 
-		if ( ! $image || 'attachment' != $image->post_type || 'image/' != substr( $image->post_mime_type, 0, 6 ) )
-			die( json_encode( array( 'error' => sprintf( __( 'Failed resize: %s is an invalid image ID.', 'regenerate-thumbnails' ), esc_html( $_REQUEST['id'] ) ) ) ) );
+		foreach ( $ids as $id ) {
+			timer_start();
+			$image = get_post( $id );
 
-		if ( ! current_user_can( $this->capability ) )
-			$this->die_json_error_msg( $image->ID, __( "Your user account doesn't have permission to resize images", 'regenerate-thumbnails' ) );
+			if ( ! $image || 'attachment' != $image->post_type || 'image/' != substr( $image->post_mime_type, 0, 6 ) ) {
+				$response[] = array( 'id' => $id, 'error' => sprintf( __( 'Failed resize: %s is an invalid image ID.', 'regenerate-thumbnails' ), esc_html( $id ) ) );
+				continue;
+			}
 
-		$fullsizepath = get_attached_file( $image->ID );
+			if ( ! current_user_can( $this->capability ) )
+				die( json_encode( $this->error_msg( $image->ID, __( "Your user account doesn't have permission to resize images", 'regenerate-thumbnails' ) ) ) );
 
-		if ( false === $fullsizepath || ! file_exists( $fullsizepath ) )
-			$this->die_json_error_msg( $image->ID, sprintf( __( 'The originally uploaded image file cannot be found at %s', 'regenerate-thumbnails' ), '<code>' . esc_html( $fullsizepath ) . '</code>' ) );
+			$fullsizepath = get_attached_file( $image->ID );
 
-		@set_time_limit( 900 ); // 5 minutes per image should be PLENTY
+			if ( false === $fullsizepath || ! file_exists( $fullsizepath ) ) {
+				$response[] = $this->error_msg( $image->ID, sprintf( __( 'The originally uploaded image file cannot be found at %s', 'regenerate-thumbnails' ), '<code>' . esc_html( $fullsizepath ) . '</code>' ) );
+				continue;
+			}
 
-		$metadata = wp_generate_attachment_metadata( $image->ID, $fullsizepath );
+			@set_time_limit( 120 ); // 2 minutes per image should be PLENTY
 
-		if ( is_wp_error( $metadata ) )
-			$this->die_json_error_msg( $image->ID, $metadata->get_error_message() );
-		if ( empty( $metadata ) )
-			$this->die_json_error_msg( $image->ID, __( 'Unknown failure reason.', 'regenerate-thumbnails' ) );
+			$metadata = wp_generate_attachment_metadata( $image->ID, $fullsizepath );
 
-		// If this fails, then it just means that nothing was changed (old value == new value)
-		wp_update_attachment_metadata( $image->ID, $metadata );
+			if ( is_wp_error( $metadata ) ) {
+				$response[] = $this->error_msg( $image->ID, $metadata->get_error_message() );
+				continue;
+			}
+			if ( empty( $metadata ) ) {
+				$response[] = $this->error_msg( $image->ID, __( 'Unknown failure reason.', 'regenerate-thumbnails' ) );
+				continue;
+			}
 
-		die( json_encode( array( 'success' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) was successfully resized in %3$s seconds.', 'regenerate-thumbnails' ), esc_html( get_the_title( $image->ID ) ), $image->ID, timer_stop() ) ) ) );
+			# If we did a subset of the sizes, make sure that we retain anything existing
+			if ( isset( $_POST['sizes'] ) ) {
+				$old_metadata = wp_get_attachment_metadata( $image->ID );
+				$metadata['sizes'] = array_merge( $old_metadata['sizes'], $metadata['sizes'] );
+			}
+
+			// If this fails, then it just means that nothing was changed (old value == new value)
+			wp_update_attachment_metadata( $image->ID, $metadata );
+
+			$response[] = array( 'id' => $image->ID, 'success' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) was successfully resized in %3$s seconds.', 'regenerate-thumbnails' ), esc_html( get_the_title( $image->ID ) ), $image->ID, timer_stop() ) );
+		}
+
+		die( json_encode($response) );
 	}
 
 
+
 	// Helper to make a JSON error message
-	function die_json_error_msg( $id, $message ) {
-		die( json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) failed to resize. The error message was: %3$s', 'regenerate-thumbnails' ), esc_html( get_the_title( $id ) ), $id, $message ) ) ) );
+	function error_msg( $id, $message ) {
+		return array( 'id' => $id, 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) failed to resize. The error message was: %3$s', 'regenerate-thumbnails' ), esc_html( get_the_title( $id ) ), $id, $message ) );
 	}
 
 
