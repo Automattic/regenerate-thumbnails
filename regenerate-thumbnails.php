@@ -224,7 +224,6 @@ class RegenerateThumbnails {
 	</ol>
 
 	<script type="text/javascript">
-	// <![CDATA[
 		jQuery(document).ready(function($){
 			var i;
 			var rt_images = [<?php echo $ids; ?>];
@@ -325,7 +324,6 @@ class RegenerateThumbnails {
 
 			RegenThumbs( rt_images.shift() );
 		});
-	// ]]>
 	</script>
 <?php
 		}
