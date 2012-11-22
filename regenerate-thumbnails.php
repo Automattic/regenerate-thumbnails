@@ -254,7 +254,7 @@ class RegenerateThumbnails {
 			$("#regenthumbs-debuglist li").remove();
 
 			// Called after each resize. Updates debug information and the progress bar.
-			public function RegenThumbsUpdateStatus( id, success, response ) {
+			function RegenThumbsUpdateStatus( id, success, response ) {
 				$("#regenthumbs-bar").progressbar( "value", ( rt_count / rt_total ) * 100 );
 				$("#regenthumbs-bar-percent").html( Math.round( ( rt_count / rt_total ) * 1000 ) / 10 + "%" );
 				rt_count = rt_count + 1;
@@ -273,7 +273,7 @@ class RegenerateThumbnails {
 			}
 
 			// Called when all images have been processed. Shows the results and cleans up.
-			public function RegenThumbsFinishUp() {
+			function RegenThumbsFinishUp() {
 				rt_timeend = new Date().getTime();
 				rt_totaltime = Math.round( ( rt_timeend - rt_timestart ) / 1000 );
 
@@ -290,7 +290,7 @@ class RegenerateThumbnails {
 			}
 
 			// Regenerate a specified image via AJAX
-			public function RegenThumbs( id ) {
+			function RegenThumbs( id ) {
 				$.ajax({
 					type: 'POST',
 					url: ajaxurl,
@@ -315,7 +315,7 @@ class RegenerateThumbnails {
 
 						if ( rt_images.length && rt_continue ) {
 							RegenThumbs( rt_images.shift() );
-						} 
+						}
 						else {
 							RegenThumbsFinishUp();
 						}
