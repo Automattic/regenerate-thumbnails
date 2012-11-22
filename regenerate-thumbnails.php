@@ -35,8 +35,25 @@ http://www.gnu.org/licenses/gpl-2.0.html
 class RegenerateThumbnails {
 	public $menu_id;
 
-	// Plugin initialization
-	function __construct() {
+	private static $instance;
+
+	private function __construct() {
+		/* Don't do anything, needs to be initialized via instance() method */
+	}
+
+	public function __clone() { wp_die( "Please don't clone RegenerateThumbnails" ); }
+
+	public function __wakeup() { wp_die( "Please don't unserialize/wakeup RegenerateThumbnails" ); }
+
+	public static function instance() {
+		if ( ! isset( self::$instance ) ) {
+			self::$instance = new RegenerateThumbnails;
+			self::$instance->setup();
+		}
+		return self::$instance;
+	}
+
+	public function setup() {
 		// Load up the localization file if we're using WordPress in a different language
 		// Place it in this plugin's "localization" folder and name it "regenerate-thumbnails-[value in wp-config].mo"
 		load_plugin_textdomain( 'regenerate-thumbnails', false, '/regenerate-thumbnails/localization' );
@@ -389,11 +406,10 @@ class RegenerateThumbnails {
 	}
 }
 
-// Start up this plugin
-add_action( 'init', 'RegenerateThumbnails' );
 function RegenerateThumbnails() {
-	global $RegenerateThumbnails;
-	$RegenerateThumbnails = new RegenerateThumbnails();
+	return RegenerateThumbnails::instance();
 }
+
+add_action( 'plugins_loaded', 'RegenerateThumbnails' );
 
 ?>
