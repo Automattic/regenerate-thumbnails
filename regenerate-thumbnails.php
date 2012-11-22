@@ -29,22 +29,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 **************************************************************************/
 
 class RegenerateThumbnails {
-	var $menu_id;
+	public $menu_id;
 
 	// Plugin initialization
-	function RegenerateThumbnails() {
+	function __construct() {
 		// Load up the localization file if we're using WordPress in a different language
 		// Place it in this plugin's "localization" folder and name it "regenerate-thumbnails-[value in wp-config].mo"
 		load_plugin_textdomain( 'regenerate-thumbnails', false, '/regenerate-thumbnails/localization' );
 
-		add_action( 'admin_menu',                              array( &$this, 'add_admin_menu' ) );
-		add_action( 'admin_enqueue_scripts',                   array( &$this, 'admin_enqueues' ) );
-		add_action( 'wp_ajax_regeneratethumbnail',             array( &$this, 'ajax_process_image' ) );
-		add_filter( 'media_row_actions',                       array( &$this, 'add_media_row_action' ), 10, 2 );
-		//add_filter( 'bulk_actions-upload',                     array( &$this, 'add_bulk_actions' ), 99 ); // A last minute change to 3.1 makes this no longer work
-		add_action( 'admin_head-upload.php',                   array( &$this, 'add_bulk_actions_via_javascript' ) );
-		add_action( 'admin_action_bulk_regenerate_thumbnails', array( &$this, 'bulk_action_handler' ) ); // Top drowndown
-		add_action( 'admin_action_-1',                         array( &$this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
+		add_action( 'admin_menu',                              array( $this, 'add_admin_menu' ) );
+		add_action( 'admin_enqueue_scripts',                   array( $this, 'admin_enqueues' ) );
+		add_action( 'wp_ajax_regeneratethumbnail',             array( $this, 'ajax_process_image' ) );
+		add_filter( 'media_row_actions',                       array( $this, 'add_media_row_action' ), 10, 2 );
+		//add_filter( 'bulk_actions-upload',                     array( $this, 'add_bulk_actions' ), 99 ); // A last minute change to 3.1 makes this no longer work
+		add_action( 'admin_head-upload.php',                   array( $this, 'add_bulk_actions_via_javascript' ) );
+		add_action( 'admin_action_bulk_regenerate_thumbnails', array( $this, 'bulk_action_handler' ) ); // Top drowndown
+		add_action( 'admin_action_-1',                         array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
 
 		// Allow people to change what capability is required to use this plugin
 		$this->capability = apply_filters( 'regenerate_thumbs_cap', 'manage_options' );
@@ -52,13 +52,13 @@ class RegenerateThumbnails {
 
 
 	// Register the management page
-	function add_admin_menu() {
-		$this->menu_id = add_management_page( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), __( 'Regen. Thumbnails', 'regenerate-thumbnails' ), $this->capability, 'regenerate-thumbnails', array(&$this, 'regenerate_interface') );
+	public function add_admin_menu() {
+		$this->menu_id = add_management_page( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), __( 'Regen. Thumbnails', 'regenerate-thumbnails' ), $this->capability, 'regenerate-thumbnails', array($this, 'regenerate_interface') );
 	}
 
 
 	// Enqueue the needed Javascript and CSS
-	function admin_enqueues( $hook_suffix ) {
+	public function admin_enqueues( $hook_suffix ) {
 		if ( $hook_suffix != $this->menu_id )
 			return;
 
@@ -69,7 +69,7 @@ class RegenerateThumbnails {
 
 
 	// Add a "Regenerate Thumbnails" link to the media row actions
-	function add_media_row_action( $actions, $post ) {
+	public function add_media_row_action( $actions, $post ) {
 		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) )
 			return $actions;
 
@@ -81,7 +81,7 @@ class RegenerateThumbnails {
 
 
 	// Add "Regenerate Thumbnails" to the Bulk Actions media dropdown
-	function add_bulk_actions( $actions ) {
+	public function add_bulk_actions( $actions ) {
 		$delete = false;
 		if ( ! empty( $actions['delete'] ) ) {
 			$delete = $actions['delete'];
@@ -99,7 +99,7 @@ class RegenerateThumbnails {
 
 	// Add new items to the Bulk Actions using Javascript
 	// A last minute change to the "bulk_actions-xxxxx" filter in 3.1 made it not possible to add items using that
-	function add_bulk_actions_via_javascript() {
+	public function add_bulk_actions_via_javascript() {
 		if ( ! current_user_can( $this->capability ) )
 			return;
 ?>
@@ -113,7 +113,7 @@ class RegenerateThumbnails {
 
 
 	// Handles the bulk actions POST
-	function bulk_action_handler() {
+	public function bulk_action_handler() {
 		if ( empty( $_REQUEST['action'] ) || ( 'bulk_regenerate_thumbnails' != $_REQUEST['action'] && 'bulk_regenerate_thumbnails' != $_REQUEST['action2'] ) )
 			return;
 
@@ -131,7 +131,7 @@ class RegenerateThumbnails {
 
 
 	// The user interface plus thumbnail regenerator
-	function regenerate_interface() {
+	public function regenerate_interface() {
 		global $wpdb;
 
 		?>
@@ -233,7 +233,7 @@ class RegenerateThumbnails {
 			$("#regenthumbs-debuglist li").remove();
 
 			// Called after each resize. Updates debug information and the progress bar.
-			function RegenThumbsUpdateStatus( id, success, response ) {
+			public function RegenThumbsUpdateStatus( id, success, response ) {
 				$("#regenthumbs-bar").progressbar( "value", ( rt_count / rt_total ) * 100 );
 				$("#regenthumbs-bar-percent").html( Math.round( ( rt_count / rt_total ) * 1000 ) / 10 + "%" );
 				rt_count = rt_count + 1;
@@ -252,7 +252,7 @@ class RegenerateThumbnails {
 			}
 
 			// Called when all images have been processed. Shows the results and cleans up.
-			function RegenThumbsFinishUp() {
+			public function RegenThumbsFinishUp() {
 				rt_timeend = new Date().getTime();
 				rt_totaltime = Math.round( ( rt_timeend - rt_timestart ) / 1000 );
 
@@ -269,7 +269,7 @@ class RegenerateThumbnails {
 			}
 
 			// Regenerate a specified image via AJAX
-			function RegenThumbs( id ) {
+			public function RegenThumbs( id ) {
 				$.ajax({
 					type: 'POST',
 					url: ajaxurl,
@@ -338,7 +338,7 @@ class RegenerateThumbnails {
 
 
 	// Process a single image ID (this is an AJAX handler)
-	function ajax_process_image() {
+	public function ajax_process_image() {
 		@error_reporting( 0 ); // Don't break the JSON result
 
 		header( 'Content-type: application/json' );
@@ -374,13 +374,13 @@ class RegenerateThumbnails {
 
 
 	// Helper to make a JSON error message
-	function die_json_error_msg( $id, $message ) {
+	public function die_json_error_msg( $id, $message ) {
 		die( json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) failed to resize. The error message was: %3$s', 'regenerate-thumbnails' ), esc_html( get_the_title( $id ) ), $id, $message ) ) ) );
 	}
 
 
 	// Helper function to escape quotes in strings for use in Javascript
-	function esc_quotes( $string ) {
+	public function esc_quotes( $string ) {
 		return str_replace( '"', '\"', $string );
 	}
 }
