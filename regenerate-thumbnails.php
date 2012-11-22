@@ -9,22 +9,26 @@ Version:      2.3.0
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
+Text Domain:  regenerate-thumbnails
+Domain Path:  /localization/
+
 **************************************************************************
 
-Copyright (C) 2008-2012 Viper007Bond
+Copyright (C) 2008-2012 Alex Mills (Viper007Bond)
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License version 2 or greater,
+as published by the Free Software Foundation.
+
+You may NOT assume that you can use any other version of the GPL.
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+The license for this software can likely be found here:
+http://www.gnu.org/licenses/gpl-2.0.html
 
 **************************************************************************/
 
