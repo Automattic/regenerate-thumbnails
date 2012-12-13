@@ -295,6 +295,12 @@ class RegenerateThumbnails {
 					url: ajaxurl,
 					data: { action: "regeneratethumbnail", id: id },
 					success: function( response ) {
+						if ( response === null ) {
+							response = new Object;
+							response.success = false;
+							response.error = "The resize request was abnormally terminated (ID " + id + "). This is likely due to the image exceeding available memory.";
+						}
+
 						if ( response.success ) {
 							RegenThumbsUpdateStatus( id, true, response );
 						}
