@@ -408,7 +408,9 @@ class RegenerateThumbnails {
 			# If we did a subset of the sizes, make sure that we retain anything existing
 			if ( isset( $_POST['sizes'] ) ) {
 				$old_metadata = wp_get_attachment_metadata( $image->ID );
-				$metadata['sizes'] = array_merge( $old_metadata['sizes'], $metadata['sizes'] );
+				if (!isset($metadata['sizes'])) $metadata['sizes'] = array();
+				if (!isset($old_metadata['sizes'])) $old_metadata['sizes'] = array();
+				$metadata['sizes'] = array_merge( (array) $old_metadata['sizes'], (array) $metadata['sizes'] );
 			}
 
 			// If this fails, then it just means that nothing was changed (old value == new value)
