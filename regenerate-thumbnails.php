@@ -168,7 +168,7 @@ class RegenerateThumbnails {
 		if ( ! empty( $_POST['regenerate-thumbnails'] ) || ! empty( $_REQUEST['ids'] ) ) {
 			// Capability check
 			if ( ! current_user_can( $this->capability ) )
-				wp_die( __( 'Cheatin&#8217; uh?' ) );
+				wp_die( __( 'Cheatin&#8217; uh?', 'regenerate-thumbnails' ) );
 
 			// Form nonce check
 			check_admin_referer( 'regenerate-thumbnails' );
