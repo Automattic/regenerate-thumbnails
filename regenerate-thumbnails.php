@@ -238,6 +238,7 @@ class RegenerateThumbnails {
 			var rt_timeend = 0;
 			var rt_totaltime = 0;
 			var rt_continue = true;
+			var rt_title=document.title; // current title
 
 			// Create the progress bar
 			$("#regenthumbs-bar").progressbar();
@@ -254,8 +255,13 @@ class RegenerateThumbnails {
 
 			// Called after each resize. Updates debug information and the progress bar.
 			function RegenThumbsUpdateStatus( id, success, response ) {
+				var rt_progress_percentage = Math.round( ( rt_count / rt_total ) * 1000 ) / 10 + "%"; // progress in percentage
+
 				$("#regenthumbs-bar").progressbar( "value", ( rt_count / rt_total ) * 100 );
-				$("#regenthumbs-bar-percent").html( Math.round( ( rt_count / rt_total ) * 1000 ) / 10 + "%" );
+				$("#regenthumbs-bar-percent").html( rt_progress_percentage );
+				
+				document.title = rt_progress_percentage + '-' + rt_title; // update title with progress ( in percentage )
+
 				rt_count = rt_count + 1;
 
 				if ( success ) {
