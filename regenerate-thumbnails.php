@@ -346,6 +346,30 @@ class RegenerateThumbnails {
 
 	<p><?php _e( "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails' ); ?></p>
 
+	<?php function list_thumbnail_sizes(){
+	global $_wp_additional_image_sizes;
+		$sizes = array();
+		foreach( get_intermediate_image_sizes() as $s ){
+			$sizes[ $s ] = array( 0, 0 );
+			if( in_array( $s, array( 'thumbnail', 'medium', 'large' ) ) ){
+				$sizes[ $s ][0] = get_option( $s . '_size_w' );
+				$sizes[ $s ][1] = get_option( $s . '_size_h' );
+			}else{
+				if( isset( $_wp_additional_image_sizes ) && isset( $_wp_additional_image_sizes[ $s ] ) )
+					$sizes[ $s ] = array( $_wp_additional_image_sizes[ $s ]['width'], $_wp_additional_image_sizes[ $s ]['height'], );
+			}
+		}
+
+		echo '<p>Registered Image Sizes:</p>';
+		echo '<ul style="list-style:circle inside;">';	
+		foreach( $sizes as $size => $atts ){
+			echo '<li>' . $size . ' ' . implode( 'x', $atts ) . "</li>\n";
+		}
+		echo '</ul>';
+	} ?>
+ 
+	<?php list_thumbnail_sizes(); ?>
+	
 	<p><?php _e( 'To begin, just press the button below.', 'regenerate-thumbnails '); ?></p>
 
 	<p><input type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
