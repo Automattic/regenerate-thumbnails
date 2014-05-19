@@ -66,6 +66,7 @@ class RegenerateThumbnails {
 		add_action( 'admin_head-upload.php',                   array( $this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_regenerate_thumbnails', array( $this, 'bulk_action_handler' ) ); // Top drowndown
 		add_action( 'admin_action_-1',                         array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
+		add_action( 'attachment_submitbox_misc_actions',       array( $this, 'add_submitbox_button' ), 99 ); // Button on media edit screen
 
 		// Allow people to change what capability is required to use this plugin
 		$this->capability = apply_filters( 'regenerate_thumbs_cap', 'manage_options' );
@@ -148,6 +149,22 @@ class RegenerateThumbnails {
 		// Can't use wp_nonce_url() as it escapes HTML entities
 		wp_redirect( add_query_arg( '_wpnonce', wp_create_nonce( 'regenerate-thumbnails' ), admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $ids ) ) );
 		exit();
+	}
+
+
+	// Add "Regenerate Thumbnails" button to the Edit Media submit metabox
+	public function add_submitbox_button() {
+		global $post;
+		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) )
+			return;
+
+		$url = wp_nonce_url( admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $post->ID ), 'regenerate-thumbnails' );
+		$button = '<a href="' . esc_url( $url ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+?>
+		<div class="misc-pub-section misc-pub-regenerate-thumbnails">
+			<?php echo $button; ?>
+		</div>
+<?php
 	}
 
 
