@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate thumbnail images for times when you change thumbnail sizes or switch to a theme with a different featured image size.
-Version:      2.4.0
+Version:      2.3.0
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -96,6 +96,9 @@ class RegenerateThumbnails {
 		wp_enqueue_style( 'jquery-ui-regenthumbs', plugins_url( 'jquery-ui/redmond/jquery-ui-1.7.2.custom.css', __FILE__ ), array(), '1.7.2' );
 	}
 
+	public function create_nonce_name( $ids ) {
+		return 'regenerate-thumbnails|' . implode( ',', $ids );
+	}
 
 	// Add a "Regenerate Thumbnails" link to the media row actions
 	public function add_media_row_action( $actions, $post ) {
@@ -103,7 +106,7 @@ class RegenerateThumbnails {
 			return $actions;
 		}
 
-		$url                              = wp_nonce_url( admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $post->ID ), 'regenerate-thumbnails' );
+		$url                              = wp_nonce_url( admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $post->ID ), $this->create_nonce_name( array( $post->ID ) ) );
 		$actions['regenerate_thumbnails'] = '<a href="' . esc_url( $url ) . '" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
 
 		return $actions;
@@ -156,10 +159,21 @@ class RegenerateThumbnails {
 
 		check_admin_referer( 'bulk-media' );
 
-		$ids = implode( ',', array_map( 'intval', $_REQUEST['media'] ) );
+		$ids = array_map( 'intval', $_REQUEST['media'] );
 
-		// Can't use wp_nonce_url() as it escapes HTML entities
-		wp_redirect( add_query_arg( '_wpnonce', wp_create_nonce( 'regenerate-thumbnails' ), admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $ids ) ) );
+		$url_args = array(
+			'page'     => '',
+			'godback'  => 1,
+			'ids'      => implode( ',', $ids ),
+			'_wpnonce' => wp_create_nonce( $this->create_nonce_name( $ids ) ), // Can't use wp_nonce_url() as it escapes HTML entities
+		);
+
+		// https://core.trac.wordpress.org/ticket/17923
+		$url_args = array_map( 'rawurlencode', $url_args );
+
+		$url = add_query_arg( $url_args, admin_url( 'tools.php' ) );
+
+		wp_safe_redirect( $url );
 		exit();
 	}
 
@@ -171,7 +185,7 @@ class RegenerateThumbnails {
 			return;
 		}
 
-		$url    = wp_nonce_url( admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $post->ID ), 'regenerate-thumbnails' );
+		$url    = wp_nonce_url( admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $post->ID ), $this->create_nonce_name( array( $post->ID ) ) );
 		$button = '<a href="' . esc_url( $url ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
 		?>
 		<div class="misc-pub-section misc-pub-regenerate-thumbnails">
@@ -201,19 +215,21 @@ class RegenerateThumbnails {
 					wp_die( __( 'Cheatin&#8217; uh?' ) );
 				}
 
-				// Form nonce check
-				check_admin_referer( 'regenerate-thumbnails' );
-
 				// Create the list of image IDs
 				if ( ! empty( $_REQUEST['ids'] ) ) {
 					$images = array_map( 'intval', explode( ',', trim( $_REQUEST['ids'], ',' ) ) );
 					$ids    = implode( ',', $images );
+
+					// Form nonce check
+					check_admin_referer( $this->create_nonce_name( $images ) );
 				} else {
+					check_admin_referer( 'regenerate_thumbnails' );
+
 					// Directly querying the database is normally frowned upon, but all
 					// of the API functions will return the full post objects which will
 					// suck up lots of memory. This is best, just not as future proof.
 					if ( ! $images = $wpdb->get_results( "SELECT ID FROM $wpdb->posts WHERE post_type = 'attachment' AND post_mime_type LIKE 'image/%' ORDER BY ID DESC" ) ) {
-						echo '	<p>' . sprintf( __( "Unable to find any images. Are you sure <a href='%s'>some exist</a>?", 'regenerate-thumbnails' ), admin_url( 'upload.php?post_mime_type=image' ) ) . "</p></div>";
+						echo '	<p>' . sprintf( __( "Unable to find any images. Are you sure <a href='%s'>some exist</a>?", 'regenerate-thumbnails' ), esc_url( admin_url( 'upload.php?post_mime_type=image' ) ) ) . "</p></div>";
 
 						return;
 					}
@@ -225,6 +241,7 @@ class RegenerateThumbnails {
 					}
 					$ids = implode( ',', $ids );
 				}
+
 
 				echo '	<p>' . __( "Please be patient while the thumbnails are regenerated. This can take a while if your server is slow (inexpensive hosting) or if you have many images. Do not navigate away from this page until this script is done or the thumbnails will not be resized. You will be notified via this page when the regenerating is completed.", 'regenerate-thumbnails' ) . '</p>';
 
@@ -373,9 +390,9 @@ class RegenerateThumbnails {
 				<form method="post" action="">
 					<?php wp_nonce_field( 'regenerate-thumbnails' ) ?>
 
-					<p><?php printf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your blog. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a>. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), admin_url( 'options-media.php' ) ); ?></p>
+					<p><?php printf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your blog. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a>. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), esc_url( admin_url( 'options-media.php' ) ) ); ?></p>
 
-					<p><?php printf( __( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images (WordPress 3.1+ only).", 'regenerate-thumbnails' ), admin_url( 'upload.php' ) ); ?></p>
+					<p><?php printf( __( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images (WordPress 3.1+ only).", 'regenerate-thumbnails' ), esc_url( admin_url( 'upload.php' ) ) ); ?></p>
 
 					<p><?php _e( "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails' ); ?></p>
 
