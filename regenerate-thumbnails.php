@@ -100,14 +100,27 @@ class RegenerateThumbnails {
 		return 'regenerate-thumbnails|' . implode( ',', $ids );
 	}
 
+	public function create_page_url( $ids ) {
+		$url_args = array(
+			'page'     => 'regenerate-thumbnails',
+			'goback'   => 1,
+			'ids'      => implode( ',', $ids ),
+			'_wpnonce' => wp_create_nonce( $this->create_nonce_name( $ids ) ), // Can't use wp_nonce_url() as it escapes HTML entities
+		);
+
+		// https://core.trac.wordpress.org/ticket/17923
+		$url_args = array_map( 'rawurlencode', $url_args );
+
+		return add_query_arg( $url_args, admin_url( 'tools.php' ) );
+	}
+
 	// Add a "Regenerate Thumbnails" link to the media row actions
 	public function add_media_row_action( $actions, $post ) {
 		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) ) {
 			return $actions;
 		}
 
-		$url                              = wp_nonce_url( admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $post->ID ), $this->create_nonce_name( array( $post->ID ) ) );
-		$actions['regenerate_thumbnails'] = '<a href="' . esc_url( $url ) . '" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+		$actions['regenerate_thumbnails'] = '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
 
 		return $actions;
 	}
@@ -159,21 +172,7 @@ class RegenerateThumbnails {
 
 		check_admin_referer( 'bulk-media' );
 
-		$ids = array_map( 'intval', $_REQUEST['media'] );
-
-		$url_args = array(
-			'page'     => '',
-			'godback'  => 1,
-			'ids'      => implode( ',', $ids ),
-			'_wpnonce' => wp_create_nonce( $this->create_nonce_name( $ids ) ), // Can't use wp_nonce_url() as it escapes HTML entities
-		);
-
-		// https://core.trac.wordpress.org/ticket/17923
-		$url_args = array_map( 'rawurlencode', $url_args );
-
-		$url = add_query_arg( $url_args, admin_url( 'tools.php' ) );
-
-		wp_safe_redirect( $url );
+		wp_safe_redirect( $this->create_page_url( array_map( 'intval', $_REQUEST['media'] ) ) );
 		exit();
 	}
 
@@ -185,13 +184,9 @@ class RegenerateThumbnails {
 			return;
 		}
 
-		$url    = wp_nonce_url( admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $post->ID ), $this->create_nonce_name( array( $post->ID ) ) );
-		$button = '<a href="' . esc_url( $url ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
-		?>
-		<div class="misc-pub-section misc-pub-regenerate-thumbnails">
-			<?php echo $button; ?>
-		</div>
-	<?php
+		$button = '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+
+		echo '<div class="misc-pub-section misc-pub-regenerate-thumbnails">' . $button . '</div>';
 	}
 
 
