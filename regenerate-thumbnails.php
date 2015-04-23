@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate thumbnail images for times when you change thumbnail sizes or switch to a theme with a different featured image size.
-Version:      2.3.0
+Version:      2.4.0
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -14,7 +14,7 @@ Domain Path:  /localization/
 
 **************************************************************************
 
-Copyright (C) 2008-2012 Alex Mills (Viper007Bond)
+Copyright (C) 2008-2015 Alex Mills (Viper007Bond)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License version 2 or greater,
@@ -34,6 +34,7 @@ http://www.gnu.org/licenses/gpl-2.0.html
 
 class RegenerateThumbnails {
 	public $menu_id;
+	public $capability = 'manage_options'; // Modify using the "regenerate_thumbs_cap" filter
 
 	private static $instance;
 
@@ -69,7 +70,7 @@ class RegenerateThumbnails {
 		add_action( 'attachment_submitbox_misc_actions',       array( $this, 'add_submitbox_button' ), 99 ); // Button on media edit screen
 
 		// Allow people to change what capability is required to use this plugin
-		$this->capability = apply_filters( 'regenerate_thumbs_cap', 'manage_options' );
+		$this->capability = apply_filters( 'regenerate_thumbs_cap', $this->capability );
 	}
 
 
@@ -432,5 +433,3 @@ function RegenerateThumbnails() {
 }
 
 add_action( 'plugins_loaded', 'RegenerateThumbnails' );
-
-?>
