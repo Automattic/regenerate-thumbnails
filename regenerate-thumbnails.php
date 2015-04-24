@@ -187,26 +187,19 @@ class RegenerateThumbnails {
 	}
 
 	/**
-	 * Adds "Regenerate Thumbnails" to the bulk actions dropdown menu in the media library list view.
-	 *
-	 * @param array $actions An array of current bulk actions.
-	 *
-	 * @return array The new array of bulk actions.
+	 * Add "Regenerate Thumbnails" to the bulk actions dropdown on the media list using Javascript.
 	 */
-	public function add_bulk_actions( $actions ) {
-		$delete = false;
-		if ( ! empty( $actions['delete'] ) ) {
-			$delete = $actions['delete'];
-			unset( $actions['delete'] );
+	public function add_bulk_actions_via_javascript() {
+		if ( ! current_user_can( $this->capability ) ) {
+			return;
 		}
-
-		$actions['bulk_regenerate_thumbnails'] = __( 'Regenerate Thumbnails', 'regenerate-thumbnails' );
-
-		if ( $delete ) {
-			$actions['delete'] = $delete;
-		}
-
-		return $actions;
+		?>
+		<script type="text/javascript">
+			jQuery(document).ready(function ($) {
+				$('select[name^="action"] option:last-child').before('<option value="bulk_regenerate_thumbnails"><?php echo esc_attr( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) ); ?></option>');
+			});
+		</script>
+	<?php
 	}
 
 	/**
@@ -439,7 +432,7 @@ class RegenerateThumbnails {
 				<form method="post" action="">
 					<?php wp_nonce_field( 'regenerate-thumbnails' ) ?>
 
-					<p><?php printf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your blog. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a>. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), esc_url( admin_url( 'options-media.php' ) ) ); ?></p>
+					<p><?php printf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), esc_url( admin_url( 'options-media.php' ) ) ); ?></p>
 
 					<p><?php printf( __( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images (WordPress 3.1+ only).", 'regenerate-thumbnails' ), esc_url( admin_url( 'upload.php' ) ) ); ?></p>
 
