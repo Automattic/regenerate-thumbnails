@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate thumbnail images for times when you change thumbnail sizes or switch to a theme with a different featured image size.
-Version:      2.3.0
+Version:      3.0.0
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -33,23 +33,55 @@ http://www.gnu.org/licenses/gpl-2.0.html
 **************************************************************************/
 
 class RegenerateThumbnails {
+	/**
+	 * Stores the menu ID of this plugin, as returned by add_management_page().
+	 *
+	 * @var string
+	 */
 	public $menu_id;
-	public $capability = 'manage_options'; // Modify using the "regenerate_thumbs_cap" filter
 
+	/**
+	 * Stores the capability required to use this plugin.
+	 * Can be changed using the "regenerate_thumbs_cap" filter.
+	 *
+	 * @var string
+	 */
+	public $capability = 'manage_options';
+
+	/**
+	 * Stores the single instance of this plugin.
+	 *
+	 * @access private
+	 * @var RegenerateThumbnails
+	 */
 	private static $instance;
 
+	/**
+	 * Constructor. Doesn't actually do anything as instance() creates the class instance.
+	 */
 	private function __construct() {
-		/* Don't do anything, needs to be initialized via instance() method */
 	}
 
+	/**
+	 * Prevents the class from being cloned.
+	 */
 	public function __clone() {
-		wp_die( "Please don't clone RegenerateThumbnails" );
+		wp_die( __( "Please don't clone RegenerateThumbnails", 'regenerate-thumbnails' ) );
 	}
 
+	/**
+	 * Prints the class from being unserialized and woken up.
+	 */
 	public function __wakeup() {
-		wp_die( "Please don't unserialize/wakeup RegenerateThumbnails" );
+		wp_die( __( "Please don't unserialize/wakeup RegenerateThumbnails", 'regenerate-thumbnails' ) );
 	}
 
+	/**
+	 * Creates a new instance of this class if one hasn't already been made
+	 * and then returns the single instance of this class.
+	 *
+	 * @return RegenerateThumbnails
+	 */
 	public static function instance() {
 		if ( ! isset( self::$instance ) ) {
 			self::$instance = new RegenerateThumbnails;
@@ -59,6 +91,10 @@ class RegenerateThumbnails {
 		return self::$instance;
 	}
 
+	/**
+	 * Does the inital setup of the instance of this class including loading the localization
+	 * file, registering the various actions and filters, and filtering the plugin's capability.
+	 */
 	public function setup() {
 		// Load up the localization file if we're using WordPress in a different language
 		// Place it in this plugin's "localization" folder and name it "regenerate-thumbnails-[value in wp-config].mo"
@@ -67,25 +103,29 @@ class RegenerateThumbnails {
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueues' ) );
 		add_action( 'wp_ajax_regeneratethumbnail', array( $this, 'ajax_process_image' ) );
-		add_filter( 'media_row_actions', array( $this, 'add_media_row_action' ), 10, 2 );
-		//add_filter( 'bulk_actions-upload',                     array( $this, 'add_bulk_actions' ), 99 ); // A last minute change to 3.1 makes this no longer work
 		add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_regenerate_thumbnails', array( $this, 'bulk_action_handler' ) ); // Top drowndown
 		add_action( 'admin_action_-1', array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
 		add_action( 'attachment_submitbox_misc_actions', array( $this, 'add_submitbox_button' ), 99 ); // Button on media edit screen
 
+		add_filter( 'media_row_actions', array( $this, 'add_media_row_action' ), 10, 2 );
+
 		// Allow people to change what capability is required to use this plugin
 		$this->capability = apply_filters( 'regenerate_thumbs_cap', $this->capability );
 	}
 
-
-	// Register the management page
+	/**
+	 * Adds a the new item to the admin menu.
+	 */
 	public function add_admin_menu() {
 		$this->menu_id = add_management_page( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), __( 'Regen. Thumbnails', 'regenerate-thumbnails' ), $this->capability, 'regenerate-thumbnails', array( $this, 'regenerate_interface' ) );
 	}
 
-
-	// Enqueue the needed Javascript and CSS
+	/**
+	 * Enqueues the requires JavaScript file and stylesheet on the plugin's admin page.
+	 *
+	 * @param string $hook_suffix The current page's hook suffix as provided by admin-header.php.
+	 */
 	public function admin_enqueues( $hook_suffix ) {
 		if ( $hook_suffix != $this->menu_id ) {
 			return;
@@ -96,10 +136,24 @@ class RegenerateThumbnails {
 		wp_enqueue_style( 'jquery-ui-regenthumbs', plugins_url( 'jquery-ui/redmond/jquery-ui-1.7.2.custom.css', __FILE__ ), array(), '1.7.2' );
 	}
 
+	/**
+	 * Creates a nonce for a given set of image IDs.
+	 *
+	 * @param array $ids An array of attachment IDs to create the nonce for.
+	 *
+	 * @return string A nonce name.
+	 */
 	public function create_nonce_name( $ids ) {
 		return 'regenerate-thumbnails|' . implode( ',', $ids );
 	}
 
+	/**
+	 * Creates a nonced URL to the plugin's admin page for a given set of attachment IDs.
+	 *
+	 * @param array $ids An array of attachment IDs that should be regenerated.
+	 *
+	 * @return string The nonced URL to the admin page.
+	 */
 	public function create_page_url( $ids ) {
 		$url_args = array(
 			'page'     => 'regenerate-thumbnails',
@@ -114,7 +168,14 @@ class RegenerateThumbnails {
 		return add_query_arg( $url_args, admin_url( 'tools.php' ) );
 	}
 
-	// Add a "Regenerate Thumbnails" link to the media row actions
+	/**
+	 * Adds "Regenerate Thumbnails" below each image in the media library list view.
+	 *
+	 * @param array  $actions An array of current actions.
+	 * @param object $post    The current attachment's post object.
+	 *
+	 * @return array The new list of actions.
+	 */
 	public function add_media_row_action( $actions, $post ) {
 		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) ) {
 			return $actions;
@@ -125,8 +186,13 @@ class RegenerateThumbnails {
 		return $actions;
 	}
 
-
-	// Add "Regenerate Thumbnails" to the Bulk Actions media dropdown
+	/**
+	 * Adds "Regenerate Thumbnails" to the bulk actions dropdown menu in the media library list view.
+	 *
+	 * @param array $actions An array of current bulk actions.
+	 *
+	 * @return array The new array of bulk actions.
+	 */
 	public function add_bulk_actions( $actions ) {
 		$delete = false;
 		if ( ! empty( $actions['delete'] ) ) {
@@ -143,24 +209,9 @@ class RegenerateThumbnails {
 		return $actions;
 	}
 
-
-	// Add new items to the Bulk Actions using Javascript
-	// A last minute change to the "bulk_actions-xxxxx" filter in 3.1 made it not possible to add items using that
-	public function add_bulk_actions_via_javascript() {
-		if ( ! current_user_can( $this->capability ) ) {
-			return;
-		}
-		?>
-		<script type="text/javascript">
-			jQuery(document).ready(function ($) {
-				$('select[name^="action"] option:last-child').before('<option value="bulk_regenerate_thumbnails"><?php echo esc_attr( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) ); ?></option>');
-			});
-		</script>
-	<?php
-	}
-
-
-	// Handles the bulk actions POST
+	/**
+	 * Handles the submission of the new bulk actions entry and redirects to the admin page with the selected attachment IDs.
+	 */
 	public function bulk_action_handler() {
 		if ( empty( $_REQUEST['action'] ) || ( 'bulk_regenerate_thumbnails' != $_REQUEST['action'] && 'bulk_regenerate_thumbnails' != $_REQUEST['action2'] ) ) {
 			return;
@@ -176,21 +227,24 @@ class RegenerateThumbnails {
 		exit();
 	}
 
-
-	// Add "Regenerate Thumbnails" button to the Edit Media submit metabox
+	/**
+	 * Add a "Regenerate Thumbnails" button to the submit box on the "Edit Media" screen for an image attachment.
+	 */
 	public function add_submitbox_button() {
 		global $post;
+
 		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) ) {
 			return;
 		}
 
-		$button = '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
-
-		echo '<div class="misc-pub-section misc-pub-regenerate-thumbnails">' . $button . '</div>';
+		echo '<div class="misc-pub-section misc-pub-regenerate-thumbnails">';
+		echo '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+		echo '</div>';
 	}
 
-
-	// The user interface plus thumbnail regenerator
+	/**
+	 * The main Regenerate Thumbnails interface.
+	 */
 	public function regenerate_interface() {
 		global $wpdb;
 
@@ -406,8 +460,9 @@ class RegenerateThumbnails {
 	<?php
 	}
 
-
-	// Process a single image ID (this is an AJAX handler)
+	/**
+	 * AJAX handler that regenerates the thumbnails a single image attachment. Outputs JSON.
+	 */
 	public function ajax_process_image() {
 		@error_reporting( 0 ); // Don't break the JSON result
 
@@ -447,21 +502,38 @@ class RegenerateThumbnails {
 		die( json_encode( array( 'success' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) was successfully resized in %3$s seconds.', 'regenerate-thumbnails' ), esc_html( get_the_title( $image->ID ) ), $image->ID, timer_stop() ) ) ) );
 	}
 
-
-	// Helper to make a JSON error message
+	/**
+	 * Create a JSON error message and die.
+	 *
+	 * @param int    $id      The attachment ID.
+	 * @param string $message The error message.
+	 */
 	public function die_json_error_msg( $id, $message ) {
 		die( json_encode( array( 'error' => sprintf( __( '&quot;%1$s&quot; (ID %2$s) failed to resize. The error message was: %3$s', 'regenerate-thumbnails' ), esc_html( get_the_title( $id ) ), $id, $message ) ) ) );
 	}
 
-
-	// Helper function to escape quotes in strings for use in Javascript
+	/**
+	 * Slash escape double quotes.
+	 *
+	 * @param string $string The string to escape.
+	 *
+	 * @return string The escaped string.
+	 */
 	public function esc_quotes( $string ) {
 		return str_replace( '"', '\"', $string );
 	}
 }
 
+/**
+ * Returns the single instance of this plugin, creating one if needed.
+ *
+ * @return RegenerateThumbnails
+ */
 function RegenerateThumbnails() {
 	return RegenerateThumbnails::instance();
 }
 
+/**
+ * Initalize this plugin once all other plugins have finished loading.
+ */
 add_action( 'plugins_loaded', 'RegenerateThumbnails' );
