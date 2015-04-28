@@ -34,6 +34,13 @@ http://www.gnu.org/licenses/gpl-2.0.html
 
 class RegenerateThumbnails {
 	/**
+	 * This plugin's version number. Used for busting caches.
+	 *
+	 * @var string
+	 */
+	public $version = '3.0.0';
+
+	/**
 	 * Stores the menu ID of this plugin, as returned by add_management_page().
 	 *
 	 * @var string
@@ -96,19 +103,31 @@ class RegenerateThumbnails {
 	 * file, registering the various actions and filters, and filtering the plugin's capability.
 	 */
 	public function setup() {
-		// Load up the localization file if we're using WordPress in a different language
-		// Place it in this plugin's "localization" folder and name it "regenerate-thumbnails-[value in wp-config].mo"
 		load_plugin_textdomain( 'regenerate-thumbnails', false, '/regenerate-thumbnails/localization' );
 
+		// Add a new item to the Tools menu in the admin menu
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
+
+		// Load the required JavaScript and CSS
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueues' ) );
+
+		// Process the individual image regenerate AJAX requests
 		add_action( 'wp_ajax_regeneratethumbnail', array( $this, 'ajax_process_image' ) );
+
+		// For the bulk action dropdowns
 		add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_regenerate_thumbnails', array( $this, 'bulk_action_handler' ) ); // Top drowndown
 		add_action( 'admin_action_-1', array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
-		add_action( 'attachment_submitbox_misc_actions', array( $this, 'add_submitbox_button' ), 99 ); // Button on media edit screen
+		
+		// Add a regenerate button to the non-modal edit media page
+		add_action( 'attachment_submitbox_misc_actions', array( $this, 'add_button_to_media_edit_page' ), 99 );
 
-		add_filter( 'media_row_actions', array( $this, 'add_media_row_action' ), 10, 2 );
+		// Add a regenerate button to the list of fields in the edit media modal
+		// Ideally this would with the action links but I'm not good enough with JavaScript to do it
+		add_filter( 'attachment_fields_to_edit', array( $this, 'add_button_to_edit_media_modal_fields_area' ), 99, 2 );
+
+		// Add a regenerate link to actions list in the media list view
+		add_filter( 'media_row_actions', array( $this, 'add_regenerate_link_to_media_list_view' ), 10, 2 );
 
 		// Allow people to change what capability is required to use this plugin
 		$this->capability = apply_filters( 'regenerate_thumbs_cap', $this->capability );
@@ -132,8 +151,8 @@ class RegenerateThumbnails {
 		}
 
 		wp_enqueue_script( 'jquery-ui-progressbar' );
-
-		wp_enqueue_style( 'jquery-ui-regenthumbs', plugins_url( 'jquery-ui/redmond/jquery-ui-1.7.2.custom.css', __FILE__ ), array(), '1.7.2' );
+		
+		wp_enqueue_style( 'jquery-ui-regenthumbs', plugins_url( 'jquery-ui/redmond/jquery-ui-1.7.2.custom.css', __FILE__ ), array(), $this->version );
 	}
 
 	/**
@@ -176,7 +195,7 @@ class RegenerateThumbnails {
 	 *
 	 * @return array The new list of actions.
 	 */
-	public function add_media_row_action( $actions, $post ) {
+	public function add_regenerate_link_to_media_list_view( $actions, $post ) {
 		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) ) {
 			return $actions;
 		}
@@ -184,6 +203,45 @@ class RegenerateThumbnails {
 		$actions['regenerate_thumbnails'] = '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
 
 		return $actions;
+	}
+
+	/**
+	 * Add a "Regenerate Thumbnails" button to the submit box on the non-modal "Edit Media" screen for an image attachment.
+	 */
+	public function add_button_to_media_edit_page() {
+		global $post;
+
+		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) ) {
+			return;
+		}
+
+		echo '<div class="misc-pub-section misc-pub-regenerate-thumbnails">';
+		echo '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+		echo '</div>';
+	}
+
+	/**
+	 * Adds a "Regenerate Thumbnails" button to the edit media modal view.
+	 *
+	 * Ideally it would be down with the actions but I'm not good enough at JavaScript
+	 * in order to be able to do it, so instead I'm adding it to the bottom of the list
+	 * of media fields. Pull requests to improve this are welcome!
+	 *
+	 * @param array  $form_fields An array of existing form fields.
+	 * @param object $post        The current media item, as a post object.
+	 *
+	 * @return array The new array of form fields.
+	 */
+	public function add_button_to_edit_media_modal_fields_area( $form_fields, $post ) {
+		$form_fields['regenerate_thumbnails'] = array(
+			'label'         => '',
+			'input'         => 'html',
+			'html'          => '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>',
+			'show_in_modal' => true,
+			'show_in_edit'  => false,
+		);
+
+		return $form_fields;
 	}
 
 	/**
@@ -218,21 +276,6 @@ class RegenerateThumbnails {
 
 		wp_safe_redirect( $this->create_page_url( array_map( 'intval', $_REQUEST['media'] ) ) );
 		exit();
-	}
-
-	/**
-	 * Add a "Regenerate Thumbnails" button to the submit box on the "Edit Media" screen for an image attachment.
-	 */
-	public function add_submitbox_button() {
-		global $post;
-
-		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) ) {
-			return;
-		}
-
-		echo '<div class="misc-pub-section misc-pub-regenerate-thumbnails">';
-		echo '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
-		echo '</div>';
 	}
 
 	/**
