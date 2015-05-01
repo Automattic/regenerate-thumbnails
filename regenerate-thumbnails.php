@@ -573,3 +573,13 @@ function RegenerateThumbnails() {
  * Initalize this plugin once all other plugins have finished loading.
  */
 add_action( 'plugins_loaded', 'RegenerateThumbnails' );
+
+// Add settings link on plugin page
+function RegenerateThumbnails_settings_link($links) { 
+  $settings_link = '<a href="tools.php?page=regenerate-thumbnails">' . __('Run', 'regenerate-thumbnails') . '</a>'; 
+  array_unshift($links, $settings_link); 
+  return $links; 
+}
+ 
+$plugin = plugin_basename(__FILE__); 
+add_filter("plugin_action_links_$plugin", 'RegenerateThumbnails_settings_link' );
