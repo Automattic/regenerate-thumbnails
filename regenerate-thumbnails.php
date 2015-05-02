@@ -344,7 +344,7 @@ class RegenerateThumbnails {
 					<div id="regenthumbs-bar-percent" style="position:absolute;left:50%;top:50%;width:300px;margin-left:-150px;height:25px;margin-top:-9px;font-weight:bold;text-align:center;"></div>
 				</div>
 
-				<p><input type="button" class="button hide-if-no-js" name="regenthumbs-stop" id="regenthumbs-stop" value="<?php _e( 'Abort Resizing Images', 'regenerate-thumbnails' ) ?>" /></p>
+				<p><input type="button" class="button-primary hide-if-no-js" name="regenthumbs-stop" id="regenthumbs-stop" value="<?php _e( 'Abort Resizing Images', 'regenerate-thumbnails' ) ?>" /></p>
 
 				<h3 class="title"><?php _e( 'Debugging Information', 'regenerate-thumbnails' ) ?></h3>
 
@@ -483,7 +483,7 @@ class RegenerateThumbnails {
 
 					<p><?php _e( 'To begin, just press the button below.', 'regenerate-thumbnails' ); ?></p>
 
-					<p><input type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
+					<p><input type="submit" class="button-primary hide-if-no-js" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
 
 					<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'regenerate-thumbnails' ) ?></em></p></noscript>
 
