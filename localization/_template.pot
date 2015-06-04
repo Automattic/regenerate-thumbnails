@@ -16,8 +16,7 @@ msgstr ""
 "X-Generator: Poedit 1.8beta1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e\n"
-"X-Poedit-Basepath: D:\\Programy\\xampp\\apps\\wordpress\\htdocs\\wp-content\\plugins"
-"\\regenerate-thumbnails\n"
+"X-Poedit-Basepath: ..\n"
 "X-Poedit-SearchPath-0: .\n"
 
 #: regenerate-thumbnails.php:76
