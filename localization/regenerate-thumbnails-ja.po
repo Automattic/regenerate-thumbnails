@@ -1,0 +1,185 @@
+# Copyright (C) 2014 Regenerate Thumbnails
+# This file is distributed under the same license as the Regenerate Thumbnails package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Regenerate Thumbnails 2.2.4\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/regenerate-thumbnails\n"
+"POT-Creation-Date: 2015-05-01 16:35+0100\n"
+"PO-Revision-Date: 2015-06-27 11:49+0900\n"
+"Last-Translator: MH35 <mh35jp@gmail.com>\n"
+"Language-Team: Japanese\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 1.8beta1\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: ..\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: regenerate-thumbnails.php:76
+msgid "Please don't clone RegenerateThumbnails"
+msgstr "RegenerateThumbnailsオブジェクトをcloneしないでください。"
+
+#: regenerate-thumbnails.php:83
+msgid "Please don't unserialize/wakeup RegenerateThumbnails"
+msgstr "RegenerateThumbnailsオブジェクトを復元できません。"
+
+#: regenerate-thumbnails.php:140 regenerate-thumbnails.php:203
+#: regenerate-thumbnails.php:219 regenerate-thumbnails.php:239
+#: regenerate-thumbnails.php:257 regenerate-thumbnails.php:292
+msgid "Regenerate Thumbnails"
+msgstr "サムネイル再生成"
+
+#: regenerate-thumbnails.php:140
+msgid "Regen. Thumbnails"
+msgstr "サムネイル再生成"
+
+#: regenerate-thumbnails.php:203 regenerate-thumbnails.php:219
+#: regenerate-thumbnails.php:239
+msgid "Regenerate the thumbnails for this single image"
+msgstr "この画像のサムネイルを再生成"
+
+#: regenerate-thumbnails.php:300
+msgid "Cheatin&#8217; uh?"
+msgstr "不正ですか?"
+
+#: regenerate-thumbnails.php:317
+#, php-format
+msgid "Unable to find any images. Are you sure <a href='%s'>some exist</a>?"
+msgstr "画像がありません。<a href='%s'>何か</a>あることを確認しましたか?"
+
+#: regenerate-thumbnails.php:331
+msgid ""
+"Please be patient while the thumbnails are regenerated. This can take a "
+"while if your server is slow (inexpensive hosting) or if you have many "
+"images. Do not navigate away from this page until this script is done or the "
+"thumbnails will not be resized. You will be notified via this page when the "
+"regenerating is completed."
+msgstr "サムネイルが再生成されるまでしばらくおまちください。たくさん画像があったりサーバーが遅かったり(安いサーバーの場合)する場合時間がかかります。再生成が終わるまでこのページから離れないでください。サムネイルがリサイズされません。サムネイル再生成が終わるとこのページで通知されます。"
+
+#: regenerate-thumbnails.php:335
+#, php-format
+msgid "To go back to the previous page, <a href=\"%s\">click here</a>."
+msgstr "前のページへ戻るには、<a href=\"%s\">ここをクリックしてください</a>。"
+
+#: regenerate-thumbnails.php:336
+#, php-format
+msgid ""
+"All done! %1$s image(s) were successfully resized in %2$s seconds and there "
+"were %3$s failure(s). To try regenerating the failed images again, <a href="
+"\"%4$s\">click here</a>. %5$s"
+msgstr "完了しました。%1$s枚の画像のリサイズを%2$s秒で完了しました。また、%3$s枚の画像のリサイズに失敗しました。失敗した画像の再生成をまた行うには、<a href=\"%4$s\">ここをクリックしてください</a>。%5$s"
+
+#. Description of the plugin/theme
+msgid ""
+"Allows you to regenerate thumbnail images for times when you change "
+"thumbnail sizes or switch to a theme with a different featured image size."
+msgstr "サムネイルのサイズを変更したり、画像のサイズが違うテーマに変更した時にサムネイルを再生成できます。"
+
+#: regenerate-thumbnails.php:337
+#, php-format
+msgid ""
+"All done! %1$s image(s) were successfully resized in %2$s seconds and there "
+"were 0 failures. %3$s"
+msgstr "完了しました。%1$s枚の画像のリサイズを%2$s秒で完了しました。また、%3$s枚の画像のリサイズに失敗しました。"
+
+#: regenerate-thumbnails.php:341 regenerate-thumbnails.php:488
+msgid "You must enable Javascript in order to proceed!"
+msgstr "続行するにはJavaScriptを有効にしてください。"
+
+#: regenerate-thumbnails.php:347
+msgid "Abort Resizing Images"
+msgstr "画像のリサイズを中止"
+
+#: regenerate-thumbnails.php:349
+msgid "Debugging Information"
+msgstr "デバッグ情報"
+
+#: regenerate-thumbnails.php:352
+#, php-format
+msgid "Total Images: %s"
+msgstr "全画像数: %s"
+
+#: regenerate-thumbnails.php:353
+#, php-format
+msgid "Images Resized: %s"
+msgstr "リサイズした画像数: %s"
+
+#: regenerate-thumbnails.php:354
+#, php-format
+msgid "Resize Failures: %s"
+msgstr "リサイズに失敗した画像数: %s"
+
+#: regenerate-thumbnails.php:384
+msgid "Stopping..."
+msgstr "停止中..."
+
+#: regenerate-thumbnails.php:478
+#, php-format
+msgid ""
+"Use this tool to regenerate thumbnails for all images that you have uploaded "
+"to your site. This is useful if you've changed any of the thumbnail "
+"dimensions on the <a href='%s'>media settings page</a> or switched themes. "
+"Old thumbnails will be kept to avoid any broken images due to hard-coded "
+"URLs."
+msgstr "このツールを使ってアップロードしたすべての画像のサムネイルを再生成できます。どれかのサムネイルの大きさを<a href='%s'>メディア設定</a>から変更した場合やテーマを変更した時に有用です。ハードコードされたURLの画像参照を破壊しないために古いサムネイルは残されます。"
+
+#: regenerate-thumbnails.php:480
+#, php-format
+msgid ""
+"You can regenerate specific images (rather than all images) from the <a "
+"href='%s'>Media</a> page. Hover over an image's row and click the link to "
+"resize just that one image or use the checkboxes and the &quot;Bulk "
+"Actions&quot; dropdown to resize multiple images (WordPress 3.1+ only)."
+msgstr "特定の画像だけ(すべての画像ではなく)を<a href='%s'>メディア</a>ページから再生成することもできます。画像の行にホバーしその画像のサムネイルを再生成するリンクをクリックしたり、チェックボックスを使って「一括操作」セレクトボックスから複数枚の画像の再生成も可能です(WordPress 3.1以上に限る)。"
+
+#: regenerate-thumbnails.php:482
+msgid ""
+"Thumbnail regeneration is not reversible, but you can just change your "
+"thumbnail dimensions back to the old values and click the button again if "
+"you don't like the results."
+msgstr "サムネイル再生成は不可逆的ですが、気に入らなかった場合、サムネイルの大きさを元に戻した上でこのボタンをクリックすれば元に戻せます。"
+
+#: regenerate-thumbnails.php:484
+msgid "To begin, just press the button below."
+msgstr "始めるには、下のボタンをクリックしてください。"
+
+#: regenerate-thumbnails.php:486
+msgid "Regenerate All Thumbnails"
+msgstr "すべてのサムネイルを再生成"
+
+#: regenerate-thumbnails.php:511
+#, php-format
+msgid "Failed resize: %s is an invalid image ID."
+msgstr "リサイズ失敗: %sは無効な画像IDです。"
+
+#: regenerate-thumbnails.php:515
+msgid "Your user account doesn't have permission to resize images"
+msgstr "あなたのアカウントはリサイズする権限がありません"
+
+#: regenerate-thumbnails.php:521
+#, php-format
+msgid "The originally uploaded image file cannot be found at %s"
+msgstr "元画像が%sにありません"
+
+#: regenerate-thumbnails.php:532
+msgid "Unknown failure reason."
+msgstr "失敗理由が不明です。"
+
+#: regenerate-thumbnails.php:538
+#, php-format
+msgid "&quot;%1$s&quot; (ID %2$s) was successfully resized in %3$s seconds."
+msgstr "%1$s(ID %2$s)は%3$s秒で正常にリサイズされました。"
+
+#: regenerate-thumbnails.php:548
+#, php-format
+msgid ""
+"&quot;%1$s&quot; (ID %2$s) failed to resize. The error message was: %3$s"
+msgstr "%1$s(ID %2$s)のリサイズに失敗しました。エラーメッセージは以下の通りです: %3$s"
+
+#: regenerate-thumbnails.php:579
+msgid "Run"
+msgstr "実行"
