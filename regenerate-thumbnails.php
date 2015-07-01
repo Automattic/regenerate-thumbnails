@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate thumbnail images for times when you change thumbnail sizes or switch to a theme with a different featured image size.
-Version:      3.0.0
+Version:      2.3.0 Alpha
 Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
@@ -38,7 +38,7 @@ class RegenerateThumbnails {
 	 *
 	 * @var string
 	 */
-	public $version = '3.0.0';
+	public $version = '2.3.0-alpha';
 
 	/**
 	 * Stores the menu ID of this plugin, as returned by add_management_page().
@@ -73,14 +73,14 @@ class RegenerateThumbnails {
 	 * Prevents the class from being cloned.
 	 */
 	public function __clone() {
-		wp_die( __( "Please don't clone RegenerateThumbnails", 'regenerate-thumbnails' ) );
+		wp_die( "Please don't clone RegenerateThumbnails" );
 	}
 
 	/**
 	 * Prints the class from being unserialized and woken up.
 	 */
 	public function __wakeup() {
-		wp_die( __( "Please don't unserialize/wakeup RegenerateThumbnails", 'regenerate-thumbnails' ) );
+		wp_die( "Please don't unserialize/wakeup RegenerateThumbnails" );
 	}
 
 	/**
@@ -151,7 +151,7 @@ class RegenerateThumbnails {
 		}
 
 		wp_enqueue_script( 'jquery-ui-progressbar' );
-		
+
 		wp_enqueue_style( 'jquery-ui-regenthumbs', plugins_url( 'jquery-ui/redmond/jquery-ui-1.7.2.custom.css', __FILE__ ), array(), $this->version );
 	}
 
