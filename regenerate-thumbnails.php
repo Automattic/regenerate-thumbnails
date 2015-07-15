@@ -264,7 +264,7 @@ class RegenerateThumbnails {
 	 * Handles the submission of the new bulk actions entry and redirects to the admin page with the selected attachment IDs.
 	 */
 	public function bulk_action_handler() {
-		if ( empty( $_REQUEST['action'] ) || ( 'bulk_regenerate_thumbnails' != $_REQUEST['action'] && 'bulk_regenerate_thumbnails' != $_REQUEST['action2'] ) ) {
+		if ( empty( $_REQUEST['action'] ) || empty( $_REQUEST['action2'] ) || ( 'bulk_regenerate_thumbnails' != $_REQUEST['action'] && 'bulk_regenerate_thumbnails' != $_REQUEST['action2'] ) ) {
 			return;
 		}
 
