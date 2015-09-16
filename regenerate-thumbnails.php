@@ -280,7 +280,7 @@ class RegenerateThumbnails {
 	}
 
 	/**
-	 * The main Regenerate Thumbnails interface, as displayed at Tools ? Regen. Thumbnails.
+	 * The main Regenerate Thumbnails interface, as displayed at Tools → Regen. Thumbnails.
 	 */
 	public function regenerate_interface() {
 		if ( ! current_user_can( $this->capability ) ) {
