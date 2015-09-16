@@ -10,7 +10,7 @@ Author:       Viper007Bond
 Author URI:   http://www.viper007bond.com/
 
 Text Domain:  regenerate-thumbnails
-Domain Path:  /localization/
+Domain Path:  /localization
 
 **************************************************************************
 
@@ -99,11 +99,11 @@ class RegenerateThumbnails {
 	}
 
 	/**
-	 * Does the inital setup of the instance of this class including loading the localization
+	 * Does the initial setup of the instance of this class including loading the localization
 	 * file, registering the various actions and filters, and filtering the plugin's capability.
 	 */
 	public function setup() {
-		load_plugin_textdomain( 'regenerate-thumbnails', false, '/regenerate-thumbnails/localization' );
+		load_plugin_textdomain( 'regenerate-thumbnails', false, dirname( plugin_basename( __FILE__ ) ) . '/localization/' );
 
 		// Add a new item to the Tools menu in the admin menu
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
@@ -150,8 +150,9 @@ class RegenerateThumbnails {
 			return;
 		}
 
-		wp_enqueue_script( 'jquery-ui-progressbar' );
+		wp_enqueue_script( 'regenerate-thumbnails', plugins_url( 'regenerate-thumbnails.js', __FILE__ ), array( 'jquery', 'jquery-ui-progressbar' ), $this->version );
 
+		// This will be removed as soon as https://core.trac.wordpress.org/ticket/18909 is eventually addressed
 		wp_enqueue_style( 'jquery-ui-regenthumbs', plugins_url( 'jquery-ui/redmond/jquery-ui-1.7.2.custom.css', __FILE__ ), array(), $this->version );
 	}
 
@@ -308,7 +309,7 @@ class RegenerateThumbnails {
 					// Form nonce check
 					check_admin_referer( $this->create_nonce_name( $images ) );
 				} else {
-					check_admin_referer( 'regenerate_thumbnails' );
+					check_admin_referer( 'regenerate-thumbnails' );
 
 					// Directly querying the database is normally frowned upon, but all
 					// of the API functions will return the full post objects which will
