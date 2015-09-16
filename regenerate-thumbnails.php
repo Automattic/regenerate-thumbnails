@@ -118,7 +118,7 @@ class RegenerateThumbnails {
 		add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_regenerate_thumbnails', array( $this, 'bulk_action_handler' ) ); // Top drowndown
 		add_action( 'admin_action_-1', array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
-		
+
 		// Add a regenerate button to the non-modal edit media page
 		add_action( 'attachment_submitbox_misc_actions', array( $this, 'add_button_to_media_edit_page' ), 99 );
 
@@ -280,9 +280,68 @@ class RegenerateThumbnails {
 	}
 
 	/**
-	 * The main Regenerate Thumbnails interface.
+	 * The main Regenerate Thumbnails interface, as displayed at Tools ? Regen. Thumbnails.
 	 */
 	public function regenerate_interface() {
+		if ( ! current_user_can( $this->capability ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?' ) );
+		}
+
+		// This is a container for the results message that gets shown using JavaScript
+		echo '<div id="message" class="updated" style="display:none"></div>' . "\n";
+
+		// Just an overall wrapper, used to help style
+		echo '<div class="wrap regenthumbs">' . "\n";
+
+		echo '<h1>' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . "</h1>\n";
+
+		// Display the introduction page
+		if ( empty( $_POST['regenerate-thumbnails'] ) && empty( $_REQUEST['ids'] ) ) {
+			?>
+			<form method="post">
+				<?php wp_nonce_field( 'regenerate-thumbnails' ) ?>
+
+				<p><?php printf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), esc_url( admin_url( 'options-media.php' ) ) ); ?></p>
+
+				<p><?php printf( __( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ), esc_url( admin_url( 'upload.php?mode=list' ) ) ); ?></p>
+
+				<p><?php _e( "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails' ); ?></p>
+
+				<p><?php _e( 'To begin, just press the button below.', 'regenerate-thumbnails' ); ?></p>
+
+				<p><input type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" value="<?php esc_attr_e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
+
+				<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'regenerate-thumbnails' ) ?></em></p></noscript>
+
+			</form>
+			<?php
+
+			echo '<h2 style="margin-top:50px">' . __( 'Thumbnail Sizes', 'regenerate-thumbnails' ) . "</h2>\n";
+
+			echo '<p>' . __( 'The following thumbnail sizes will be generated, overwriting any existing thumbnails of the same size:', 'regenerate-thumbnails' ) . "</p>\n";
+
+			echo "<ul>\n";
+			foreach ( $this->get_thumbnail_sizes() as $thumbnail_size => $thumbnail_details ) {
+				echo '<li>';
+				printf(
+					/* translators: This is a thumbnail size description, such as "<strong>post-thumbnail:</strong> 825&#215;510 (Cropped)", &#215; being the fancy "x" */
+					__( '<strong>%1$s:</strong> %2$d&#215;%3$d pixels (%4$s)', 'regenerate-thumbnails' ),
+					esc_html( $thumbnail_size ),
+					$thumbnail_details['width'],
+					$thumbnail_details['height'],
+					( $thumbnail_details['crop'] ) ? __( 'cropped to fit', 'regenerate-thumbnails' ) : __( 'proportionally resized', 'regenerate-thumbnails' )
+				);
+				echo "</li>\n";
+			}
+			echo "</ul>\n";
+		}
+
+
+		return;
+		## Old page is below for reference while rewriting it above
+
+
+
 		global $wpdb;
 
 		?>
@@ -495,6 +554,31 @@ class RegenerateThumbnails {
 		</div>
 
 	<?php
+	}
+
+	/**
+	 * Returns an array of all thumbnail sizes, including their label, size, and crop setting.
+	 *
+	 * @return array An array, with the thumbnail label as the key and an array of thumbnail properties (width, height, crop).
+	 */
+	public function get_thumbnail_sizes() {
+		global $_wp_additional_image_sizes;
+
+		$thumbnail_sizes = array();
+
+		foreach ( get_intermediate_image_sizes() as $size ) {
+			if ( in_array( $size, array( 'thumbnail', 'medium', 'large' ) ) ) {
+				$thumbnail_sizes[ $size ]['width']  = (int) get_option( $size . '_size_w' );
+				$thumbnail_sizes[ $size ]['height'] = (int) get_option( $size . '_size_h' );
+				$thumbnail_sizes[ $size ]['crop']   = ( 'thumbnail' == $size ) ? (bool) get_option( 'thumbnail_crop' ) : false;
+			} elseif ( ! empty( $_wp_additional_image_sizes ) && ! empty( $_wp_additional_image_sizes[ $size ] ) ) {
+				$thumbnail_sizes[ $size ]['width']  = (int) $_wp_additional_image_sizes[ $size ]['width'];
+				$thumbnail_sizes[ $size ]['height'] = (int) $_wp_additional_image_sizes[ $size ]['height'];
+				$thumbnail_sizes[ $size ]['crop']   = (bool) $_wp_additional_image_sizes[ $size ]['crop'];
+			}
+		}
+
+		return $thumbnail_sizes;
 	}
 
 	/**
