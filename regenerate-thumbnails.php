@@ -309,7 +309,7 @@ class RegenerateThumbnails {
 
 				<p><?php _e( 'To begin, just press the button below.', 'regenerate-thumbnails' ); ?></p>
 
-				<p><input type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" value="<?php esc_attr_e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
+				<p><?php submit_button( __( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ), 'primary hide-if-no-js', 'regenerate-thumbnails' ); ?></p>
 
 				<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'regenerate-thumbnails' ) ?></em></p></noscript>
 
