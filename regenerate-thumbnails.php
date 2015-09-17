@@ -327,8 +327,8 @@ class RegenerateThumbnails {
 					/* translators: This is a thumbnail size description, such as "<strong>post-thumbnail:</strong> 825&#215;510 (Cropped)", &#215; being the fancy "x" */
 					__( '<strong>%1$s:</strong> %2$d&#215;%3$d pixels (%4$s)', 'regenerate-thumbnails' ),
 					esc_html( $thumbnail_size ),
-					$thumbnail_details['width'],
-					$thumbnail_details['height'],
+					(int) $thumbnail_details['width'],
+					(int) $thumbnail_details['height'],
 					( $thumbnail_details['crop'] ) ? __( 'cropped to fit', 'regenerate-thumbnails' ) : __( 'proportionally resized', 'regenerate-thumbnails' )
 				);
 				echo "</li>\n";
@@ -568,13 +568,13 @@ class RegenerateThumbnails {
 
 		foreach ( get_intermediate_image_sizes() as $size ) {
 			if ( in_array( $size, array( 'thumbnail', 'medium', 'large' ) ) ) {
-				$thumbnail_sizes[ $size ]['width']  = (int) get_option( $size . '_size_w' );
-				$thumbnail_sizes[ $size ]['height'] = (int) get_option( $size . '_size_h' );
-				$thumbnail_sizes[ $size ]['crop']   = ( 'thumbnail' == $size ) ? (bool) get_option( 'thumbnail_crop' ) : false;
+				$thumbnail_sizes[ $size ]['width']  = get_option( $size . '_size_w' );
+				$thumbnail_sizes[ $size ]['height'] = get_option( $size . '_size_h' );
+				$thumbnail_sizes[ $size ]['crop']   = ( 'thumbnail' == $size ) ? get_option( 'thumbnail_crop' ) : false;
 			} elseif ( ! empty( $_wp_additional_image_sizes ) && ! empty( $_wp_additional_image_sizes[ $size ] ) ) {
-				$thumbnail_sizes[ $size ]['width']  = (int) $_wp_additional_image_sizes[ $size ]['width'];
-				$thumbnail_sizes[ $size ]['height'] = (int) $_wp_additional_image_sizes[ $size ]['height'];
-				$thumbnail_sizes[ $size ]['crop']   = (bool) $_wp_additional_image_sizes[ $size ]['crop'];
+				$thumbnail_sizes[ $size ]['width']  = $_wp_additional_image_sizes[ $size ]['width'];
+				$thumbnail_sizes[ $size ]['height'] = $_wp_additional_image_sizes[ $size ]['height'];
+				$thumbnail_sizes[ $size ]['crop']   = $_wp_additional_image_sizes[ $size ]['crop'];
 			}
 		}
 
