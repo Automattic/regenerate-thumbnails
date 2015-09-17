@@ -297,44 +297,14 @@ class RegenerateThumbnails {
 
 		// Display the introduction page
 		if ( empty( $_POST['regenerate-thumbnails'] ) && empty( $_REQUEST['ids'] ) ) {
-			?>
-			<form method="post">
-				<?php wp_nonce_field( 'regenerate-thumbnails' ) ?>
-
-				<p><?php printf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), esc_url( admin_url( 'options-media.php' ) ) ); ?></p>
-
-				<p><?php printf( __( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ), esc_url( admin_url( 'upload.php?mode=list' ) ) ); ?></p>
-
-				<p><?php _e( "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails' ); ?></p>
-
-				<p><?php _e( 'To begin, just press the button below.', 'regenerate-thumbnails' ); ?></p>
-
-				<p><?php submit_button( __( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ), 'primary hide-if-no-js', 'regenerate-thumbnails' ); ?></p>
-
-				<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'regenerate-thumbnails' ) ?></em></p></noscript>
-
-			</form>
-			<?php
-
-			echo '<h2 style="margin-top:50px">' . __( 'Thumbnail Sizes', 'regenerate-thumbnails' ) . "</h2>\n";
-
-			echo '<p>' . __( 'The following thumbnail sizes will be generated, overwriting any existing thumbnails of the same size:', 'regenerate-thumbnails' ) . "</p>\n";
-
-			echo "<ul>\n";
-			foreach ( $this->get_thumbnail_sizes() as $thumbnail_size => $thumbnail_details ) {
-				echo '<li>';
-				printf(
-					/* translators: This is a thumbnail size description, such as "<strong>post-thumbnail:</strong> 825&#215;510 (Cropped)", &#215; being the fancy "x" */
-					__( '<strong>%1$s:</strong> %2$d&#215;%3$d pixels (%4$s)', 'regenerate-thumbnails' ),
-					esc_html( $thumbnail_size ),
-					(int) $thumbnail_details['width'],
-					(int) $thumbnail_details['height'],
-					( $thumbnail_details['crop'] ) ? __( 'cropped to fit', 'regenerate-thumbnails' ) : __( 'proportionally resized', 'regenerate-thumbnails' )
-				);
-				echo "</li>\n";
-			}
-			echo "</ul>\n";
+			$this->regenerate_interface_introduction();
 		}
+		// Regenerate button was pushed, so start the operation
+		else {
+			$this->regenerate_interface_process();
+		}
+
+		echo '</div>'; // end "wrap regenthumbs"
 
 
 		return;
@@ -554,6 +524,56 @@ class RegenerateThumbnails {
 		</div>
 
 	<?php
+	}
+
+	/**
+	 * Outputs the introduction on the plugin's page.
+	 *
+	 * The start button is a part of this.
+	 */
+	public function regenerate_interface_introduction() {
+		?>
+		<form method="post">
+			<?php wp_nonce_field( 'regenerate-thumbnails' ) ?>
+
+			<p><?php printf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), esc_url( admin_url( 'options-media.php' ) ) ); ?></p>
+
+			<p><?php printf( __( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ), esc_url( admin_url( 'upload.php?mode=list' ) ) ); ?></p>
+
+			<p><?php _e( "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails' ); ?></p>
+
+			<p><?php _e( 'To begin, just press the button below.', 'regenerate-thumbnails' ); ?></p>
+
+			<p><?php submit_button( __( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ), 'primary hide-if-no-js', 'regenerate-thumbnails' ); ?></p>
+
+			<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'regenerate-thumbnails' ) ?></em></p></noscript>
+
+		</form>
+		<?php
+
+		echo '<h2 style="margin-top:50px">' . __( 'Thumbnail Sizes', 'regenerate-thumbnails' ) . "</h2>\n";
+
+		echo '<p>' . __( 'The following thumbnail sizes will be generated, overwriting any existing thumbnails of the same size:', 'regenerate-thumbnails' ) . "</p>\n";
+
+		echo "<ul>\n";
+		foreach ( $this->get_thumbnail_sizes() as $thumbnail_size => $thumbnail_details ) {
+			echo '<li>';
+			printf(
+			/* translators: This is a thumbnail size description, such as "<strong>post-thumbnail:</strong> 825&#215;510 (Cropped)", &#215; being the fancy "x" */
+				__( '<strong>%1$s:</strong> %2$d&#215;%3$d pixels (%4$s)', 'regenerate-thumbnails' ),
+				esc_html( $thumbnail_size ),
+				(int) $thumbnail_details['width'],
+				(int) $thumbnail_details['height'],
+				( $thumbnail_details['crop'] ) ? __( 'cropped to fit', 'regenerate-thumbnails' ) : __( 'proportionally resized', 'regenerate-thumbnails' )
+			);
+			echo "</li>\n";
+		}
+		echo "</ul>\n";
+	}
+
+
+	public function regenerate_interface_process() {
+		var_dump( $_POST );
 	}
 
 	/**
