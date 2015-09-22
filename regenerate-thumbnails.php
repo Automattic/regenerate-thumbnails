@@ -551,6 +551,7 @@ class RegenerateThumbnails {
 		</form>
 		<?php
 
+
 		echo '<h2 style="margin-top:50px">' . __( 'Thumbnail Sizes', 'regenerate-thumbnails' ) . "</h2>\n";
 
 		echo '<p>' . __( 'The following thumbnail sizes will be generated, overwriting any existing thumbnails of the same size:', 'regenerate-thumbnails' ) . "</p>\n";
@@ -569,6 +570,17 @@ class RegenerateThumbnails {
 			echo "</li>\n";
 		}
 		echo "</ul>\n";
+
+
+		echo '<h2 style="margin-top:50px">' . __( 'Command Line Interface', 'regenerate-thumbnails' ) . "</h2>\n";
+
+		echo '<p>';
+		printf(
+			__( 'If you have command line access to your server via SSH, consider using <a href="%1$s">WP-CLI</a> instead of this plugin to regenerate thumbmails. It has <a href="%2$s">a built-in command</a> for generating thumbnails that is significantly faster than this plugin since a separate HTTP request per image is not required.', 'regenerate-thumbnails' ),
+			'http://wp-cli.org/',
+			'http://wp-cli.org/commands/media/regenerate/'
+		);
+		echo "</p>\n";
 	}
 
 
