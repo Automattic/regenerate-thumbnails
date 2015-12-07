@@ -22,4 +22,4 @@ The Photon module makes the images on your site be served from WordPress.com's g
 
 I personally use Photon on my own website.
 
-*Disclaimer: I work for Automattic but I would recommend this even if I didn't.*
+*Disclaimer: I work for Automattic but I would recommend Photon even if I didn't.*
