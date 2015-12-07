@@ -104,7 +104,7 @@ class RegenerateThumbnails {
 	 */
 	public function setup() {
 		if ( ! is_admin() ) {
-			return false;
+			return;
 		}
 
 		load_plugin_textdomain( 'regenerate-thumbnails', false, dirname( plugin_basename( __FILE__ ) ) . '/localization/' );
