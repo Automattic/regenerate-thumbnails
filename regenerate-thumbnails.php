@@ -295,8 +295,12 @@ class RegenerateThumbnails {
 
 		echo '<h1>' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . "</h1>\n";
 
+		// Make sure image editing is supported
+		if ( ! wp_image_editor_supports() ) {
+			echo '<p>' . __( "Sorry but your server doesn't support image editing which means that WordPress can't create thumbnails. Please ask your host to install the Imagick or GD PHP extensions.", 'regenerate-thumbnails' ) . '</p>';
+		}
 		// Display the introduction page
-		if ( empty( $_POST['regenerate-thumbnails'] ) && empty( $_REQUEST['ids'] ) ) {
+		elseif ( empty( $_POST['regenerate-thumbnails'] ) && empty( $_REQUEST['ids'] ) ) {
 			$this->regenerate_interface_introduction();
 		}
 		// Regenerate button was pushed, so start the operation
