@@ -103,6 +103,10 @@ class RegenerateThumbnails {
 	 * file, registering the various actions and filters, and filtering the plugin's capability.
 	 */
 	public function setup() {
+		if ( ! is_admin() ) {
+			return false;
+		}
+
 		load_plugin_textdomain( 'regenerate-thumbnails', false, dirname( plugin_basename( __FILE__ ) ) . '/localization/' );
 
 		// Add a new item to the Tools menu in the admin menu
