@@ -107,7 +107,7 @@ class RegenerateThumbnails {
 			return;
 		}
 
-		load_plugin_textdomain( 'regenerate-thumbnails', false, dirname( plugin_basename( __FILE__ ) ) . '/localization/' );
+		load_plugin_textdomain( 'regenerate-thumbnails' );
 
 		// Add a new item to the Tools menu in the admin menu
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
