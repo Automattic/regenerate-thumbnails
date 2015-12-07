@@ -14,7 +14,7 @@ Domain Path:  /localization
 
 **************************************************************************
 
-Copyright (C) 2008-2015 Alex Mills (Viper007Bond)
+Copyright (C) 2008-2016 Alex Mills (Viper007Bond)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License version 2 or greater,
