@@ -6,11 +6,9 @@ Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate thumbnail images for times when you change thumbnail sizes or switch to a theme with a different featured image size.
 Version:      3.0.0 Alpha
-Author:       Viper007Bond
+Author:       Alex Mills (Viper007Bond)
 Author URI:   http://www.viper007bond.com/
-
 Text Domain:  regenerate-thumbnails
-Domain Path:  /localization
 
 **************************************************************************
 
