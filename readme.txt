@@ -6,7 +6,7 @@ Requires at least: 3.3
 Tested up to: 4.4
 Stable tag: trunk
 
-Allows you to regenerate your thumbnails after changing the thumbnail sizes or switching themes.
+Allows you to regenerate your image upload thumbnails after changing the thumbnail sizes or switching themes.
 
 == Description ==
 
