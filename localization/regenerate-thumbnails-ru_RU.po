@@ -5,7 +5,7 @@ msgstr ""
 "Project-Id-Version: Regenerate Thumbnails 2.2.4\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/regenerate-thumbnails\n"
 "POT-Creation-Date: 2015-12-09 13:51+0800\n"
-"PO-Revision-Date: 2015-12-09 23:25+0800\n"
+"PO-Revision-Date: 2015-12-09 23:39+0800\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -26,7 +26,7 @@ msgstr "Пожалуйста не клонируйте RegenerateThumbnails"
 
 #: regenerate-thumbnails.php:83
 msgid "Please don't unserialize/wakeup RegenerateThumbnails"
-msgstr "Пожалуйста не десериализовуйте/пробуждайте RegenerateThumbnails"
+msgstr "Пожалуйста не десериализируйте/пробуждайте RegenerateThumbnails"
 
 #: regenerate-thumbnails.php:140 regenerate-thumbnails.php:203
 #: regenerate-thumbnails.php:219 regenerate-thumbnails.php:239
