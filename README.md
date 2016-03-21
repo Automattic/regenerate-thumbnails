@@ -12,7 +12,7 @@ This is useful for situations such as:
 
 ### WP-CLI
 
-If you have command line access to your server, I highly recommend using [WP-CLI](http://wp-cli.org/) instead of this plugin as it's faster and can be run inside of a `screen`. For details, see the documentation of it's [regenerate](http://wp-cli.org/commands/media/regenerate/) command.
+If you have command line access to your server, I highly recommend using [WP-CLI](http://wp-cli.org/) instead of this plugin as it's faster and can be run inside of a `screen`. For details, see the documentation of its [regenerate](http://wp-cli.org/commands/media/regenerate/) command.
 
 ### Jetpack's Photon Module
 
