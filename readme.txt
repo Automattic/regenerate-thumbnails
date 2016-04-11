@@ -2,53 +2,26 @@
 Contributors: Viper007Bond
 Donate link: http://www.viper007bond.com/donate/
 Tags: thumbnail, thumbnails
-Requires at least: 3.3
+Requires at least: 2.8
 Tested up to: 4.4
 Stable tag: trunk
 
-Allows you to regenerate your thumbnails after changing the thumbnail sizes or switching themes.
+Allows you to regenerate your thumbnails after changing the thumbnail sizes.
 
 == Description ==
 
-Regenerate Thumbnails allows you to regenerate all thumbnail sizes for one or more images that have been uploaded to your Media Library.
+Regenerate Thumbnails allows you to regenerate the thumbnails for your image attachments. This is very handy if you've changed any of your thumbnail dimensions (via Settings -> Media) after previously uploading images or have changed to a theme with different featured post image dimensions.
 
-This is useful for situations such as:
+You can either regenerate the thumbnails for all image uploads, individual image uploads, or specific multiple image uploads.
 
-* A new thumbnail size has been added and you want past uploads to have a thumbnail in that size.
-* You've changed the dimensions of an existing thumbnail size, for example via Settings → Media.
-* You've switched to a new WordPress theme that uses featured images of a different size.
-
-= Alternatives =
-
-** WP-CLI **
-
-If you have command line access to your server, I highly recommend using [WP-CLI](http://wp-cli.org/) instead of this plugin as it's faster and can be run inside of a `screen`. For details, see the documentation of it's [regenerate](http://wp-cli.org/commands/media/regenerate/) command.
-
-** Jetpack's Photon Module **
-
-[Jetpack](http://jetpack.me/) is a plugin by Automattic, makers of WordPress.com. It gives your self-hosted WordPress site some of the functionality that is available to WordPress.com-hosted sites.
-
-[The Photon module](http://jetpack.me/support/photon/) makes the images on your site be served from WordPress.com's global content delivery network (CDN) which should speed up the loading of images. Additionally it can create thumbnails on the fly which means you'll never need to use this plugin.
-
-I personally use Photon on my own website.
-
-*Disclaimer: I work for Automattic but I would recommend Photon even if I didn't.*
-
-= Need Help? =
-
-Post to [the support forums](https://wordpress.org/support/plugin/regenerate-thumbnails).
-
-= Found A Bug? Want To Contribute Code? =
-
-This plugin is developed on [GitHub](https://github.com/Viper007Bond/regenerate-thumbnails).
+See the [screenshots tab](http://wordpress.org/extend/plugins/regenerate-thumbnails/screenshots/) for more details.
 
 == Installation ==
 
-1. Go to your admin area and select Plugins → Add New from the menu.
+1. Go to your admin area and select Plugins -> Add new from the menu.
 2. Search for "Regenerate Thumbnails".
 3. Click install.
 4. Click activate.
-5. Navigate to Tools → Regen. Thumbnails
 
 == Screenshots ==
 
@@ -58,18 +31,13 @@ This plugin is developed on [GitHub](https://github.com/Viper007Bond/regenerate-
 
 == ChangeLog ==
 
-= Version 3.0.0 =
+= Version 2.2.6 =
 
-Major rewrite.
+* PHP 7 compatibility.
 
-* Add a Regenerate Thumbnails button to the Edit Media submit metabox. Props ironprogrammer on GitHub.
+= Version 2.2.5 =
 
-Plus some technical stuff:
-
-* Use the copy of jQuery UI Progressbar that's bundled with WordPress.
-* When regenerating a specific set of image ID(s), use a nonce that is specific to those ID(s) for better security.
-* Rewritten to better use PHP5 standards and to be a singleton.
-* PHPDoc class method documentation.
+* Updates relating to plugin language pack support.
 
 = Version 2.2.4 =
 
@@ -142,3 +110,17 @@ Lots of new features!
 = Version 1.0.0 =
 
 * Initial release.
+
+== Upgrade Notice ==
+
+= 2.2.4 =
+Better AJAX response error handling in the JavaScript. This should fix a long-standing bug in this plugin. Props Hew Sutton.
+
+= 2.2.3 =
+Make the capability required to use this plugin filterable so themes and other plugins can change it. Props [Jackson Whelan](http://jacksonwhelan.com/).
+
+= 2.2.2 =
+Fixes lots of "Are you sure you want to do this?" error messages.
+
+= 2.2.1 =
+Fix the bottom bulk action dropdown. Thanks Stefan for pointing out the issue!
