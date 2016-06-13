@@ -78,7 +78,7 @@ class RegenerateThumbnails {
 			return $actions;
 
 		$url = wp_nonce_url( admin_url( 'tools.php?page=regenerate-thumbnails&goback=1&ids=' . $post->ID ), 'regenerate-thumbnails' );
-		$actions['regenerate_thumbnails'] = '<a href="' . esc_url( $url ) . '" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+		$actions['regenerate_thumbnails'] = '<a href="' . esc_url( $url ) . '" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . _x( 'Regenerate Thumbnails', 'action of regenerate thumbnails', 'regenerate-thumbnails' ) . '</a>';
 
 		return $actions;
 	}
@@ -92,7 +92,7 @@ class RegenerateThumbnails {
 			unset( $actions['delete'] );
 		}
 
-		$actions['bulk_regenerate_thumbnails'] = __( 'Regenerate Thumbnails', 'regenerate-thumbnails' );
+		$actions['bulk_regenerate_thumbnails'] = _x( 'Regenerate Thumbnails', 'action of regenerate thumbnails', 'regenerate-thumbnails' );
 
 		if ( $delete )
 			$actions['delete'] = $delete;
@@ -109,7 +109,7 @@ class RegenerateThumbnails {
 ?>
 		<script type="text/javascript">
 			jQuery(document).ready(function($){
-				$('select[name^="action"] option:last-child').before('<option value="bulk_regenerate_thumbnails"><?php echo esc_attr( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) ); ?></option>');
+				$('select[name^="action"] option:last-child').before('<option value="bulk_regenerate_thumbnails"><?php echo esc_attr( _x( 'Regenerate Thumbnails', 'action of regenerate thumbnails', 'regenerate-thumbnails' ) ); ?></option>');
 			});
 		</script>
 <?php
