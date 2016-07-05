@@ -39,22 +39,24 @@ class RegenerateThumbnails {
 	public $version = '3.0.0-alpha';
 
 	/**
-	 * Stores the menu ID of this plugin, as returned by add_management_page().
+	 * The menu ID of this plugin, as returned by add_management_page().
 	 *
 	 * @var string
 	 */
 	public $menu_id;
 
 	/**
-	 * Stores the capability required to use this plugin.
-	 * Can be changed using the "regenerate_thumbs_cap" filter.
+	 * The capability required to use this plugin.
+	 * Please don't change this directly. Use the "regenerate_thumbs_cap" filter instead.
 	 *
 	 * @var string
 	 */
 	public $capability = 'manage_options';
 
 	/**
-	 * Stores the single instance of this plugin.
+	 * The single instance of this plugin.
+	 *
+	 * @see RegenerateThumbnails()
 	 *
 	 * @access private
 	 * @var RegenerateThumbnails
