@@ -401,5 +401,3 @@ function RegenerateThumbnails() {
 	global $RegenerateThumbnails;
 	$RegenerateThumbnails = new RegenerateThumbnails();
 }
-
-?>
