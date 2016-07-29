@@ -14,7 +14,7 @@ Regenerate Thumbnails allows you to regenerate the thumbnails for your image att
 
 You can either regenerate the thumbnails for all image uploads, individual image uploads, or specific multiple image uploads.
 
-See the [screenshots tab](http://wordpress.org/extend/plugins/regenerate-thumbnails/screenshots/) for more details.
+See the [screenshots tab](https://wordpress.org/plugins/regenerate-thumbnails/screenshots/) for more details.
 
 == Installation ==
 
@@ -30,6 +30,10 @@ See the [screenshots tab](http://wordpress.org/extend/plugins/regenerate-thumbna
 2. You can resize specific multiples images using the checkboxes and the "Bulk Actions" dropdown
 
 == ChangeLog ==
+
+= Version 2.2.7 =
+
+* Context for translators.
 
 = Version 2.2.6 =
 
