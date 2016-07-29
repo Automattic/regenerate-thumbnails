@@ -3,7 +3,7 @@ Contributors: Viper007Bond
 Donate link: http://www.viper007bond.com/donate/
 Tags: thumbnail, thumbnails
 Requires at least: 2.8
-Tested up to: 4.4
+Tested up to: 4.6
 Stable tag: trunk
 
 Allows you to regenerate your thumbnails after changing the thumbnail sizes.
