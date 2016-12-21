@@ -332,13 +332,8 @@ class RegenerateThumbnails {
 	<p><?php _e( "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails' ); ?></p>
 
 	<p><?php _e( 'To begin, just press the button below.', 'regenerate-thumbnails'); ?></p>
-<<<<<<< HEAD
 
-	<?php if ( 0 ): ?>
-=======
-	
 	<?php if ( ! extension_loaded( 'gd' ) || ! extension_loaded( 'imagick' ) ): ?>
->>>>>>> 80c9fd63b18a2493fae8c573fcac2ec774742ba4
 
 		<p><input type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
 	
@@ -346,11 +341,7 @@ class RegenerateThumbnails {
 
 		<p><input disabled="disabled" type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
 		<div class="notice notice-error">
-<<<<<<< HEAD
 			<p><?php  _e( 'Your server does not have a PHP image manipulation library enabled. Please install/activate GD Library or ImageMagick to use this tool.', 'regenerate-thumbnails' ); ?></p>
-=======
-			<p>Your server does not have a PHP image manipulation library enabled. Please install/activate GD Library or ImageMagick to use this tool.</p>
->>>>>>> 80c9fd63b18a2493fae8c573fcac2ec774742ba4
 		</div>
 	
 	<?php endif; ?>
