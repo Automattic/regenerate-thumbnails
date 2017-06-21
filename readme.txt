@@ -1,9 +1,8 @@
 === Regenerate Thumbnails ===
 Contributors: Viper007Bond
-Donate link: http://www.viper007bond.com/donate/
 Tags: thumbnail, thumbnails
-Requires at least: 3.3
-Tested up to: 4.4
+Requires at least: 4.7
+Tested up to: 4.8
 Stable tag: trunk
 
 Allows you to regenerate your image upload thumbnails after changing the thumbnail sizes or switching themes.

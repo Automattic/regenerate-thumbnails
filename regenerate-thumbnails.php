@@ -3,16 +3,16 @@
 **************************************************************************
 
 Plugin Name:  Regenerate Thumbnails
-Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
+Plugin URI:   https://alex.blog/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate your image upload thumbnails after changing the thumbnail sizes or switching themes.
 Version:      3.0.0 Alpha
 Author:       Alex Mills (Viper007Bond)
-Author URI:   http://www.viper007bond.com/
+Author URI:   https://alex.blog/
 Text Domain:  regenerate-thumbnails
 
 **************************************************************************
 
-Copyright (C) 2008-2016 Alex Mills (Viper007Bond)
+Copyright (C) 2008-2017 Alex Mills (Viper007Bond)
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License version 2 or greater,
@@ -29,6 +29,9 @@ The license for this software can likely be found here:
 http://www.gnu.org/licenses/gpl-2.0.html
 
 **************************************************************************/
+
+require( __DIR__ . '/includes/regenerator.php' );
+require( __DIR__ . '/includes/rest-api.php' );
 
 class RegenerateThumbnails {
 	/**
@@ -52,6 +55,13 @@ class RegenerateThumbnails {
 	 * @var string
 	 */
 	public $capability = 'manage_options';
+
+	/**
+	 * The instance of the REST API controller class used to extend the REST API.
+	 *
+	 * @var RegenerateThumbnails_REST_Controller
+	 */
+	public $rest_api;
 
 	/**
 	 * The single instance of this plugin.
@@ -103,11 +113,9 @@ class RegenerateThumbnails {
 	 * file, registering the various actions and filters, and filtering the plugin's capability.
 	 */
 	public function setup() {
-		if ( ! is_admin() ) {
-			return;
-		}
-
 		load_plugin_textdomain( 'regenerate-thumbnails' );
+
+		add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
 
 		// Add a new item to the Tools menu in the admin menu
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
@@ -135,6 +143,11 @@ class RegenerateThumbnails {
 
 		// Allow people to change what capability is required to use this plugin
 		$this->capability = apply_filters( 'regenerate_thumbs_cap', $this->capability );
+	}
+
+	public function rest_api_init() {
+		$this->rest_api = new RegenerateThumbnails_REST_Controller();
+		$this->rest_api->register_routes();
 	}
 
 	/**
@@ -289,6 +302,8 @@ class RegenerateThumbnails {
 	 * The main Regenerate Thumbnails interface, as displayed at Tools → Regen. Thumbnails.
 	 */
 	public function regenerate_interface() {
+		var_dump( wp_create_nonce( 'wp_rest' ) );
+
 		if ( ! current_user_can( $this->capability ) ) {
 			wp_die( __( 'Cheatin&#8217; uh?' ) );
 		}
