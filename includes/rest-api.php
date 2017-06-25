@@ -1,14 +1,13 @@
 <?php
 
 class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
+	public $namespace = 'regenerate-thumbnails/v1';
+	public $rest_base = 'regenerate';
 
 	/**
 	 * Register the routes for the objects of the controller.
 	 */
 	public function register_routes() {
-		$this->namespace = 'regenerate-thumbnails/v1';
-		$this->rest_base = 'regenerate';
-
 		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
 			array(
 				'methods'             => WP_REST_Server::READABLE,//WP_REST_Server::EDITABLE,
