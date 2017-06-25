@@ -330,13 +330,9 @@ class RegenerateThumbnails {
 		}
 
 		echo '</div>'; // end "wrap regenthumbs"
+	}
 
-
-		return;
-		## Old page is below for reference while rewriting it above
-
-
-
+	public function regenerate_interface_old() {
 		global $wpdb;
 
 		?>
