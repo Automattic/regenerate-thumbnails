@@ -9,7 +9,7 @@ notifications:
 
 branches:
   only:
-    - dev/*
+    - /^dev\/.*$/
 
 php:
   - 5.2
