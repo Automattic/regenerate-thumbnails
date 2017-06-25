@@ -29,6 +29,10 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	public function regenerate_item( $request ) {
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $request->get_param( 'id' ) );
 
+		if ( is_wp_error( $regenerator ) ) {
+			return $regenerator;
+		}
+
 		$result = $regenerator->regenerate();
 
 		if ( is_wp_error( $result ) ) {

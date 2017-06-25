@@ -21,7 +21,10 @@ class RegenerateThumbnails_Regenerator {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_attachment_doesnt_exist',
 				esc_html__( 'No attachment exists with that ID.', 'regenerate-thumbnails' ),
-				$attachment_id );
+				array(
+					'status' => 404,
+				)
+			);
 		}
 
 		// We can only regenerate thumbnails for attachments
@@ -29,7 +32,9 @@ class RegenerateThumbnails_Regenerator {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_not_attachment',
 				esc_html__( 'This item is not an attachment.', 'regenerate-thumbnails' ),
-				$attachment
+				array(
+					'status' => 400,
+				)
 			);
 		}
 
@@ -41,8 +46,26 @@ class RegenerateThumbnails_Regenerator {
 	}
 
 	public function regenerate() {
-		return array(
-			'success' => true,
-		);
+		$fullsizepath = get_attached_file( $this->attachment->ID );
+
+		if ( false === $fullsizepath || ! file_exists( $fullsizepath ) ) {
+			return new WP_Error(
+				'regenerate_thumbnails_regenerator_file_not_found',
+				esc_html__( "Unable to locate the original file for this attachment.", 'regenerate-thumbnails' ),
+				array(
+					'status'       => 404,
+					'fullsizepath' => _wp_relative_upload_path( $fullsizepath ),
+					'attachment'   => $this->attachment,
+				)
+			);
+		}
+
+		require_once( ABSPATH . 'wp-admin/includes/admin.php' );
+
+		$metadata = wp_generate_attachment_metadata( $this->attachment->ID, $fullsizepath );
+
+		wp_update_attachment_metadata( $this->attachment->ID, $metadata );
+
+		return $metadata;
 	}
 }
