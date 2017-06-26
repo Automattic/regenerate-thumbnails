@@ -2,15 +2,12 @@ sudo: false
 
 language: php
 
-notifications:
-  email:
-    on_success: never
-    on_failure: change
-
 branches:
   only:
     - /^dev\/.*$/
 
+# Test against these versions of PHP.
+# PHPUnit doesn't work under PHP 5.2.
 php:
   - 5.3
   - 5.5
@@ -18,11 +15,13 @@ php:
   - 7.0
   - 7.1
 
+# Test against these versions of WordPress.
 env:
   - WP_VERSION=latest WP_MULTISITE=0
   - WP_VERSION=4.7 WP_MULTISITE=0
   - WP_VERSION=4.8 WP_MULTISITE=0
 
+# Also do a quick test with multisite enabled.
 matrix:
   include:
     - php: 5.3
