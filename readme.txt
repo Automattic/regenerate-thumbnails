@@ -2,7 +2,7 @@
 Contributors: Viper007Bond
 Donate link: http://www.viper007bond.com/donate/
 Tags: thumbnail, thumbnails
-Requires at least: 2.8
+Requires at least: 3.2
 Tested up to: 4.9
 Stable tag: trunk
 
@@ -34,6 +34,7 @@ You can either regenerate the thumbnails for all image uploads, individual image
 Maintenance release. A [major rewrite](https://github.com/Viper007Bond/regenerate-thumbnails/tree/dev/v3-rewrite) is in the works on GitHub.
 
 * Add "Regenerate Thumbnails" button to the Edit Media submit metabox. Props [Brian Alexander](https://github.com/ironprogrammer) for inspiration.
+* Bump required WordPress version to v3.2 so that we don't need to bundle jQuery's progress bar plugin anymore.
 * Context for translators.
 
 = Version 2.2.6 =

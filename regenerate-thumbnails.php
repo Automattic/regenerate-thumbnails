@@ -63,14 +63,11 @@ class RegenerateThumbnails {
 
 	// Enqueue the needed Javascript and CSS
 	public function admin_enqueues( $hook_suffix ) {
-		if ( $hook_suffix != $this->menu_id )
+		if ( $hook_suffix != $this->menu_id ) {
 			return;
+		}
 
-		// WordPress 3.1 vs older version compatibility
-		if ( wp_script_is( 'jquery-ui-widget', 'registered' ) )
-			wp_enqueue_script( 'jquery-ui-progressbar', plugins_url( 'jquery-ui/jquery.ui.progressbar.min.js', __FILE__ ), array( 'jquery-ui-core', 'jquery-ui-widget' ), '1.8.6' );
-		else
-			wp_enqueue_script( 'jquery-ui-progressbar', plugins_url( 'jquery-ui/jquery.ui.progressbar.min.1.7.2.js', __FILE__ ), array( 'jquery-ui-core' ), '1.7.2' );
+		wp_enqueue_script( 'jquery-ui-progressbar' );
 
 		wp_enqueue_style( 'jquery-ui-regenthumbs', plugins_url( 'jquery-ui/redmond/jquery-ui-1.7.2.custom.css', __FILE__ ), array(), '1.7.2' );
 	}
