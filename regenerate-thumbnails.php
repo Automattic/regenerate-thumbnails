@@ -5,14 +5,14 @@
 Plugin Name:  Regenerate Thumbnails
 Plugin URI:   http://www.viper007bond.com/wordpress-plugins/regenerate-thumbnails/
 Description:  Allows you to regenerate all thumbnails after changing the thumbnail sizes.
-Version:      2.2.7
+Version:      2.3.0
 Author:       Alex Mills (Viper007Bond)
 Author URI:   http://www.viper007bond.com/
 Text Domain:  regenerate-thumbnails
 
 **************************************************************************
 
-Copyright (C) 2008-2016 Alex Mills (Viper007Bond)
+Copyright (C) 2008-2017 Alex Mills (Viper007Bond)
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,11 +40,15 @@ class RegenerateThumbnails {
 		add_action( 'admin_menu',                              array( $this, 'add_admin_menu' ) );
 		add_action( 'admin_enqueue_scripts',                   array( $this, 'admin_enqueues' ) );
 		add_action( 'wp_ajax_regeneratethumbnail',             array( $this, 'ajax_process_image' ) );
-		add_filter( 'media_row_actions',                       array( $this, 'add_media_row_action' ), 10, 2 );
-		//add_filter( 'bulk_actions-upload',                     array( $this, 'add_bulk_actions' ), 99 ); // A last minute change to 3.1 makes this no longer work
+		add_filter( 'media_row_actions',                       array( $this, 'add_regenerate_link_to_media_list_view' ), 10, 2 );
 		add_action( 'admin_head-upload.php',                   array( $this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_regenerate_thumbnails', array( $this, 'bulk_action_handler' ) ); // Top drowndown
 		add_action( 'admin_action_-1',                         array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
+		add_action( 'attachment_submitbox_misc_actions',       array( $this, 'add_button_to_media_edit_page' ), 99 ); // Button on media edit screen
+
+		// Add a regenerate button to the list of fields in the edit media modal
+		// Ideally this would with the action links but I'm not good enough with JavaScript to do it
+		add_filter( 'attachment_fields_to_edit', array( $this, 'add_button_to_edit_media_modal_fields_area' ), 99, 2 );
 
 		// Allow people to change what capability is required to use this plugin
 		$this->capability = apply_filters( 'regenerate_thumbs_cap', 'manage_options' );
@@ -72,8 +76,30 @@ class RegenerateThumbnails {
 	}
 
 
+	/**
+	 * Creates a nonced URL to the plugin's admin page for a given set of attachment IDs.
+	 *
+	 * @param array $ids An array of attachment IDs that should be regenerated.
+	 *
+	 * @return string The nonced URL to the admin page.
+	 */
+	public function create_page_url( $ids ) {
+		$url_args = array(
+			'page'     => 'regenerate-thumbnails',
+			'goback'   => 1,
+			'ids'      => implode( ',', $ids ),
+			'_wpnonce' => wp_create_nonce( 'regenerate-thumbnails' ), // Can't use wp_nonce_url() as it escapes HTML entities
+		);
+
+		// https://core.trac.wordpress.org/ticket/17923
+		$url_args = array_map( 'rawurlencode', $url_args );
+
+		return add_query_arg( $url_args, admin_url( 'tools.php' ) );
+	}
+
+
 	// Add a "Regenerate Thumbnails" link to the media row actions
-	public function add_media_row_action( $actions, $post ) {
+	public function add_regenerate_link_to_media_list_view( $actions, $post ) {
 		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) )
 			return $actions;
 
@@ -83,21 +109,44 @@ class RegenerateThumbnails {
 		return $actions;
 	}
 
+	/**
+	 * Add a "Regenerate Thumbnails" button to the submit box on the non-modal "Edit Media" screen for an image attachment.
+	 */
+	public function add_button_to_media_edit_page() {
+		global $post;
 
-	// Add "Regenerate Thumbnails" to the Bulk Actions media dropdown
-	public function add_bulk_actions( $actions ) {
-		$delete = false;
-		if ( ! empty( $actions['delete'] ) ) {
-			$delete = $actions['delete'];
-			unset( $actions['delete'] );
+		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) ) {
+			return;
 		}
 
-		$actions['bulk_regenerate_thumbnails'] = _x( 'Regenerate Thumbnails', 'action of regenerate thumbnails', 'regenerate-thumbnails' );
+		echo '<div class="misc-pub-section misc-pub-regenerate-thumbnails">';
+		echo '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+		echo '</div>';
+	}
 
-		if ( $delete )
-			$actions['delete'] = $delete;
 
-		return $actions;
+	/**
+	 * Adds a "Regenerate Thumbnails" button to the edit media modal view.
+	 *
+	 * Ideally it would be down with the actions but I'm not good enough at JavaScript
+	 * in order to be able to do it, so instead I'm adding it to the bottom of the list
+	 * of media fields. Pull requests to improve this are welcome!
+	 *
+	 * @param array  $form_fields An array of existing form fields.
+	 * @param object $post        The current media item, as a post object.
+	 *
+	 * @return array The new array of form fields.
+	 */
+	public function add_button_to_edit_media_modal_fields_area( $form_fields, $post ) {
+		$form_fields['regenerate_thumbnails'] = array(
+			'label'         => '',
+			'input'         => 'html',
+			'html'          => '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>',
+			'show_in_modal' => true,
+			'show_in_edit'  => false,
+		);
+
+		return $form_fields;
 	}
 
 
@@ -207,7 +256,6 @@ class RegenerateThumbnails {
 	</ol>
 
 	<script type="text/javascript">
-	// <![CDATA[
 		jQuery(document).ready(function($){
 			var i;
 			var rt_images = [<?php echo $ids; ?>];
@@ -314,7 +362,6 @@ class RegenerateThumbnails {
 
 			RegenThumbs( rt_images.shift() );
 		});
-	// ]]>
 	</script>
 <?php
 		}
