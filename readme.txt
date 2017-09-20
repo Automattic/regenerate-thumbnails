@@ -29,6 +29,10 @@ You can either regenerate the thumbnails for all image uploads, individual image
 
 == ChangeLog ==
 
+= Version 2.3.1 =
+
+* Fix PHP notice. ([#20](https://github.com/Viper007Bond/regenerate-thumbnails/issues/20))
+
 = Version 2.3.0 =
 
 Maintenance release. A [major rewrite](https://github.com/Viper007Bond/regenerate-thumbnails/tree/dev/v3-rewrite) is in the works on GitHub.
