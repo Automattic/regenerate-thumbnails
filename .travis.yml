@@ -30,16 +30,20 @@ env:
   - WP_VERSION=latest WP_MULTISITE=0
   - WP_VERSION=4.8 WP_MULTISITE=0
 
-# PHP 5.2 and 5.3 require precise not trusty.
-# Also run phpcs against PHP 7.1.
+# Some additional environments to test:
+#   * PHP 5.2 and 5.3 require precise not trusty
+#   * WordPress multisite
+#   * PHP_CodeSniffer
 matrix:
   include:
     - php: 5.2
       dist: precise
     - php: 5.3
       dist: precise
+    - php: 7.2
+      env: WP_VERSION=latest WP_MULTISITE=1
 #    - php: 7.1
-#      env: WP_TRAVISCI=phpcs
+#      WP_VERSION=latest WP_MULTISITE=0 WP_TRAVISCI=phpcs
 
 
 before_script:
