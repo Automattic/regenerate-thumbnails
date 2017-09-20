@@ -164,11 +164,15 @@ class RegenerateThumbnails {
 
 	// Handles the bulk actions POST
 	public function bulk_action_handler() {
-		if ( empty( $_REQUEST['action'] ) || ( 'bulk_regenerate_thumbnails' != $_REQUEST['action'] && 'bulk_regenerate_thumbnails' != $_REQUEST['action2'] ) )
+		if (
+				empty( $_REQUEST['action'] ) ||
+				empty( $_REQUEST['action2'] ) ||
+				( 'bulk_regenerate_thumbnails' != $_REQUEST['action'] && 'bulk_regenerate_thumbnails' != $_REQUEST['action2'] ) ||
+				empty( $_REQUEST['media'] ) ||
+				! is_array( $_REQUEST['media'] )
+		) {
 			return;
-
-		if ( empty( $_REQUEST['media'] ) || ! is_array( $_REQUEST['media'] ) )
-			return;
+		}
 
 		check_admin_referer( 'bulk-media' );
 
