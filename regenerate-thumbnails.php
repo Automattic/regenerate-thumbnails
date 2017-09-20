@@ -30,8 +30,8 @@ http://www.gnu.org/licenses/gpl-2.0.html
 
 **************************************************************************/
 
-require( __DIR__ . '/includes/regenerator.php' );
-require( __DIR__ . '/includes/rest-api.php' );
+require( dirname( __FILE__ ) . '/includes/regenerator.php' );
+require( dirname( __FILE__ ) . '/includes/rest-api.php' );
 
 class RegenerateThumbnails {
 	/**
