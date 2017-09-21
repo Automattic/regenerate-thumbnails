@@ -57,8 +57,10 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 
 	public function test_auth_logged_out() {
 		wp_set_current_user( 0 );
+
 		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
+
 		$this->assertResponseStatus( 403, $response );
 		$this->assertResponseData( array(
 			'code' => 'rest_forbidden',
