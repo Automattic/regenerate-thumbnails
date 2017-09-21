@@ -28,7 +28,7 @@ php:
 # Test against these versions of WordPress.
 env:
   - WP_VERSION=latest WP_MULTISITE=0
-  - WP_VERSION=4.8 WP_MULTISITE=0
+  - WP_VERSION=nightly WP_MULTISITE=0
 
 # Some additional environments to test:
 #   * PHP 5.2 and 5.3 require precise not trusty
