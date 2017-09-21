@@ -3,14 +3,17 @@
  * Class Regenerate_Thumbnails_Tests_REST_API
  *
  * @package Regenerate_Thumbnails
+ * @subpackage REST API
  */
 
 /**
  * Tests for the REST API.
+ * @group restapi
  */
 class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 
-	public $testfile;
+	public $subscriber;
+	public $administrator;
 	public $attachment_id;
 
 	public function setUp() {
@@ -23,18 +26,16 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 		$this->subscriber    = self::factory()->user->create( array( 'role' => 'subscriber' ) );
 		$this->administrator = self::factory()->user->create( array( 'role' => 'administrator' ) );
 
-		$this->testfile      = DIR_TESTDATA . '/images/33772.jpg';
-		$upload              = wp_upload_bits( basename( $this->testfile ), null, file_get_contents( $this->testfile ) );
-		$this->attachment_id = $this->_make_attachment( $upload );
+		$this->attachment_id = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
 	}
 
 	public function tearDown() {
-		parent::tearDown();
-
 		global $wp_rest_server;
 		$wp_rest_server = null;
 
 		$this->remove_added_uploads();
+
+		parent::tearDown();
 	}
 
 	public function assertResponseStatus( $status, $response ) {
