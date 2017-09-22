@@ -27,8 +27,8 @@ php:
 
 # Test against these versions of WordPress.
 env:
-  - WP_VERSION=latest WP_MULTISITE=0
-  - WP_VERSION=nightly WP_MULTISITE=0
+  - WP_VERSION=latest
+  - WP_VERSION=nightly
 
 # Some additional environments to test:
 #   * PHP 5.2 and 5.3 require precise not trusty
@@ -40,10 +40,8 @@ matrix:
       dist: precise
     - php: 5.3
       dist: precise
-    - php: 7.2
-      env: WP_VERSION=latest WP_MULTISITE=1
 #    - php: 7.1
-#      WP_VERSION=latest WP_MULTISITE=0 WP_TRAVISCI=phpcs
+#      WP_VERSION=latest WP_TRAVISCI=phpcs
 
 
 before_script:
