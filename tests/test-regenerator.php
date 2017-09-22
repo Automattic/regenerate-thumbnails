@@ -6,6 +6,8 @@
  * @subpackage Regenerator
  */
 
+require( dirname( __FILE__ ) . '/functions-return-ints.php' );
+
 /**
  * Tests for the RegenerateThumbnails_Regenerator class.
  * @group regenerator
@@ -19,33 +21,15 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	 */
 	public static function wpSetUpBeforeClass( $factory ) {
 		self::$default_size_functions = array(
-			'thumbnail_size_w'    => function () {
-				return 150;
-			},
-			'thumbnail_size_h'    => function () {
-				return 150;
-			},
-			'thumbnail_crop'      => function () {
-				return 1;
-			},
-			'medium_size_w'       => function () {
-				return 300;
-			},
-			'medium_size_h'       => function () {
-				return 300;
-			},
-			'medium_large_size_w' => function () {
-				return 768;
-			},
-			'medium_large_size_h' => function () {
-				return 0;
-			},
-			'large_size_w'        => function () {
-				return 1024;
-			},
-			'large_size_h'        => function () {
-				return 1024;
-			},
+			'thumbnail_size_w'    => '__return_int_150',
+			'thumbnail_size_h'    => '__return_int_150',
+			'thumbnail_crop'      => '__return_int_1',
+			'medium_size_w'       => '__return_int_300',
+			'medium_size_h'       => '__return_int_300',
+			'medium_large_size_w' => '__return_int_768',
+			'medium_large_size_h' => '__return_zero',
+			'large_size_w'        => '__return_int_1024',
+			'large_size_h'        => '__return_int_1024',
 		);
 
 		foreach ( self::$default_size_functions as $filter => $function ) {
@@ -147,33 +131,15 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 
 	public function _get_custom_thumbnail_size_filter_functions() {
 		return array(
-			'thumbnail_size_w'    => function () {
-				return 100;
-			},
-			'thumbnail_size_h'    => function () {
-				return 100;
-			},
-			'thumbnail_crop'      => function () {
-				return 0;
-			},
-			'medium_size_w'       => function () {
-				return 350;
-			},
-			'medium_size_h'       => function () {
-				return 250;
-			},
-			'medium_large_size_w' => function () {
-				return 500;
-			},
-			'medium_large_size_h' => function () {
-				return 500;
-			},
-			'large_size_w'        => function () {
-				return 1500;
-			},
-			'large_size_h'        => function () {
-				return 1500;
-			},
+			'thumbnail_size_w'    => '__return_int_100',
+			'thumbnail_size_h'    => '__return_int_100',
+			'thumbnail_crop'      => '__return_zero',
+			'medium_size_w'       => '__return_int_350',
+			'medium_size_h'       => '__return_int_350',
+			'medium_large_size_w' => '__return_int_500',
+			'medium_large_size_h' => '__return_int_500',
+			'large_size_w'        => '__return_int_1500',
+			'large_size_h'        => '__return_int_1500',
 		);
 	}
 }
