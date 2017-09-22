@@ -94,8 +94,6 @@ class RegenerateThumbnails {
 	 * Register all of the needed hooks and actions.
 	 */
 	public function setup() {
-		load_plugin_textdomain( 'regenerate-thumbnails' );
-
 		// Initialize the REST API routes
 		add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
 
