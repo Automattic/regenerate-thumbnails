@@ -3,30 +3,12 @@
 **************************************************************************
 
 Plugin Name:  Regenerate Thumbnails
+Description:  Regenerate the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.
 Plugin URI:   https://alex.blog/wordpress-plugins/regenerate-thumbnails/
-Description:  Allows you to regenerate your image upload thumbnails after changing the thumbnail sizes or switching themes.
 Version:      3.0.0 Alpha
 Author:       Alex Mills (Viper007Bond)
 Author URI:   https://alex.blog/
 Text Domain:  regenerate-thumbnails
-
-**************************************************************************
-
-Copyright (C) 2008-2017 Alex Mills (Viper007Bond)
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License version 2 or greater,
-as published by the Free Software Foundation.
-
-You may NOT assume that you can use any other version of the GPL.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-The license for this software can likely be found here:
-http://www.gnu.org/licenses/gpl-2.0.html
 
 **************************************************************************/
 
@@ -109,12 +91,12 @@ class RegenerateThumbnails {
 	}
 
 	/**
-	 * Does the initial setup of the instance of this class including loading the localization
-	 * file, registering the various actions and filters, and filtering the plugin's capability.
+	 * Register all of the needed hooks and actions.
 	 */
 	public function setup() {
 		load_plugin_textdomain( 'regenerate-thumbnails' );
 
+		// Initialize the REST API routes
 		add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
 
 		// Add a new item to the Tools menu in the admin menu
@@ -145,6 +127,9 @@ class RegenerateThumbnails {
 		$this->capability = apply_filters( 'regenerate_thumbs_cap', $this->capability );
 	}
 
+	/**
+	 * Initialize the REST API routes.
+	 */
 	public function rest_api_init() {
 		$this->rest_api = new RegenerateThumbnails_REST_Controller();
 		$this->rest_api->register_routes();
