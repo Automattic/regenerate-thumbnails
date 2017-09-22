@@ -20,6 +20,12 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 	}
 
+	public function tearDown() {
+		$this->remove_added_uploads();
+
+		parent::tearDown();
+	}
+
 	public function test_attachment_doesnt_exist() {
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( 0 );
 
