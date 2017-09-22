@@ -26,7 +26,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 		$this->subscriber    = self::factory()->user->create( array( 'role' => 'subscriber' ) );
 		$this->administrator = self::factory()->user->create( array( 'role' => 'administrator' ) );
 
-		$this->attachment_id = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
+		$this->attachment_id = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/test-image.jpg' );
 	}
 
 	public function tearDown() {
