@@ -45,7 +45,7 @@ This plugin is developed on [GitHub](https://github.com/Viper007Bond/regenerate-
 2. Search for "Regenerate Thumbnails".
 3. Click install.
 4. Click activate.
-5. Navigate to Tools → Regen. Thumbnails.
+5. Navigate to Tools → Regenerate Thumbnails.
 
 == Screenshots ==
 

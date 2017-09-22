@@ -137,7 +137,7 @@ class RegenerateThumbnails {
 	 * Adds a the new item to the admin menu.
 	 */
 	public function add_admin_menu() {
-		$this->menu_id = add_management_page( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), __( 'Regen. Thumbnails', 'regenerate-thumbnails' ), $this->capability, 'regenerate-thumbnails', array( $this, 'regenerate_interface' ) );
+		$this->menu_id = add_management_page( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), $this->capability, 'regenerate-thumbnails', array( $this, 'regenerate_interface' ) );
 	}
 
 	/**
@@ -282,9 +282,10 @@ class RegenerateThumbnails {
 	}
 
 	/**
-	 * The main Regenerate Thumbnails interface, as displayed at Tools → Regen. Thumbnails.
+	 * The main Regenerate Thumbnails interface, as displayed at Tools → Regenerate Thumbnails.
 	 */
 	public function regenerate_interface() {
+		// For testing, to use the REST API
 		var_dump( wp_create_nonce( 'wp_rest' ) );
 
 		if ( ! current_user_can( $this->capability ) ) {
@@ -300,7 +301,7 @@ class RegenerateThumbnails {
 		echo '<h1>' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . "</h1>\n";
 
 		// Make sure image editing is supported
-		if ( ! wp_image_editor_supports() ) {
+		if ( ! wp_image_editor_supports( array( 'methods' => array( 'resize' ) ) ) ) {
 			echo '<p>' . __( "Sorry but your server doesn't support image editing which means that WordPress can't create thumbnails. Please ask your host to install the Imagick or GD PHP extensions.", 'regenerate-thumbnails' ) . '</p>';
 		}
 		// Display the introduction page
@@ -538,7 +539,7 @@ class RegenerateThumbnails {
 	public function regenerate_interface_introduction() {
 		?>
 		<form method="post">
-			<?php wp_nonce_field( 'regenerate-thumbnails' ) ?>
+			<?php wp_nonce_field( 'regenerate-thumbnails' ); ?>
 
 			<p><?php printf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), esc_url( admin_url( 'options-media.php' ) ) ); ?></p>
 
@@ -569,7 +570,7 @@ class RegenerateThumbnails {
 				esc_html( $thumbnail_size ),
 				(int) $thumbnail_details['width'],
 				(int) $thumbnail_details['height'],
-				( $thumbnail_details['crop'] ) ? __( 'cropped to fit', 'regenerate-thumbnails' ) : __( 'proportionally resized', 'regenerate-thumbnails' )
+				( $thumbnail_details['crop'] ) ? __( 'cropped to fit', 'regenerate-thumbnails' ) : __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' )
 			);
 			echo "</li>\n";
 		}
@@ -581,8 +582,8 @@ class RegenerateThumbnails {
 		echo '<p>';
 		printf(
 			__( 'If you have command line access to your server via SSH, consider using <a href="%1$s">WP-CLI</a> instead of this plugin to regenerate thumbmails. It has <a href="%2$s">a built-in command</a> for generating thumbnails that is significantly faster than this plugin since a separate HTTP request per image is not required.', 'regenerate-thumbnails' ),
-			'http://wp-cli.org/',
-			'http://wp-cli.org/commands/media/regenerate/'
+			'https://wp-cli.org/',
+			'https://developer.wordpress.org/cli/commands/media/regenerate/'
 		);
 		echo "</p>\n";
 	}
