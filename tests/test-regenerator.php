@@ -35,4 +35,16 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$this->assertInstanceOf( 'WP_Error', $regenerator );
 		$this->assertEquals( 'regenerate_thumbnails_regenerator_not_attachment', $regenerator->get_error_code() );
 	}
+
+	public function test_missing_original_file() {
+		$attachment_id = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/test-image.jpg' );
+
+		unlink( get_attached_file( $attachment_id ) );
+
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
+		$result = $regenerator->regenerate();
+
+		$this->assertInstanceOf( 'WP_Error', $result );
+		$this->assertEquals( 'regenerate_thumbnails_regenerator_file_not_found', $result->get_error_code() );
+	}
 }
