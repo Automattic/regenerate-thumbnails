@@ -4,6 +4,8 @@ Tags: thumbnail, thumbnails
 Requires at least: 4.7
 Tested up to: 4.9
 Stable tag: trunk
+License: GPLv2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Regenerate the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.
 
