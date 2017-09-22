@@ -59,6 +59,7 @@ before_script:
       echo "xdebug.ini does not exist"
     fi
   - |
+    # Install WordPress and PHPUnit
     if [[ ! -z "$WP_VERSION" ]] ; then
       bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
       case "$TRAVIS_PHP_VERSION" in
@@ -81,6 +82,7 @@ before_script:
       esac
     fi
   - |
+    # Install PHP_CodeSniffer if it's requested for this test
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
       composer global require wp-coding-standards/wpcs
       phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
@@ -88,11 +90,13 @@ before_script:
 
 script:
   - |
+    # Run PHPUnit in both single site and multisite mode
     if [[ ! -z "$WP_VERSION" ]] ; then
       phpunit
       WP_MULTISITE=1 phpunit
     fi
   - |
+    # Run PHP_CodeSniffer coding standards if it's requested for this test
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
       phpcs
     fi
