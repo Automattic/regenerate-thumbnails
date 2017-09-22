@@ -26,4 +26,13 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$this->assertInstanceOf( 'WP_Error', $regenerator );
 		$this->assertEquals( 'regenerate_thumbnails_regenerator_attachment_doesnt_exist', $regenerator->get_error_code() );
 	}
+
+	public function test_not_attachment() {
+		$post_id = self::factory()->post->create( array() );
+
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $post_id );
+
+		$this->assertInstanceOf( 'WP_Error', $regenerator );
+		$this->assertEquals( 'regenerate_thumbnails_regenerator_not_attachment', $regenerator->get_error_code() );
+	}
 }
