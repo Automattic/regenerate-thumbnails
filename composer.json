@@ -3,6 +3,7 @@
   "description": "Regenerate the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.",
   "homepage":    "https://alex.blog/wordpress-plugins/regenerate-thumbnails/",
   "type":        "wordpress-plugin",
+  "keywords":    ["wordpress", "plugin", "thumbnails"],
   "license":     "GPL-2.0+",
   "authors": [
     {
@@ -10,7 +11,11 @@
       "homepage": "https://alex.blog/"
     }
   ],
+  "support": {
+    "issues": "https://github.com/Viper007Bond/regenerate-thumbnails/issues"
+  },
   "require": {
-    "php": ">=5.2.4"
+    "php": ">=5.2.4",
+    "composer/installers": "~1.0"
   }
 }
