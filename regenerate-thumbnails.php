@@ -12,8 +12,8 @@ Text Domain:  regenerate-thumbnails
 
 **************************************************************************/
 
-require( dirname( __FILE__ ) . '/includes/regenerator.php' );
-require( dirname( __FILE__ ) . '/includes/rest-api.php' );
+require( dirname( __FILE__ ) . '/includes/class.regenerator.php' );
+require( dirname( __FILE__ ) . '/includes/class.rest-controller.php' );
 
 class RegenerateThumbnails {
 	/**
