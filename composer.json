@@ -1,0 +1,16 @@
+{
+  "name":        "Viper007Bond/regenerate-thumbnails",
+  "description": "Regenerate the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.",
+  "homepage":    "https://alex.blog/wordpress-plugins/regenerate-thumbnails/",
+  "type":        "wordpress-plugin",
+  "license":     "GPL-2.0+",
+  "authors": [
+    {
+      "name": "Alex Mills (Viper007Bond)",
+      "homepage": "https://alex.blog/"
+    }
+  ],
+  "require": {
+    "php": ">=5.2.4"
+  }
+}
