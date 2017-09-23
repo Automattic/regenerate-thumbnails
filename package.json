@@ -1,0 +1,24 @@
+{
+  "name": "regenerate-thumbnails",
+  "version": "3.0.0-alpha",
+  "description": "A WordPress plugin for regenerating the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.",
+  "homepage": "https://alex.blog/wordpress-plugins/regenerate-thumbnails/",
+  "author": "Alex Mills (Viper007Bond)",
+  "license": "GPL-2.0+",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Viper007Bond/regenerate-thumbnails.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Viper007Bond/regenerate-thumbnails/issues"
+  },
+  "scripts": {
+    "build": "webpack"
+  },
+  "dependencies": {
+    "vue": "^2.4.4"
+  },
+  "devDependencies": {
+    "webpack": "^3.6.0"
+  }
+}
