@@ -58,7 +58,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 	public function test_auth_logged_out() {
 		wp_set_current_user( 0 );
 
-		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
+		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
 		$this->assertResponseStatus( 403, $response );
@@ -70,7 +70,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 	public function test_auth_subscriber() {
 		wp_set_current_user( $this->subscriber );
 
-		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
+		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
 		$this->assertResponseStatus( 403, $response );
@@ -82,7 +82,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 	public function test_auth_administrator() {
 		wp_set_current_user( $this->administrator );
 
-		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
+		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
 		$this->assertResponseStatus( 200, $response );
@@ -91,7 +91,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 	public function test_attachment_doesnt_exist() {
 		wp_set_current_user( $this->administrator );
 
-		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/0' );
+		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/0' );
 		$response = $this->server->dispatch( $request );
 
 		$this->assertResponseStatus( 404, $response );
@@ -105,7 +105,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 
 		$post_id = self::factory()->post->create();
 
-		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/' . $post_id );
+		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $post_id );
 		$response = $this->server->dispatch( $request );
 
 		$this->assertResponseStatus( 400, $response );
