@@ -154,7 +154,7 @@ class RegenerateThumbnails {
 			'regenerate-thumbnails',
 			plugins_url( 'dist/build.js', __FILE__ ),
 			array(),
-			( SCRIPT_DEBUG ) ? filemtime( dirname( __FILE__ ) . '/dist/build.js' ) : $this->version,
+			( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? filemtime( dirname( __FILE__ ) . '/dist/build.js' ) : $this->version,
 			true
 		);
 	}
