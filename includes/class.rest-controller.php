@@ -1,16 +1,38 @@
 <?php
 
+/**
+ * Registers new REST API endpoints.
+ *
+ * @since 3.0.0
+ */
 class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
+	/**
+	 * The namespace for the REST API routes.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var string
+	 */
 	public $namespace = 'regenerate-thumbnails/v1';
+
+	/**
+	 * The base prefix for the routes that this class adds.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var string
+	 */
 	public $rest_base = 'regenerate';
 
 	/**
-	 * Register the routes for the objects of the controller.
+	 * Register the new routes and endpoints.
+	 *
+	 * @since 3.0.0
 	 */
 	public function register_routes() {
 		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
 			array(
-				'methods'             => WP_REST_Server::READABLE,//WP_REST_Server::EDITABLE,
+				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => array( $this, 'regenerate_item' ),
 				'permission_callback' => array( $this, 'regenerate_item_permissions_check' ),
 				'args'                => array(),
@@ -20,6 +42,8 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 
 	/**
 	 * Regenerate the thumbnails for a specific media item.
+	 *
+	 * @since 3.0.0
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
@@ -43,6 +67,8 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 
 	/**
 	 * Check if a given request has access to regenerate the thumbnails for a given item.
+	 *
+	 * @since 3.0.0
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *

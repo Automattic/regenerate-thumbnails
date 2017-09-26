@@ -1,7 +1,19 @@
 <?php
 
+/**
+ * Regenerates the thumbnails for a given attachment.
+ *
+ * @since 3.0.0
+ */
 class RegenerateThumbnails_Regenerator {
 
+	/**
+	 * The WP_Post object for the attachment that is being operated on.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var WP_Post
+	 */
 	public $attachment;
 
 	/**
@@ -10,9 +22,11 @@ class RegenerateThumbnails_Regenerator {
 	 * MIME type is purposefully not validated in order to be more future proof and
 	 * to avoid duplicating a ton of logic that already exists in WordPress core.
 	 *
-	 * @param int $attachment_id Attachment Id to process.
+	 * @since 3.0.0
 	 *
-	 * @return RegenerateThumbnails_Regenerator|WP_Error
+	 * @param int $attachment_id Attachment ID to process.
+	 *
+	 * @return RegenerateThumbnails_Regenerator|WP_Error A new instance of RegenerateThumbnails_Regenerator on success, or WP_Error on error.
 	 */
 	public static function get_instance( $attachment_id ) {
 		$attachment = get_post( $attachment_id );
@@ -41,10 +55,27 @@ class RegenerateThumbnails_Regenerator {
 		return new RegenerateThumbnails_Regenerator( $attachment );
 	}
 
-	public function __construct( WP_Post $attachment ) {
+	/**
+	 * The constructor for this class. Don't call this directly, see get_instance() instead.
+	 * This is done so that WP_Error objects can be returned during class initiation.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param WP_Post $attachment The WP_Post object for the attachment that is being operated on.
+	 */
+	private function __construct( WP_Post $attachment ) {
 		$this->attachment = $attachment;
 	}
 
+	/**
+	 * Regenerate the thumbnails for this instance's attachment.
+	 *
+	 * @todo Additional parameters such as deleting old thumbnails or only regenerating certain sizes.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return mixed|WP_Error Metadata for attachment (see wp_generate_attachment_metadata()), or WP_Error on error.
+	 */
 	public function regenerate() {
 		$fullsizepath = get_attached_file( $this->attachment->ID );
 
