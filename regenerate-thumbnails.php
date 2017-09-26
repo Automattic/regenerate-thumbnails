@@ -150,10 +150,13 @@ class RegenerateThumbnails {
 			return;
 		}
 
-		wp_enqueue_script( 'regenerate-thumbnails', plugins_url( 'regenerate-thumbnails.js', __FILE__ ), array( 'jquery', 'jquery-ui-progressbar' ), $this->version );
-
-		// This will be removed as soon as https://core.trac.wordpress.org/ticket/18909 is eventually addressed
-		wp_enqueue_style( 'jquery-ui-regenthumbs', plugins_url( 'jquery-ui/redmond/jquery-ui-1.7.2.custom.css', __FILE__ ), array(), $this->version );
+		wp_enqueue_script(
+			'regenerate-thumbnails',
+			plugins_url( 'dist/build.js', __FILE__ ),
+			array(),
+			( SCRIPT_DEBUG ) ? filemtime( dirname( __FILE__ ) . '/dist/build.js' ) : $this->version,
+			true
+		);
 	}
 
 	/**
@@ -286,11 +289,14 @@ class RegenerateThumbnails {
 	 */
 	public function regenerate_interface() {
 		// For testing, to use the REST API
-		var_dump( wp_create_nonce( 'wp_rest' ) );
+		//var_dump( wp_create_nonce( 'wp_rest' ) );
 
 		if ( ! current_user_can( $this->capability ) ) {
 			wp_die( __( 'Cheatin&#8217; uh?' ) );
 		}
+
+		$this->regenerate_interface_vuejs_experiment();
+		return;
 
 		// This is a container for the results message that gets shown using JavaScript
 		echo '<div id="message" class="updated" style="display:none"></div>' . "\n";
@@ -314,6 +320,18 @@ class RegenerateThumbnails {
 		}
 
 		echo '</div>'; // end "wrap regenthumbs"
+	}
+
+	public function regenerate_interface_vuejs_experiment() {
+		?>
+
+		<div class="wrap">
+			<h1><?php esc_html_e( 'Regenerate Thumbnails', 'regenerate-thumbnails' ); ?></h1>
+
+			<div id="regenerate-thumbnails-app"></div>
+		</div>
+
+		<?php
 	}
 
 	public function regenerate_interface_old() {

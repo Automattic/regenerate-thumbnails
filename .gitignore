@@ -1,5 +1,6 @@
-.svn
-.idea
-/vendor/
-/node_modules/
+/.idea/
+/.svn/
 /dist/
+/node_modules/
+/vendor/
+/npm-debug.log
