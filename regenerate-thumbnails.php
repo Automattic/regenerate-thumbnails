@@ -381,7 +381,18 @@ class RegenerateThumbnails {
 
 	<p><?php _e( 'To begin, just press the button below.', 'regenerate-thumbnails'); ?></p>
 
-	<p><input type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
+	<?php if ( ! extension_loaded( 'gd' ) || ! extension_loaded( 'imagick' ) ): ?>
+
+		<p><input type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
+	
+	<?php else: ?>
+
+		<p><input disabled="disabled" type="submit" class="button hide-if-no-js" name="regenerate-thumbnails" id="regenerate-thumbnails" value="<?php _e( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ) ?>" /></p>
+		<div class="notice notice-error">
+			<p><?php  _e( 'Your server does not have a PHP image manipulation library enabled. Please install/activate GD Library or ImageMagick to use this tool.', 'regenerate-thumbnails' ); ?></p>
+		</div>
+	
+	<?php endif; ?>
 
 	<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'regenerate-thumbnails' ) ?></em></p></noscript>
 
