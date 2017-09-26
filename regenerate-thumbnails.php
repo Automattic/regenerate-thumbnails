@@ -328,7 +328,9 @@ class RegenerateThumbnails {
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Regenerate Thumbnails', 'regenerate-thumbnails' ); ?></h1>
 
-			<div id="regenerate-thumbnails-app"></div>
+			<div id="regenerate-thumbnails-app">
+				<p><?php esc_html_e( 'Loading…', 'regenerate-thumbnails' ); ?></p>
+			</div>
 		</div>
 
 		<?php
