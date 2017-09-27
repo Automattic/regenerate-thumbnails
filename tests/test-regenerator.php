@@ -51,6 +51,26 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 	}
 
+	public function tearDown() {
+		$this->remove_added_uploads();
+
+		parent::tearDown();
+	}
+
+	public function _get_custom_thumbnail_size_filter_functions() {
+		return array(
+			'thumbnail_size_w'    => '__return_int_100',
+			'thumbnail_size_h'    => '__return_int_100',
+			'thumbnail_crop'      => '__return_zero',
+			'medium_size_w'       => '__return_int_350',
+			'medium_size_h'       => '__return_int_350',
+			'medium_large_size_w' => '__return_int_500',
+			'medium_large_size_h' => '__return_int_500',
+			'large_size_w'        => '__return_int_1500',
+			'large_size_h'        => '__return_int_1500',
+		);
+	}
+
 	public function test_attachment_doesnt_exist() {
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( 0 );
 
@@ -79,7 +99,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$this->assertEquals( 'regenerate_thumbnails_regenerator_file_not_found', $result->get_error_code() );
 	}
 
-	public function test_regeneration() {
+	public function test_regenerate_thumbnails_to_new_sizes_with_no_args() {
 		$attachment_id       = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
 		$attachment_metadata = wp_get_attachment_metadata( $attachment_id );
 
@@ -125,21 +145,6 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		// Cleanup
 		foreach ( $this->_get_custom_thumbnail_size_filter_functions() as $filter => $function ) {
 			remove_filter( 'pre_option_' . $filter, $function );
-		};
-		$this->remove_added_uploads();
-	}
-
-	public function _get_custom_thumbnail_size_filter_functions() {
-		return array(
-			'thumbnail_size_w'    => '__return_int_100',
-			'thumbnail_size_h'    => '__return_int_100',
-			'thumbnail_crop'      => '__return_zero',
-			'medium_size_w'       => '__return_int_350',
-			'medium_size_h'       => '__return_int_350',
-			'medium_large_size_w' => '__return_int_500',
-			'medium_large_size_h' => '__return_int_500',
-			'large_size_w'        => '__return_int_1500',
-			'large_size_h'        => '__return_int_1500',
-		);
+		}
 	}
 }
