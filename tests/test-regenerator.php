@@ -97,23 +97,25 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$this->assertEquals( 'regenerate_thumbnails_regenerator_file_not_found', $result->get_error_code() );
 	}
 
-	public function test_regenerate_thumbnails_to_new_sizes_with_no_args() {
+	public function test_regenerate_thumbnails_to_new_sizes() {
 		$attachment_id       = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
 		$attachment_metadata = wp_get_attachment_metadata( $attachment_id );
 
-		// Verify thumbnail sizes are the expected defaults after initial upload
-		$this->assertEquals( 150, $attachment_metadata['sizes']['thumbnail']['width'] );
-		$this->assertEquals( 150, $attachment_metadata['sizes']['thumbnail']['height'] );
-		$this->assertEquals( 300, $attachment_metadata['sizes']['medium']['width'] );
-		$this->assertEquals( 169, $attachment_metadata['sizes']['medium']['height'] );
-		$this->assertEquals( 768, $attachment_metadata['sizes']['medium_large']['width'] );
-		$this->assertEquals( 432, $attachment_metadata['sizes']['medium_large']['height'] );
-		$this->assertEquals( 1024, $attachment_metadata['sizes']['large']['width'] );
-		$this->assertEquals( 576, $attachment_metadata['sizes']['large']['height'] );
+		$upload_dir = wp_get_upload_dir();
+		$upload_dir = trailingslashit( $upload_dir['path'] );
 
-		// And that all of the thumbnail sizes have been made
-		foreach ( get_intermediate_image_sizes() as $size ) {
-			$this->assertArrayHasKey( $size, $attachment_metadata['sizes'] );
+		$expected_default_thumbnail_sizes = array(
+			'thumbnail'    => array( 150, 150 ),
+			'medium'       => array( 300, 169 ),
+			'medium_large' => array( 768, 432 ),
+			'large'        => array( 1024, 576 ),
+		);
+
+		// Verify that the default thumbnails were made correctly during initial upload
+		foreach ( $expected_default_thumbnail_sizes as $size => $dims ) {
+			$this->assertFileExists( $upload_dir . "33772-{$dims[0]}x{$dims[1]}.jpg" );
+			$this->assertEquals( $dims[0], $attachment_metadata['sizes'][ $size ]['width'] );
+			$this->assertEquals( $dims[1], $attachment_metadata['sizes'][ $size ]['height'] );
 		}
 
 		$custom_thumbnail_size_callbacks = array(
@@ -137,24 +139,23 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
 		$result      = $regenerator->regenerate();
 
-		// Verify thumbnail sizes are the new non-default sizes
-		$this->assertEquals( 100, $result['sizes']['thumbnail']['width'] );
-		$this->assertEquals( 56, $result['sizes']['thumbnail']['height'] );
-		$this->assertEquals( 350, $result['sizes']['medium']['width'] );
-		$this->assertEquals( 197, $result['sizes']['medium']['height'] );
-		$this->assertEquals( 500, $result['sizes']['medium_large']['width'] );
-		$this->assertEquals( 281, $result['sizes']['medium_large']['height'] );
-		$this->assertEquals( 1500, $result['sizes']['large']['width'] );
-		$this->assertEquals( 844, $result['sizes']['large']['height'] );
-
-		// And that all of the thumbnail sizes have been made
-		foreach ( get_intermediate_image_sizes() as $size ) {
-			$this->assertArrayHasKey( $size, $result['sizes'] );
-		}
-
 		// Cleanup
 		foreach ( $custom_thumbnail_size_callbacks as $filter => $function ) {
 			remove_filter( 'pre_option_' . $filter, $function );
+		}
+
+		$expected_custom_thumbnail_sizes = array(
+			'thumbnail'    => array( 100, 56 ),
+			'medium'       => array( 350, 197 ),
+			'medium_large' => array( 500, 281 ),
+			'large'        => array( 1500, 844 ),
+		);
+
+		// Verify that the new custom thumbnails were made correctly by this plugin
+		foreach ( $expected_custom_thumbnail_sizes as $size => $dims ) {
+			$this->assertFileExists( $upload_dir . "33772-{$dims[0]}x{$dims[1]}.jpg" );
+			$this->assertEquals( $dims[0], $result['sizes'][ $size ]['width'] );
+			$this->assertEquals( $dims[1], $result['sizes'][ $size ]['height'] );
 		}
 	}
 
