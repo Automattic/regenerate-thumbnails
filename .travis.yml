@@ -32,7 +32,6 @@ env:
 
 # Some additional environments to test:
 #   * PHP 5.2 and 5.3 require precise not trusty
-#   * WordPress multisite
 #   * PHP_CodeSniffer
 matrix:
   include:
