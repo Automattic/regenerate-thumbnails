@@ -69,20 +69,6 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$filesystem->rmdir( trailingslashit( $upload_dir ), true );
 	}
 
-	public function _get_custom_thumbnail_size_filter_functions() {
-		return array(
-			'thumbnail_size_w'    => '__return_int_100',
-			'thumbnail_size_h'    => '__return_int_100',
-			'thumbnail_crop'      => '__return_zero',
-			'medium_size_w'       => '__return_int_350',
-			'medium_size_h'       => '__return_int_350',
-			'medium_large_size_w' => '__return_int_500',
-			'medium_large_size_h' => '__return_int_500',
-			'large_size_w'        => '__return_int_1500',
-			'large_size_h'        => '__return_int_1500',
-		);
-	}
-
 	public function test_attachment_doesnt_exist() {
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( 0 );
 
@@ -130,8 +116,20 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			$this->assertArrayHasKey( $size, $attachment_metadata['sizes'] );
 		}
 
+		$custom_thumbnail_size_callbacks = array(
+			'thumbnail_size_w'    => '__return_int_100',
+			'thumbnail_size_h'    => '__return_int_100',
+			'thumbnail_crop'      => '__return_zero',
+			'medium_size_w'       => '__return_int_350',
+			'medium_size_h'       => '__return_int_350',
+			'medium_large_size_w' => '__return_int_500',
+			'medium_large_size_h' => '__return_int_500',
+			'large_size_w'        => '__return_int_1500',
+			'large_size_h'        => '__return_int_1500',
+		);
+
 		// Now change the thumbnail sizes to something other than the defaults
-		foreach ( $this->_get_custom_thumbnail_size_filter_functions() as $filter => $function ) {
+		foreach ( $custom_thumbnail_size_callbacks as $filter => $function ) {
 			add_filter( 'pre_option_' . $filter, $function );
 		};
 
@@ -155,7 +153,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 
 		// Cleanup
-		foreach ( $this->_get_custom_thumbnail_size_filter_functions() as $filter => $function ) {
+		foreach ( $custom_thumbnail_size_callbacks as $filter => $function ) {
 			remove_filter( 'pre_option_' . $filter, $function );
 		}
 	}
