@@ -17,6 +17,15 @@ class RegenerateThumbnails_Regenerator {
 	public $attachment;
 
 	/**
+	 * Stores the full path to the original image so that it can be passed between methods.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var string
+	 */
+	public $fullsizepath;
+
+	/**
 	 * Generates an instance of this class after doing some setup.
 	 *
 	 * MIME type is purposefully not validated in order to be more future proof and
@@ -74,29 +83,107 @@ class RegenerateThumbnails_Regenerator {
 	 *
 	 * @since 3.0.0
 	 *
+	 * @param array|string $args {
+	 *     Optional. Array or string of arguments thumbnail regeneration.
+	 *
+	 *     @type bool $only_regenerate_missing_thumbnails Skip regenerating existing thumbnail files. Default true.
+	 * }
+	 *
 	 * @return mixed|WP_Error Metadata for attachment (see wp_generate_attachment_metadata()), or WP_Error on error.
 	 */
-	public function regenerate() {
-		$fullsizepath = get_attached_file( $this->attachment->ID );
+	public function regenerate( $args = array() ) {
+		$args = wp_parse_args( $args, array(
+			'only_regenerate_missing_thumbnails' => true,
+		) );
 
-		if ( false === $fullsizepath || ! file_exists( $fullsizepath ) ) {
+		$this->fullsizepath = get_attached_file( $this->attachment->ID );
+
+		if ( false === $this->fullsizepath || ! file_exists( $this->fullsizepath ) ) {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_file_not_found',
 				esc_html__( "Unable to locate the original file for this attachment.", 'regenerate-thumbnails' ),
 				array(
 					'status'       => 404,
-					'fullsizepath' => _wp_relative_upload_path( $fullsizepath ),
+					'fullsizepath' => _wp_relative_upload_path( $this->fullsizepath ),
 					'attachment'   => $this->attachment,
 				)
 			);
 		}
 
+		if ( $args['only_regenerate_missing_thumbnails'] ) {
+			$old_metadata = wp_get_attachment_metadata( $this->attachment->ID );
+			add_filter( 'intermediate_image_sizes_advanced', array( $this, 'filter_image_sizes_to_only_missing_thumbnails' ), 10, 2 );
+		}
+
 		require_once( ABSPATH . 'wp-admin/includes/admin.php' );
 
-		$metadata = wp_generate_attachment_metadata( $this->attachment->ID, $fullsizepath );
+		$metadata = wp_generate_attachment_metadata( $this->attachment->ID, $this->fullsizepath );
+
+		if ( $args['only_regenerate_missing_thumbnails'] ) {
+			$metadata['sizes'] = array_merge( $old_metadata['sizes'], $metadata['sizes'] );
+			remove_filter( 'intermediate_image_sizes_advanced', array( $this, 'filter_image_sizes_to_only_missing_thumbnails' ), 10 );
+		}
 
 		wp_update_attachment_metadata( $this->attachment->ID, $metadata );
 
 		return $metadata;
+	}
+
+	/**
+	 * Filters the list of thumbnail sizes to only include those which have missing files.
+	 *
+	 * @param array $sizes    An associative array of image sizes.
+	 * @param array $metadata An associative array of image metadata: width, height, file.
+	 *
+	 * @return array An associative array of image sizes.
+	 */
+	public function filter_image_sizes_to_only_missing_thumbnails( $sizes, $metadata ) {
+		if ( ! $sizes ) {
+			return $sizes;
+		}
+
+		$editor = wp_get_image_editor( $this->fullsizepath );
+
+		if ( is_wp_error( $editor ) ) {
+			return $sizes;
+		}
+
+		// This is based on WP_Image_Editor_GD::multi_resize() and others
+		foreach ( $sizes as $size => $size_data ) {
+			if ( ! isset( $size_data['width'] ) && ! isset( $size_data['height'] ) ) {
+				continue;
+			}
+
+			if ( ! isset( $size_data['width'] ) ) {
+				$size_data['width'] = null;
+			}
+			if ( ! isset( $size_data['height'] ) ) {
+				$size_data['height'] = null;
+			}
+
+			if ( ! isset( $size_data['crop'] ) ) {
+				$size_data['crop'] = false;
+			}
+
+			$dims = image_resize_dimensions( $metadata['width'], $metadata['height'], $size_data['width'], $size_data['height'], $size_data['crop'] );
+
+			if ( ! $dims ) {
+				unset( $sizes[ $size ] );
+				continue;
+			}
+
+			list( $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h ) = $dims;
+
+			$suffix   = "{$dst_w}x{$dst_h}";
+			$file_ext = strtolower( pathinfo( $this->fullsizepath, PATHINFO_EXTENSION ) );
+
+			$filename = $editor->generate_filename( $suffix, null, $file_ext );
+
+			if ( file_exists( $filename ) ) {
+				unset( $sizes[ $size ] );
+			}
+		}
+
+		return $sizes;
 	}
 }

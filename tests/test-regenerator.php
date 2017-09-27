@@ -7,6 +7,8 @@
  */
 
 require( dirname( __FILE__ ) . '/functions-return-ints.php' );
+require_once( ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php' );
+require_once( ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php' );
 
 /**
  * Tests for the RegenerateThumbnails_Regenerator class.
@@ -20,6 +22,8 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	 * Make sure a bunch of thumbnail options are what we expect them to be.
 	 */
 	public static function wpSetUpBeforeClass( $factory ) {
+		self::_delete_upload_dir_contents();
+
 		self::$default_size_functions = array(
 			'thumbnail_size_w'    => '__return_int_150',
 			'thumbnail_size_h'    => '__return_int_150',
@@ -52,9 +56,14 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function tearDown() {
-		$this->remove_added_uploads();
+		self::_delete_upload_dir_contents();
 
 		parent::tearDown();
+	}
+
+	public static function _delete_upload_dir_contents() {
+		$filesystem = new WP_Filesystem_Direct( array() );
+		$filesystem->rmdir( trailingslashit( wp_get_upload_dir()['path'] ), true );
 	}
 
 	public function _get_custom_thumbnail_size_filter_functions() {
@@ -145,6 +154,66 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		// Cleanup
 		foreach ( $this->_get_custom_thumbnail_size_filter_functions() as $filter => $function ) {
 			remove_filter( 'pre_option_' . $filter, $function );
+		}
+	}
+
+	public function test_regenerate_thumbnails_skipping_existing_thumbnails() {
+		$this->_regenerate_thumbnails_skipping_existing_thumbnails_helper( true );
+	}
+
+	public function test_regenerate_thumbnails_without_skipping_existing_thumbnails() {
+		$this->_regenerate_thumbnails_skipping_existing_thumbnails_helper( false );
+	}
+
+	public function _regenerate_thumbnails_skipping_existing_thumbnails_helper( $only_regenerate_missing_thumbnails ) {
+		$attachment_id = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
+
+		// These are the expected thumbnail filenames
+		$thumbnails = array(
+			'thumbnail'    => '33772-150x150.jpg',
+			'medium'       => '33772-300x169.jpg',
+			'medium_large' => '33772-768x432.jpg',
+			'large'        => '33772-1024x576.jpg',
+		);
+
+		$filemtimes = array();
+		$upload_dir = trailingslashit( wp_get_upload_dir()['path'] );
+
+		// Verify that all of the thumbnails were created and record their modified times
+		foreach ( $thumbnails as $size => $filename ) {
+			$file = $upload_dir . $filename;
+			$this->assertFileExists( $file );
+			$filemtimes[ $size ] = filemtime( $file );
+		}
+
+		// Delete some of the thumbnail files
+		$missing_thumbnails = array( 'medium', 'large' );
+		foreach ( $missing_thumbnails as $size ) {
+			unlink( $upload_dir . $thumbnails[ $size ] );
+			$this->assertFileNotExists( $upload_dir . $thumbnails[ $size ] );
+		}
+
+		// Sleep to make sure that filemtime() changes
+		sleep( 1 );
+
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
+		$regenerator->regenerate( array(
+			'only_regenerate_missing_thumbnails' => $only_regenerate_missing_thumbnails,
+		) );
+
+		// Clear the file stat cache to make sure that filemtime() works correctly
+		clearstatcache();
+
+		// Verify the modified times of files
+		// When skipping existing thumbnails, the thumbnail files we didn't delete shouldn't change
+		foreach ( $thumbnails as $size => $filename ) {
+			$file = $upload_dir . $filename;
+			if ( ! $only_regenerate_missing_thumbnails || in_array( $size, $missing_thumbnails ) ) {
+				$this->assertFileExists( $file );
+				$this->assertNotEquals( $filemtimes[ $size ], filemtime( $file ) );
+			} else {
+				$this->assertEquals( $filemtimes[ $size ], filemtime( $file ) );
+			}
 		}
 	}
 }
