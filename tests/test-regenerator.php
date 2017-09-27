@@ -62,8 +62,11 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public static function _delete_upload_dir_contents() {
+		$upload_dir = wp_get_upload_dir();
+		$upload_dir = $upload_dir['path'];
+
 		$filesystem = new WP_Filesystem_Direct( array() );
-		$filesystem->rmdir( trailingslashit( wp_get_upload_dir()['path'] ), true );
+		$filesystem->rmdir( trailingslashit( $upload_dir ), true );
 	}
 
 	public function _get_custom_thumbnail_size_filter_functions() {
