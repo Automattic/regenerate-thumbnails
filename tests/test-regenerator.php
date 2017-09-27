@@ -180,7 +180,9 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		);
 
 		$filemtimes = array();
-		$upload_dir = trailingslashit( wp_get_upload_dir()['path'] );
+
+		$upload_dir = wp_get_upload_dir();
+		$upload_dir = trailingslashit( $upload_dir['path'] );
 
 		// Verify that all of the thumbnails were created and record their modified times
 		foreach ( $thumbnails as $size => $filename ) {
