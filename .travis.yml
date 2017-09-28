@@ -27,6 +27,7 @@ php:
 
 # Test against these versions of WordPress.
 env:
+  - WP_VERSION=4.7
   - WP_VERSION=latest
   - WP_VERSION=nightly
 
