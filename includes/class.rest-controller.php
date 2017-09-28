@@ -62,7 +62,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 			return $result;
 		}
 
-		return new WP_REST_Response( $result );
+		return new WP_REST_Response( true );
 	}
 
 	/**
