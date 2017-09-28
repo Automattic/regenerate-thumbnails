@@ -69,6 +69,10 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$filesystem->rmdir( trailingslashit( $upload_dir ), true );
 	}
 
+	public function _create_attachment() {
+		return self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
+	}
+
 	public function test_attachment_doesnt_exist() {
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( 0 );
 
@@ -98,8 +102,8 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function test_regenerate_thumbnails_to_new_sizes() {
-		$attachment_id       = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
-		$attachment_metadata = wp_get_attachment_metadata( $attachment_id );
+		$attachment_id = $this->_create_attachment();
+		$old_metadata  = wp_get_attachment_metadata( $attachment_id );
 
 		$upload_dir = wp_get_upload_dir();
 		$upload_dir = trailingslashit( $upload_dir['path'] );
@@ -114,8 +118,8 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		// Verify that the default thumbnails were made correctly during initial upload
 		foreach ( $expected_default_thumbnail_sizes as $size => $dims ) {
 			$this->assertFileExists( $upload_dir . "33772-{$dims[0]}x{$dims[1]}.jpg" );
-			$this->assertEquals( $dims[0], $attachment_metadata['sizes'][ $size ]['width'] );
-			$this->assertEquals( $dims[1], $attachment_metadata['sizes'][ $size ]['height'] );
+			$this->assertEquals( $dims[0], $old_metadata['sizes'][ $size ]['width'] );
+			$this->assertEquals( $dims[1], $old_metadata['sizes'][ $size ]['height'] );
 		}
 
 		$custom_thumbnail_size_callbacks = array(
@@ -137,7 +141,9 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 
 		// Regenerate the thumbnails!
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
-		$result      = $regenerator->regenerate();
+		$regenerator->regenerate();
+
+		$new_metadata = wp_get_attachment_metadata( $attachment_id );
 
 		// Cleanup
 		foreach ( $custom_thumbnail_size_callbacks as $filter => $function ) {
@@ -154,8 +160,8 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		// Verify that the new custom thumbnails were made correctly by this plugin
 		foreach ( $expected_custom_thumbnail_sizes as $size => $dims ) {
 			$this->assertFileExists( $upload_dir . "33772-{$dims[0]}x{$dims[1]}.jpg" );
-			$this->assertEquals( $dims[0], $result['sizes'][ $size ]['width'] );
-			$this->assertEquals( $dims[1], $result['sizes'][ $size ]['height'] );
+			$this->assertEquals( $dims[0], $new_metadata['sizes'][ $size ]['width'] );
+			$this->assertEquals( $dims[1], $new_metadata['sizes'][ $size ]['height'] );
 		}
 	}
 
@@ -168,7 +174,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function _regenerate_thumbnails_skipping_existing_thumbnails_helper( $only_regenerate_missing_thumbnails ) {
-		$attachment_id = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
+		$attachment_id = $this->_create_attachment();
 
 		// These are the expected thumbnail filenames
 		$thumbnails = array(
@@ -218,6 +224,43 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			} else {
 				$this->assertEquals( $filemtimes[ $size ], filemtime( $file ) );
 			}
+		}
+	}
+
+	public function test_dont_delete_unregistered_thumbnail_files() {
+		$this->_delete_unregistered_thumbnail_files_helper( false );
+	}
+
+	public function test_delete_unregistered_thumbnail_files() {
+		$this->_delete_unregistered_thumbnail_files_helper( true );
+	}
+
+	public function _delete_unregistered_thumbnail_files_helper( $delete_unregistered_thumbnail_files ) {
+		add_image_size( 'regenerate-thumbnails-test', 500, 500 );
+
+		$attachment_id = $this->_create_attachment();
+		$old_metadata  = wp_get_attachment_metadata( $attachment_id );
+
+		$upload_dir     = wp_get_upload_dir();
+		$thumbnail_file = trailingslashit( $upload_dir['path'] ) . $old_metadata['sizes']['regenerate-thumbnails-test']['file'];
+
+		$this->assertFileExists( $thumbnail_file );
+
+		remove_image_size( 'regenerate-thumbnails-test' );
+
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
+		$regenerator->regenerate( array(
+			'delete_unregistered_thumbnail_files' => $delete_unregistered_thumbnail_files,
+		) );
+
+		$new_metadata = wp_get_attachment_metadata( $attachment_id );
+
+		if ( $delete_unregistered_thumbnail_files ) {
+			$this->assertFileNotExists( $thumbnail_file );
+			$this->assertArrayNotHasKey( 'regenerate-thumbnails-test', $new_metadata['sizes'] );
+		} else {
+			$this->assertFileExists( $thumbnail_file );
+			$this->assertArrayHasKey( 'regenerate-thumbnails-test', $new_metadata['sizes'] );
 		}
 	}
 }

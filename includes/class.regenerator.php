@@ -43,7 +43,7 @@ class RegenerateThumbnails_Regenerator {
 		if ( ! $attachment ) {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_attachment_doesnt_exist',
-				esc_html__( 'No attachment exists with that ID.', 'regenerate-thumbnails' ),
+				__( 'No attachment exists with that ID.', 'regenerate-thumbnails' ),
 				array(
 					'status' => 404,
 				)
@@ -54,7 +54,7 @@ class RegenerateThumbnails_Regenerator {
 		if ( 'attachment' != get_post_type( $attachment ) ) {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_not_attachment',
-				esc_html__( 'This item is not an attachment.', 'regenerate-thumbnails' ),
+				__( 'This item is not an attachment.', 'regenerate-thumbnails' ),
 				array(
 					'status' => 400,
 				)
@@ -79,7 +79,7 @@ class RegenerateThumbnails_Regenerator {
 	/**
 	 * Regenerate the thumbnails for this instance's attachment.
 	 *
-	 * @todo Additional parameters such as deleting old thumbnails or only regenerating certain sizes.
+	 * @todo  Additional parameters such as deleting old thumbnails or only regenerating certain sizes.
 	 *
 	 * @since 3.0.0
 	 *
@@ -93,7 +93,8 @@ class RegenerateThumbnails_Regenerator {
 	 */
 	public function regenerate( $args = array() ) {
 		$args = wp_parse_args( $args, array(
-			'only_regenerate_missing_thumbnails' => true,
+			'only_regenerate_missing_thumbnails'  => true,
+			'delete_unregistered_thumbnail_files' => false,
 		) );
 
 		$this->fullsizepath = get_attached_file( $this->attachment->ID );
@@ -101,7 +102,7 @@ class RegenerateThumbnails_Regenerator {
 		if ( false === $this->fullsizepath || ! file_exists( $this->fullsizepath ) ) {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_file_not_found',
-				esc_html__( "Unable to locate the original file for this attachment.", 'regenerate-thumbnails' ),
+				__( "Unable to locate the original file for this attachment.", 'regenerate-thumbnails' ),
 				array(
 					'status'       => 404,
 					'fullsizepath' => _wp_relative_upload_path( $this->fullsizepath ),
@@ -110,23 +111,45 @@ class RegenerateThumbnails_Regenerator {
 			);
 		}
 
+		$old_metadata = wp_get_attachment_metadata( $this->attachment->ID );
+
 		if ( $args['only_regenerate_missing_thumbnails'] ) {
-			$old_metadata = wp_get_attachment_metadata( $this->attachment->ID );
 			add_filter( 'intermediate_image_sizes_advanced', array( $this, 'filter_image_sizes_to_only_missing_thumbnails' ), 10, 2 );
 		}
 
 		require_once( ABSPATH . 'wp-admin/includes/admin.php' );
 
-		$metadata = wp_generate_attachment_metadata( $this->attachment->ID, $this->fullsizepath );
+		$new_metadata = wp_generate_attachment_metadata( $this->attachment->ID, $this->fullsizepath );
 
 		if ( $args['only_regenerate_missing_thumbnails'] ) {
-			$metadata['sizes'] = array_merge( $old_metadata['sizes'], $metadata['sizes'] );
+			$new_metadata['sizes'] = array_merge( $old_metadata['sizes'], $new_metadata['sizes'] );
 			remove_filter( 'intermediate_image_sizes_advanced', array( $this, 'filter_image_sizes_to_only_missing_thumbnails' ), 10 );
 		}
 
-		wp_update_attachment_metadata( $this->attachment->ID, $metadata );
+		/**
+		 * If the user wants to keep their storage usage down, we can iterate over the list of
+		 * thumbnails in the old metadata and delete any that are no longer registered as valid sizes.
+		 */
+		if ( $args['delete_unregistered_thumbnail_files'] ) {
+			$upload_dir = wp_get_upload_dir();
+			$upload_dir = trailingslashit( $upload_dir['path'] );
 
-		return $metadata;
+			$intermediate_image_sizes = get_intermediate_image_sizes();
+			foreach ( $old_metadata['sizes'] as $size => $thumbnail ) {
+				if ( in_array( $size, $intermediate_image_sizes ) ) {
+					continue;
+				}
+
+				// @todo: Prefix with @ for release. Could wrap in file_exists() but that just adds overhead.
+				unlink( $upload_dir . $thumbnail['file'] );
+
+				unset( $new_metadata['sizes'][ $size ] );
+			}
+		}
+
+		wp_update_attachment_metadata( $this->attachment->ID, $new_metadata );
+
+		return $new_metadata;
 	}
 
 	/**
