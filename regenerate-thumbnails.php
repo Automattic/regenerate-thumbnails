@@ -289,7 +289,7 @@ class RegenerateThumbnails {
 	 */
 	public function regenerate_interface() {
 		// For testing, to use the REST API
-		//var_dump( wp_create_nonce( 'wp_rest' ) );
+		var_dump( wp_create_nonce( 'wp_rest' ) );
 
 		if ( ! current_user_can( $this->capability ) ) {
 			wp_die( __( 'Cheatin&#8217; uh?' ) );
