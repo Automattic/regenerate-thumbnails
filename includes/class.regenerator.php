@@ -51,12 +51,24 @@ class RegenerateThumbnails_Regenerator {
 		}
 
 		// We can only regenerate thumbnails for attachments
-		if ( 'attachment' != get_post_type( $attachment ) ) {
+		if ( 'attachment' !== get_post_type( $attachment ) ) {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_not_attachment',
 				__( 'This item is not an attachment.', 'regenerate-thumbnails' ),
 				array(
 					'status' => 400,
+				)
+			);
+		}
+
+		// Don't touch any attachments that are being used as a site icon. Their thumbnails are usually custom cropped.
+		if ( 'site-icon' === get_post_meta( $attachment->ID, '_wp_attachment_context', true ) ) {
+			return new WP_Error(
+				'regenerate_thumbnails_regenerator_is_site_icon',
+				__( "This attachment is being used as a site icon and therefore the thumbnails shouldn't be touched.", 'regenerate-thumbnails' ),
+				array(
+					'status'     => 415,
+					'attachment' => $attachment,
 				)
 			);
 		}
@@ -118,18 +130,18 @@ class RegenerateThumbnails_Regenerator {
 		}
 
 		require_once( ABSPATH . 'wp-admin/includes/admin.php' );
-
 		$new_metadata = wp_generate_attachment_metadata( $this->attachment->ID, $this->fullsizepath );
 
 		if ( $args['only_regenerate_missing_thumbnails'] ) {
+			// Certain sizes may have been temporarily removed by the file so that they
+			// weren't regenerated, so we need to add them back into the metadata.
 			$new_metadata['sizes'] = array_merge( $old_metadata['sizes'], $new_metadata['sizes'] );
+
 			remove_filter( 'intermediate_image_sizes_advanced', array( $this, 'filter_image_sizes_to_only_missing_thumbnails' ), 10 );
 		}
 
-		/**
-		 * If the user wants to keep their storage usage down, we can iterate over the list of
-		 * thumbnails in the old metadata and delete any that are no longer registered as valid sizes.
-		 */
+		// If the user wants to keep their storage usage down, we can iterate over the list of
+		// thumbnails in the old metadata and delete any that are no longer registered as valid sizes.
 		if ( $args['delete_unregistered_thumbnail_files'] ) {
 			$upload_dir = wp_get_upload_dir();
 			$upload_dir = trailingslashit( $upload_dir['path'] );

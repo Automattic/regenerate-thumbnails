@@ -73,6 +73,18 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		return self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
 	}
 
+	public function _get_filemtimes( $upload_dir, $thumbnails ) {
+		$filemtimes = array();
+
+		foreach ( $thumbnails as $size => $filename ) {
+			$file = $upload_dir . $filename;
+			$this->assertFileExists( $file );
+			$filemtimes[ $size ] = filemtime( $file );
+		}
+
+		return $filemtimes;
+	}
+
 	public function test_attachment_doesnt_exist() {
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( 0 );
 
@@ -184,17 +196,10 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			'large'        => '33772-1024x576.jpg',
 		);
 
-		$filemtimes = array();
-
 		$upload_dir = wp_get_upload_dir();
 		$upload_dir = trailingslashit( $upload_dir['path'] );
 
-		// Verify that all of the thumbnails were created and record their modified times
-		foreach ( $thumbnails as $size => $filename ) {
-			$file = $upload_dir . $filename;
-			$this->assertFileExists( $file );
-			$filemtimes[ $size ] = filemtime( $file );
-		}
+		$filemtimes = $this->_get_filemtimes( $upload_dir, $thumbnails );
 
 		// Delete some of the thumbnail files
 		$missing_thumbnails = array( 'medium', 'large' );
@@ -261,6 +266,57 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		} else {
 			$this->assertFileExists( $thumbnail_file );
 			$this->assertArrayHasKey( 'regenerate-thumbnails-test', $new_metadata['sizes'] );
+		}
+	}
+
+	public function test_verify_that_site_icons_are_not_regenerated() {
+		$attachment_id = $this->_create_attachment();
+
+		// See wp_ajax_crop_image()
+
+		require_once( ABSPATH . '/wp-admin/includes/class-wp-site-icon.php' );
+		$wp_site_icon = new WP_Site_Icon();
+
+		$cropped = wp_crop_image( $attachment_id, 1300, 300, 512, 512, 512, 512 );
+		$this->assertNotFalse( $cropped );
+		$this->assertNotInstanceOf( 'WP_Error', $cropped );
+
+		$object = $wp_site_icon->create_attachment_object( $cropped, $attachment_id );
+		unset( $object['ID'] );
+
+		// Update the attachment.
+		add_filter( 'intermediate_image_sizes_advanced', array( $wp_site_icon, 'additional_sizes' ) );
+		$attachment_id = $wp_site_icon->insert_attachment( $object, $cropped );
+		remove_filter( 'intermediate_image_sizes_advanced', array( $wp_site_icon, 'additional_sizes' ) );
+
+		$attachment_metadata = wp_get_attachment_metadata( $attachment_id );
+
+		$thumbnails = array();
+		foreach ( $attachment_metadata['sizes'] as $size => $size_data ) {
+			$thumbnails[ $size ] = $size_data['file'];
+		}
+
+		$upload_dir = wp_get_upload_dir();
+		$upload_dir = trailingslashit( $upload_dir['path'] );
+
+		$filemtimes = $this->_get_filemtimes( $upload_dir, $thumbnails );
+
+		// Sleep to make sure that filemtime() will change if the thumbnail files do
+		sleep( 1 );
+
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
+
+		$this->assertInstanceOf( 'WP_Error', $regenerator );
+		$this->assertEquals( 'regenerate_thumbnails_regenerator_is_site_icon', $regenerator->get_error_code() );
+
+		// Clear the file stat cache to make sure that filemtime() works correctly
+		clearstatcache();
+
+		// Verify that none of the thumbnail files have changed
+		foreach ( $attachment_metadata['sizes'] as $size => $size_data ) {
+			$file = $upload_dir . $size_data['file'];
+			$this->assertFileExists( $file );
+			$this->assertEquals( $filemtimes[ $size ], filemtime( $file ) );
 		}
 	}
 }
