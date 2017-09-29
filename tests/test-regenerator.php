@@ -278,8 +278,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$wp_site_icon = new WP_Site_Icon();
 
 		$cropped = wp_crop_image( $attachment_id, 1300, 300, 512, 512, 512, 512 );
-		$this->assertNotFalse( $cropped );
-		$this->assertNotInstanceOf( 'WP_Error', $cropped );
+		$this->assertInternalType( 'string', $cropped );
 
 		$object = $wp_site_icon->create_attachment_object( $cropped, $attachment_id );
 		unset( $object['ID'] );
