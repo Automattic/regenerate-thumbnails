@@ -2,7 +2,7 @@
 /**
  * Class Regenerate_Thumbnails_Tests_REST_API
  *
- * @package Regenerate_Thumbnails
+ * @package    Regenerate_Thumbnails
  * @subpackage REST API
  */
 
@@ -38,21 +38,23 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 		parent::tearDown();
 	}
 
-	public function assertResponseStatus( $status, $response ) {
+	private function assertResponseStatus( $status, $response ) {
 		$this->assertEquals( $status, $response->get_status() );
 	}
 
-	public function assertResponseData( $data, $response ) {
-		$response_data = $response->get_data();
-		$tested_data   = array();
-		foreach ( $data as $key => $value ) {
-			if ( isset( $response_data[ $key ] ) ) {
-				$tested_data[ $key ] = $response_data[ $key ];
-			} else {
-				$tested_data[ $key ] = null;
-			}
+	private function assertErrorResponse( $code, $response, $status = null ) {
+		if ( is_a( $response, 'WP_REST_Response' ) ) {
+			$response = $response->as_error();
 		}
-		$this->assertEquals( $data, $tested_data );
+
+		$this->assertInstanceOf( 'WP_Error', $response );
+		$this->assertEquals( $code, $response->get_error_code() );
+
+		if ( null !== $status ) {
+			$data = $response->get_error_data();
+			$this->assertArrayHasKey( 'status', $data );
+			$this->assertEquals( $status, $data['status'] );
+		}
 	}
 
 	public function test_auth_logged_out() {
@@ -61,10 +63,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
-		$this->assertResponseStatus( 403, $response );
-		$this->assertResponseData( array(
-			'code' => 'rest_forbidden',
-		), $response );
+		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
 	}
 
 	public function test_auth_subscriber() {
@@ -73,10 +72,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
-		$this->assertResponseStatus( 403, $response );
-		$this->assertResponseData( array(
-			'code' => 'rest_forbidden',
-		), $response );
+		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
 	}
 
 	public function test_auth_administrator() {
@@ -94,10 +90,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/0' );
 		$response = $this->server->dispatch( $request );
 
-		$this->assertResponseStatus( 404, $response );
-		$this->assertResponseData( array(
-			'code' => 'regenerate_thumbnails_regenerator_attachment_doesnt_exist',
-		), $response );
+		$this->assertErrorResponse( 'regenerate_thumbnails_regenerator_attachment_doesnt_exist', $response, 404 );
 	}
 
 	public function test_not_attachment() {
@@ -108,9 +101,26 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $post_id );
 		$response = $this->server->dispatch( $request );
 
-		$this->assertResponseStatus( 400, $response );
-		$this->assertResponseData( array(
-			'code' => 'regenerate_thumbnails_regenerator_not_attachment',
-		), $response );
+		$this->assertErrorResponse( 'regenerate_thumbnails_regenerator_not_attachment', $response, 400 );
+	}
+
+	public function test_arg_regeneration_args_not_array() {
+		wp_set_current_user( $this->administrator );
+
+		$request = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
+		$request->set_param( 'regeneration_args', 'string' );
+		$response = $this->server->dispatch( $request );
+
+		$this->assertErrorResponse( 'rest_invalid_param', $response, 400 );
+	}
+
+	public function test_arg_update_usages_in_posts_args_not_array() {
+		wp_set_current_user( $this->administrator );
+
+		$request = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
+		$request->set_param( 'update_usages_in_posts_args', 'string' );
+		$response = $this->server->dispatch( $request );
+
+		$this->assertErrorResponse( 'rest_invalid_param', $response, 400 );
 	}
 }

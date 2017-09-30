@@ -35,7 +35,19 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => array( $this, 'regenerate_item' ),
 				'permission_callback' => array( $this, 'regenerate_item_permissions_check' ),
-				'args'                => array(),
+				'args'                => array(
+					'regeneration_args'           => array(
+						'default'           => array(),
+						'validate_callback' => array( $this, 'is_array' ),
+					),
+					'update_usages_in_posts'      => array(
+						'default' => true,
+					),
+					'update_usages_in_posts_args' => array(
+						'default'           => array(),
+						'validate_callback' => array( $this, 'is_array' ),
+					),
+				),
 			),
 		) );
 	}
@@ -47,7 +59,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
-	 * @return WP_Error|WP_REST_Response
+	 * @return true|WP_Error True on success, otherwise a WP_Error object.
 	 */
 	public function regenerate_item( $request ) {
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $request->get_param( 'id' ) );
@@ -56,25 +68,52 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 			return $regenerator;
 		}
 
-		$result = $regenerator->regenerate();
+		$result = $regenerator->regenerate( $request->get_param( 'regeneration_args' ) );
 
 		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
 
-		return new WP_REST_Response( true );
+		if ( $request->get_param( 'update_usages_in_posts' ) ) {
+			$posts_updated = $regenerator->update_usages_in_posts( $request->get_param( 'update_usages_in_posts_args' ) );
+
+			// If wp_update_post() failed for any posts, return that error
+			foreach ( $posts_updated as $post_updated_id => $result ) {
+				if ( is_wp_error( $result ) ) {
+					return $result;
+				}
+			}
+		}
+
+		return true;
 	}
 
 	/**
-	 * Check if a given request has access to regenerate the thumbnails for a given item.
+	 * Check to see if the current user is allowed to use this endpoint.
 	 *
 	 * @since 3.0.0
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 *
-	 * @return bool
+	 * @return bool Whether the current user has permission to regenerate thumbnails.
 	 */
 	public function regenerate_item_permissions_check( $request ) {
 		return current_user_can( RegenerateThumbnails()->capability );
+	}
+
+	/**
+	 * Returns whether a variable is an array or not. This is needed because 3 arguments are
+	 * passed to validation callbacks but is_array() only accepts one argument.
+	 *
+	 * @see https://core.trac.wordpress.org/ticket/34659
+	 *
+	 * @param mixed           $param   The parameter value to validate.
+	 * @param WP_REST_Request $request The REST request.
+	 * @param string          $key     The parameter name.
+	 *
+	 * @return bool Whether the parameter is an array or not.
+	 */
+	public function is_array( $param, $request, $key ) {
+		return is_array( $param );
 	}
 }
