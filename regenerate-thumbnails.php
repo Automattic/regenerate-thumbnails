@@ -327,9 +327,11 @@ class RegenerateThumbnails {
 			<h1><?php esc_html_e( 'Regenerate Thumbnails', 'regenerate-thumbnails' ); ?></h1>
 
 			<div id="regenerate-thumbnails-app">
-				<p><?php esc_html_e( 'Loading…', 'regenerate-thumbnails' ); ?></p>
+				<div class="notice notice-error hide-if-js">
+					<p><strong><?php esc_html_e( 'This tool requires that JavaScript be enabled to work.', 'regenerate-thumbnails' ); ?></strong></p>
+				</div>
 
-				<noscript><p><?php esc_html_e( 'This plugin requires that JavaScript be enabled to work.', 'regenerate-thumbnails' ); ?></p></noscript>
+				<router-view><p class="hide-if-no-js"><?php esc_html_e( 'Loading…', 'regenerate-thumbnails' ); ?></p></router-view>
 			</div>
 		</div>
 

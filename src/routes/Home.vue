@@ -6,7 +6,6 @@
 
 <script>
 	export default {
-		name: 'app',
 		data() {
 			return {
 				restAPINonce        : wpApiSettings.nonce,
@@ -15,7 +14,3 @@
 		}
 	}
 </script>
-
-<style lang="scss">
-
-</style>
