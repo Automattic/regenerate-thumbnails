@@ -96,9 +96,10 @@ class RegenerateThumbnails_Regenerator {
 	 * @since 3.0.0
 	 *
 	 * @param array|string $args {
-	 *     Optional. Array or string of arguments thumbnail regeneration.
+	 *     Optional. Array or string of arguments for thumbnail regeneration.
 	 *
-	 *     @type bool $only_regenerate_missing_thumbnails Skip regenerating existing thumbnail files. Default true.
+	 *     @type bool $only_regenerate_missing_thumbnails  Skip regenerating existing thumbnail files. Default true.
+	 *     @type bool $delete_unregistered_thumbnail_files Delete any thumbnail sizes that are no longer registered. Default false.
 	 * }
 	 *
 	 * @return mixed|WP_Error Metadata for attachment (see wp_generate_attachment_metadata()), or WP_Error on error.
@@ -220,5 +221,138 @@ class RegenerateThumbnails_Regenerator {
 		}
 
 		return $sizes;
+	}
+
+	/**
+	 * Update the post content of any public post types (posts and pages by default)
+	 * that make use of this attachment.
+	 *
+	 * @param array|string $args {
+	 *     Optional. Array or string of arguments for controlling the updating.
+	 *
+	 *     @type array $post_type      The post types to update. Defaults to public post types (posts and pages by default).
+	 *     @type array $post_ids       Specific post IDs to update as opposed to any that uses the attachment.
+	 *     @type int   $posts_per_loop How many posts to query at a time to keep memory usage down. You shouldn't need to modify this.
+	 * }
+	 *
+	 * @return array List of post IDs that were modified. The key is the post ID and the value is either the post ID again or a WP_Error object if wp_update_post() failed.
+	 */
+	public function update_usages_in_posts( $args = array() ) {
+		$args = wp_parse_args( $args, array(
+			'post_type'     => array(),
+			'post_ids'       => array(),
+			'posts_per_loop' => 10,
+		) );
+
+		if ( empty( $args['post_type'] ) ) {
+			$args['post_type'] = array_values( get_post_types( array( 'public' => true ) ) );
+			unset( $args['post_type']['attachment'] );
+		}
+
+		$offset        = 0;
+		$posts_updated = array();
+
+		while ( true ) {
+			$posts = get_posts( array(
+				'numberposts'            => $args['posts_per_loop'],
+				'offset'                 => $offset,
+				'orderby'                => 'ID',
+				'order'                  => 'ASC',
+				'include'                => $args['post_ids'],
+				'post_type'              => $args['post_type'],
+				's'                      => 'wp-image-' . $this->attachment->ID,
+
+				// For faster queries
+				'update_post_meta_cache' => false,
+				'update_post_term_cache' => false,
+			) );
+
+			if ( ! $posts ) {
+				break;
+			}
+
+			$offset += $args['posts_per_loop'];
+
+			foreach ( $posts as $post ) {
+				$content = $post->post_content;
+				$search  = $replace = array();
+
+				// Example: <img src="URL" alt="" width="100" height="75" class="size-thumbnail wp-image-1712" />
+				preg_match_all(
+					'#<img src="[^"]+"([^>]+)? width="[^"]+" height="[^"]+"([^>]+)size-([^"]+) wp-image-' . $this->attachment->ID . '"([^>]+)?/>#i',
+					$content,
+					$matches,
+					PREG_SET_ORDER
+				);
+				if ( $matches ) {
+					foreach ( $matches as $match ) {
+						$thumbnail = image_downsize( $this->attachment->ID, $match[3] );
+
+						if ( ! $thumbnail ) {
+							continue;
+						}
+
+						$search[]  = $match[0];
+						$replace[] = '<img src="' . $thumbnail[0] . '"' . $match[1] . ' width="' . $thumbnail[1] . '" height="' . $thumbnail[2] . '"' . $match[2] . 'size-' . $match[3] . ' wp-image-' . $this->attachment->ID . '"' . $match[4] . '/>';
+					}
+				}
+
+				// Example: <img class="cssclass wp-image-123 size-large" title="img title" src="URL" alt="alt" width="500" height="375" />
+				// I believe this comes from TinyMCE reformatting the HTML
+				preg_match_all(
+					'#<img ([^>]+)wp-image-' . $this->attachment->ID . ' size-([^"]+)"([^>]+)? src="[^"]+"([^>]+)? width="[^"]+" height="[^"]+" />#i',
+					$content,
+					$matches,
+					PREG_SET_ORDER
+				);
+				if ( $matches ) {
+					foreach ( $matches as $match ) {
+						$thumbnail = image_downsize( $this->attachment->ID, $match[2] );
+
+						if ( ! $thumbnail ) {
+							continue;
+						}
+
+						$search[]  = $match[0];
+						$replace[] = '<img ' . $match[1] . 'wp-image-' . $this->attachment->ID . ' size-' . $match[2] . '"' . $match[3] . ' src="' . $thumbnail[0] . '"' . $match[4] . ' width="' . $thumbnail[1] . '" height="' . $thumbnail[2] . '" />';
+					}
+				}
+
+				// Process the <img> tags now
+				$content = str_replace( $search, $replace, $content );
+				$search  = $replace = array();
+
+				// Update the width in any [caption] shortcodes
+				preg_match_all(
+					'#\[caption id="attachment_' . $this->attachment->ID . '"([^\]]+)? width="[^"]+"\]([^\[]+)size-([^" ]+)([^\[]+)\[\/caption\]#i',
+					$content,
+					$matches,
+					PREG_SET_ORDER
+				);
+				if ( $matches ) {
+					foreach ( $matches as $match ) {
+						$thumbnail = image_downsize( $this->attachment->ID, $match[3] );
+
+						if ( ! $thumbnail ) {
+							continue;
+						}
+
+						$search[]  = $match[0];
+						$replace[] = '[caption id="attachment_' . $this->attachment->ID . '"' . $match[1] . ' width="' . $thumbnail[1] . '"]' . $match[2] . 'size-' . $match[3] . $match[4] . '[/caption]';
+					}
+				}
+
+				$content = str_replace( $search, $replace, $content );
+
+				$updated_post_object = (object) array(
+					'ID'           => $post->ID,
+					'post_content' => $content,
+				);
+
+				$posts_updated[ $post->ID ] = wp_update_post( $updated_post_object, true );
+			}
+		}
+
+		return $posts_updated;
 	}
 }

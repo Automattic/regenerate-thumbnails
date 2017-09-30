@@ -73,6 +73,20 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		return self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
 	}
 
+	public function _get_custom_thumbnail_size_callbacks() {
+		return array(
+			'thumbnail_size_w'    => '__return_int_100',
+			'thumbnail_size_h'    => '__return_int_100',
+			'thumbnail_crop'      => '__return_zero',
+			'medium_size_w'       => '__return_int_350',
+			'medium_size_h'       => '__return_int_350',
+			'medium_large_size_w' => '__return_int_500',
+			'medium_large_size_h' => '__return_int_500',
+			'large_size_w'        => '__return_int_1500',
+			'large_size_h'        => '__return_int_1500',
+		);
+	}
+
 	public function _get_filemtimes( $upload_dir, $thumbnails ) {
 		$filemtimes = array();
 
@@ -134,20 +148,8 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			$this->assertEquals( $dims[1], $old_metadata['sizes'][ $size ]['height'] );
 		}
 
-		$custom_thumbnail_size_callbacks = array(
-			'thumbnail_size_w'    => '__return_int_100',
-			'thumbnail_size_h'    => '__return_int_100',
-			'thumbnail_crop'      => '__return_zero',
-			'medium_size_w'       => '__return_int_350',
-			'medium_size_h'       => '__return_int_350',
-			'medium_large_size_w' => '__return_int_500',
-			'medium_large_size_h' => '__return_int_500',
-			'large_size_w'        => '__return_int_1500',
-			'large_size_h'        => '__return_int_1500',
-		);
-
 		// Now change the thumbnail sizes to something other than the defaults
-		foreach ( $custom_thumbnail_size_callbacks as $filter => $function ) {
+		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
 			add_filter( 'pre_option_' . $filter, $function );
 		};
 
@@ -158,7 +160,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$new_metadata = wp_get_attachment_metadata( $attachment_id );
 
 		// Cleanup
-		foreach ( $custom_thumbnail_size_callbacks as $filter => $function ) {
+		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
 			remove_filter( 'pre_option_' . $filter, $function );
 		}
 
@@ -316,6 +318,60 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			$file = $upload_dir . $size_data['file'];
 			$this->assertFileExists( $file );
 			$this->assertEquals( $filemtimes[ $size ], filemtime( $file ) );
+		}
+	}
+
+	public function test_update_usages_in_posts() {
+		$attachment_id = $this->_create_attachment();
+
+		$thumbnail_thumbnail = image_downsize( $attachment_id, 'thumbnail' );
+		$thumbnail_medium    = image_downsize( $attachment_id, 'medium' );
+		$thumbnail_large     = image_downsize( $attachment_id, 'large' );
+
+		$test_contents = array(
+			'<img src="' . esc_attr( $thumbnail_medium[0] ) . '" alt="" width="300" height="169" class="align size-medium wp-image-' . $attachment_id . '" />',
+			'<a href="https://wordpress.org/"><img src="' . esc_attr( $thumbnail_large[0] ) . '" alt="WordPress" width="1024" height="576" class="align size-large wp-image-' . $attachment_id . '" /></a>',
+			'[caption id="attachment_' . $attachment_id . '" align="aligncenter" width="300"]<img src="' . esc_attr( $thumbnail_medium[0] ) . '" alt="" width="300" height="169" class="size-medium wp-image-' . $attachment_id . '" /> This is the caption[/caption]',
+			'<img class="cssclass wp-image-' . $attachment_id . ' size-thumbnail" title="img title" src="' . esc_attr( $thumbnail_thumbnail[0] ) . '" alt="alt" width="150" height="56" />',
+		);
+
+		$post_ids = array();
+		foreach ( $test_contents as $test_content ) {
+			$post_ids[] = self::factory()->post->create( array(
+				'post_content' => $test_content,
+			) );
+		}
+
+		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
+			add_filter( 'pre_option_' . $filter, $function );
+		};
+
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
+		$regenerator->regenerate();
+		$regenerator->update_usages_in_posts();
+
+		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
+			remove_filter( 'pre_option_' . $filter, $function );
+		}
+
+		$thumbnail_thumbnail = image_downsize( $attachment_id, 'thumbnail' );
+		$thumbnail_medium    = image_downsize( $attachment_id, 'medium' );
+		$thumbnail_large     = image_downsize( $attachment_id, 'large' );
+
+		$result_contents = array(
+			'<img src="' . esc_attr( $thumbnail_medium[0] ) . '" alt="" width="350" height="197" class="align size-medium wp-image-' . $attachment_id . '" />',
+			'<a href="https://wordpress.org/"><img src="' . esc_attr( $thumbnail_large[0] ) . '" alt="WordPress" width="1500" height="844" class="align size-large wp-image-' . $attachment_id . '" /></a>',
+			'[caption id="attachment_' . $attachment_id . '" align="aligncenter" width="350"]<img src="' . esc_attr( $thumbnail_medium[0] ) . '" alt="" width="350" height="197" class="size-medium wp-image-' . $attachment_id . '" /> This is the caption[/caption]',
+			'<img class="cssclass wp-image-' . $attachment_id . ' size-thumbnail" title="img title" src="' . esc_attr( $thumbnail_thumbnail[0] ) . '" alt="alt" width="100" height="56" />',
+		);
+
+		$counter = 0;
+		foreach ( $post_ids as $post_id ) {
+			$post = get_post( $post_id );
+
+			$this->assertSame( $result_contents[ $counter ], $post->post_content );
+
+			$counter ++;
 		}
 	}
 }
