@@ -274,7 +274,7 @@ class RegenerateThumbnails {
 				$('select[name^="action"] option:last-child').before('<option value="bulk_regenerate_thumbnails"><?php echo esc_attr( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) ); ?></option>');
 			});
 		</script>
-	<?php
+		<?php
 	}
 
 	/**
@@ -282,11 +282,11 @@ class RegenerateThumbnails {
 	 */
 	public function bulk_action_handler() {
 		if (
-				empty( $_REQUEST['action'] ) ||
-				empty( $_REQUEST['action2'] ) ||
-				( 'bulk_regenerate_thumbnails' != $_REQUEST['action'] && 'bulk_regenerate_thumbnails' != $_REQUEST['action2'] ) ||
-				empty( $_REQUEST['media'] ) ||
-				! is_array( $_REQUEST['media'] )
+			empty( $_REQUEST['action'] ) ||
+			empty( $_REQUEST['action2'] ) ||
+			( 'bulk_regenerate_thumbnails' != $_REQUEST['action'] && 'bulk_regenerate_thumbnails' != $_REQUEST['action2'] ) ||
+			empty( $_REQUEST['media'] ) ||
+			! is_array( $_REQUEST['media'] )
 		) {
 			return;
 		}
