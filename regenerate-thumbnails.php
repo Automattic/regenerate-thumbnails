@@ -106,9 +106,6 @@ class RegenerateThumbnails {
 		// Load the required JavaScript and CSS
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueues' ) );
 
-		// Process the individual image regenerate AJAX requests
-		add_action( 'wp_ajax_regeneratethumbnail', array( $this, 'ajax_process_image' ) );
-
 		// For the bulk action dropdowns
 		add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_regenerate_thumbnails', array( $this, 'bulk_action_handler' ) ); // Top drowndown
@@ -138,6 +135,8 @@ class RegenerateThumbnails {
 	 */
 	public function add_admin_menu() {
 		$this->menu_id = add_management_page( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ), $this->capability, 'regenerate-thumbnails', array( $this, 'regenerate_interface' ) );
+
+		add_action( 'admin_head-' . $this->menu_id, array( $this, 'add_admin_notice_if_resizing_not_supported' ) );
 	}
 
 	/**
@@ -162,14 +161,31 @@ class RegenerateThumbnails {
 			'regenerate-thumbnails',
 			'regenerateThumbnails',
 			array(
-				'data' => array(
-					'resizingSupported' => wp_image_editor_supports( array( 'methods' => array( 'resize' ) ) ),
-				),
-				'i18n' => array(
-					'resizingNotSupported' => __( "Sorry but your server doesn't support image editing which means that WordPress can't create thumbnails. Please ask your host to install the Imagick or GD PHP extensions.", 'regenerate-thumbnails' ),
-				),
+				'data' => array(),
+				'i18n' => array(),
 			)
 		);
+	}
+
+	/**
+	 * If the image editor doesn't support image resizing (thumbnailing), then add an admin notice
+	 * warning the user of this.
+	 */
+	public function add_admin_notice_if_resizing_not_supported() {
+		if ( ! wp_image_editor_supports( array( 'methods' => array( 'resize' ) ) ) ) {
+			add_action( 'admin_notices', array( $this, 'admin_notices_resizing_not_supported' ) );
+		}
+	}
+
+	/**
+	 * Outputs an admin notice stating that image resizing (thumbnailing) is not supported.
+	 */
+	public function admin_notices_resizing_not_supported() {
+		?>
+		<div class="notice notice-error">
+			<p><strong><?php esc_html_e( "This tool won't be able to do anything because your server doesn't support image editing which means that WordPress can't create thumbnail images. Please ask your host to install the Imagick or GD PHP extensions.", 'regenerate-thumbnails' ); ?></strong></p>
+		</div>
+		<?php
 	}
 
 	/**
