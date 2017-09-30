@@ -48,7 +48,7 @@ class RegenerateThumbnails {
 	/**
 	 * The single instance of this plugin.
 	 *
-	 * @see RegenerateThumbnails()
+	 * @see    RegenerateThumbnails()
 	 *
 	 * @access private
 	 * @var RegenerateThumbnails
@@ -156,6 +156,19 @@ class RegenerateThumbnails {
 			array( 'wp-api' ),
 			( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? filemtime( dirname( __FILE__ ) . '/dist/build.js' ) : $this->version,
 			true
+		);
+
+		wp_localize_script(
+			'regenerate-thumbnails',
+			'regenerateThumbnails',
+			array(
+				'data' => array(
+					'resizingSupported' => wp_image_editor_supports( array( 'methods' => array( 'resize' ) ) ),
+				),
+				'i18n' => array(
+					'resizingNotSupported' => __( "Sorry but your server doesn't support image editing which means that WordPress can't create thumbnails. Please ask your host to install the Imagick or GD PHP extensions.", 'regenerate-thumbnails' ),
+				),
+			)
 		);
 	}
 
