@@ -152,7 +152,7 @@ class RegenerateThumbnails {
 		wp_enqueue_script(
 			'regenerate-thumbnails',
 			plugins_url( 'dist/build.js', __FILE__ ),
-			array( 'wp-api' ),
+			array(),
 			( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? filemtime( dirname( __FILE__ ) . '/dist/build.js' ) : $this->version,
 			true
 		);
@@ -161,27 +161,32 @@ class RegenerateThumbnails {
 			'regenerate-thumbnails',
 			'regenerateThumbnails',
 			array(
-				'data' => array(
+				// wp-api is too much and wp-api-request is 4.9+: https://core.trac.wordpress.org/changeset/41206
+				'wpApiSettings' => array(
+					'root'  => esc_url_raw( get_rest_url() ),
+					'nonce' => wp_create_nonce( 'wp_rest' ),
+				),
+				'data'          => array(
 					'thumbnailSizes' => $this->get_thumbnail_sizes(),
 				),
-				'i18n' => array(
+				'i18n'          => array(
 					'Home' => array(
 						'intro1'                        => sprintf(
-							__( "Use this tool to regenerate thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ),
+							__( "Use this tool to regenerate the thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes.", 'regenerate-thumbnails' ),
 							esc_url( admin_url( 'options-media.php' ) )
 						),
 						'intro2'                        => sprintf(
 							__( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ),
 							esc_url( admin_url( 'upload.php?mode=list' ) )
 						),
-						'intro3'                        => __( "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails' ),
 						'thumbnailSizes'                => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
+						'thumbnailSizesText'            => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
 						'thumbnailSizeItem'             => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemCropped'      => __( 'cropped to fit', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemProportional' => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
 						'commandLineInterface'          => __( 'Command Line Interface', 'regenerate-thumbnails' ),
 						'commandLineInterfaceText'      => sprintf(
-							__( 'If you have command line access to your server via SSH, consider using <a href="%1$s">WP-CLI</a> instead of this plugin to regenerate thumbnails. It has <a href="%2$s">a built-in command</a> for generating thumbnails that is significantly faster than this plugin since a separate HTTP request per image is not required.', 'regenerate-thumbnails' ),
+							__( 'If you have command line access to your server via SSH, consider using <a href="%1$s">WP-CLI</a> instead of this plugin to regenerate thumbnails. It has <a href="%2$s">a built-in command</a> for regenerating thumbnails that is significantly faster than this plugin since making HTTP requests via the browser is not required.', 'regenerate-thumbnails' ),
 							'https://wp-cli.org/',
 							'https://developer.wordpress.org/cli/commands/media/regenerate/'
 						),
