@@ -166,8 +166,14 @@ class RegenerateThumbnails {
 				),
 				'i18n' => array(
 					'Home' => array(
-						'intro1'                        => sprintf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), esc_url( admin_url( 'options-media.php' ) ) ),
-						'intro2'                        => sprintf( __( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ), esc_url( admin_url( 'upload.php?mode=list' ) ) ),
+						'intro1'                        => sprintf(
+							__( "Use this tool to regenerate thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ),
+							esc_url( admin_url( 'options-media.php' ) )
+						),
+						'intro2'                        => sprintf(
+							__( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ),
+							esc_url( admin_url( 'upload.php?mode=list' ) )
+						),
 						'intro3'                        => __( "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails' ),
 						'thumbnailSizes'                => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
 						'thumbnailSizeItem'             => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
@@ -183,6 +189,31 @@ class RegenerateThumbnails {
 				),
 			)
 		);
+	}
+
+	/**
+	 * The main Regenerate Thumbnails interface, as displayed at Tools → Regenerate Thumbnails.
+	 */
+	public function regenerate_interface() {
+		if ( ! current_user_can( $this->capability ) ) {
+			wp_die( __( 'Cheatin&#8217; uh?' ) );
+		}
+
+		?>
+
+		<div class="wrap">
+			<h1><?php esc_html_e( 'Regenerate Thumbnails', 'regenerate-thumbnails' ); ?></h1>
+
+			<div id="regenerate-thumbnails-app">
+				<div class="notice notice-error hide-if-js">
+					<p><strong><?php esc_html_e( 'This tool requires that JavaScript be enabled to work.', 'regenerate-thumbnails' ); ?></strong></p>
+				</div>
+
+				<router-view><p class="hide-if-no-js"><?php esc_html_e( 'Loading…', 'regenerate-thumbnails' ); ?></p></router-view>
+			</div>
+		</div>
+
+		<?php
 	}
 
 	/**
@@ -329,31 +360,6 @@ class RegenerateThumbnails {
 
 		wp_safe_redirect( $this->create_page_url( array_map( 'intval', $_REQUEST['media'] ) ) );
 		exit();
-	}
-
-	/**
-	 * The main Regenerate Thumbnails interface, as displayed at Tools → Regenerate Thumbnails.
-	 */
-	public function regenerate_interface() {
-		if ( ! current_user_can( $this->capability ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?' ) );
-		}
-
-		?>
-
-		<div class="wrap">
-			<h1><?php esc_html_e( 'Regenerate Thumbnails', 'regenerate-thumbnails' ); ?></h1>
-
-			<div id="regenerate-thumbnails-app">
-				<div class="notice notice-error hide-if-js">
-					<p><strong><?php esc_html_e( 'This tool requires that JavaScript be enabled to work.', 'regenerate-thumbnails' ); ?></strong></p>
-				</div>
-
-				<router-view><p class="hide-if-no-js"><?php esc_html_e( 'Loading…', 'regenerate-thumbnails' ); ?></p></router-view>
-			</div>
-		</div>
-
-		<?php
 	}
 
 	/**
