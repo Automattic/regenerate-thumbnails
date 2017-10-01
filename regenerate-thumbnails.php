@@ -161,8 +161,26 @@ class RegenerateThumbnails {
 			'regenerate-thumbnails',
 			'regenerateThumbnails',
 			array(
-				'data' => array(),
-				'i18n' => array(),
+				'data' => array(
+					'thumbnailSizes' => $this->get_thumbnail_sizes(),
+				),
+				'i18n' => array(
+					'Home' => array(
+						'intro1'                        => sprintf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), esc_url( admin_url( 'options-media.php' ) ) ),
+						'intro2'                        => sprintf( __( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ), esc_url( admin_url( 'upload.php?mode=list' ) ) ),
+						'intro3'                        => __( "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails' ),
+						'thumbnailSizes'                => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
+						'thumbnailSizeItem'             => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemCropped'      => __( 'cropped to fit', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemProportional' => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
+						'commandLineInterface'          => __( 'Command Line Interface', 'regenerate-thumbnails' ),
+						'commandLineInterfaceText'      => sprintf(
+							__( 'If you have command line access to your server via SSH, consider using <a href="%1$s">WP-CLI</a> instead of this plugin to regenerate thumbnails. It has <a href="%2$s">a built-in command</a> for generating thumbnails that is significantly faster than this plugin since a separate HTTP request per image is not required.', 'regenerate-thumbnails' ),
+							'https://wp-cli.org/',
+							'https://developer.wordpress.org/cli/commands/media/regenerate/'
+						),
+					)
+				),
 			)
 		);
 	}
@@ -339,63 +357,6 @@ class RegenerateThumbnails {
 	}
 
 	/**
-	 * Outputs the introduction on the plugin's page.
-	 *
-	 * The start button is a part of this.
-	 */
-	public function regenerate_interface_introduction() {
-		?>
-		<form method="post">
-			<?php wp_nonce_field( 'regenerate-thumbnails' ); ?>
-
-			<p><?php printf( __( "Use this tool to regenerate thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes. Old thumbnails will be kept to avoid any broken images due to hard-coded URLs.", 'regenerate-thumbnails' ), esc_url( admin_url( 'options-media.php' ) ) ); ?></p>
-
-			<p><?php printf( __( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ), esc_url( admin_url( 'upload.php?mode=list' ) ) ); ?></p>
-
-			<p><?php _e( "Thumbnail regeneration is not reversible, but you can just change your thumbnail dimensions back to the old values and click the button again if you don't like the results.", 'regenerate-thumbnails' ); ?></p>
-
-			<p><?php _e( 'To begin, just press the button below.', 'regenerate-thumbnails' ); ?></p>
-
-			<p><?php submit_button( __( 'Regenerate All Thumbnails', 'regenerate-thumbnails' ), 'primary hide-if-no-js', 'regenerate-thumbnails' ); ?></p>
-
-			<noscript><p><em><?php _e( 'You must enable Javascript in order to proceed!', 'regenerate-thumbnails' ) ?></em></p></noscript>
-
-		</form>
-		<?php
-
-
-		echo '<h2 style="margin-top:50px">' . __( 'Thumbnail Sizes', 'regenerate-thumbnails' ) . "</h2>\n";
-
-		echo '<p>' . __( 'The following thumbnail sizes will be generated, overwriting any existing thumbnails of the same size:', 'regenerate-thumbnails' ) . "</p>\n";
-
-		echo "<ul>\n";
-		foreach ( $this->get_thumbnail_sizes() as $thumbnail_size => $thumbnail_details ) {
-			echo '<li>';
-			printf(
-			/* translators: This is a thumbnail size description, such as "<strong>post-thumbnail:</strong> 825&#215;510 (Cropped)", &#215; being the fancy "x" */
-				__( '<strong>%1$s:</strong> %2$d&#215;%3$d pixels (%4$s)', 'regenerate-thumbnails' ),
-				esc_html( $thumbnail_size ),
-				(int) $thumbnail_details['width'],
-				(int) $thumbnail_details['height'],
-				( $thumbnail_details['crop'] ) ? __( 'cropped to fit', 'regenerate-thumbnails' ) : __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' )
-			);
-			echo "</li>\n";
-		}
-		echo "</ul>\n";
-
-
-		echo '<h2 style="margin-top:50px">' . __( 'Command Line Interface', 'regenerate-thumbnails' ) . "</h2>\n";
-
-		echo '<p>';
-		printf(
-			__( 'If you have command line access to your server via SSH, consider using <a href="%1$s">WP-CLI</a> instead of this plugin to regenerate thumbmails. It has <a href="%2$s">a built-in command</a> for generating thumbnails that is significantly faster than this plugin since a separate HTTP request per image is not required.', 'regenerate-thumbnails' ),
-			'https://wp-cli.org/',
-			'https://developer.wordpress.org/cli/commands/media/regenerate/'
-		);
-		echo "</p>\n";
-	}
-
-	/**
 	 * Returns an array of all thumbnail sizes, including their label, size, and crop setting.
 	 *
 	 * @return array An array, with the thumbnail label as the key and an array of thumbnail properties (width, height, crop).
@@ -406,7 +367,8 @@ class RegenerateThumbnails {
 		$thumbnail_sizes = array();
 
 		foreach ( get_intermediate_image_sizes() as $size ) {
-			if ( in_array( $size, array( 'thumbnail', 'medium', 'large' ) ) ) {
+			$thumbnail_sizes[ $size ]['label'] = $size;
+			if ( in_array( $size, array( 'thumbnail', 'medium', 'medium_large', 'large' ) ) ) {
 				$thumbnail_sizes[ $size ]['width']  = get_option( $size . '_size_w' );
 				$thumbnail_sizes[ $size ]['height'] = get_option( $size . '_size_h' );
 				$thumbnail_sizes[ $size ]['crop']   = ( 'thumbnail' == $size ) ? get_option( 'thumbnail_crop' ) : false;
