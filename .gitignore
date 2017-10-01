@@ -2,5 +2,6 @@
 /.svn/
 /dist/
 /node_modules/
-/vendor/
 /npm-debug.log
+/tests/rest-api.http
+/vendor/
