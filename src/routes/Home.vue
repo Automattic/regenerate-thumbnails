@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<p><em>DEBUG: WordPress REST API nonce is <code>{{ restAPINonce }}</code>.</em></p>
+		<p><em>DEBUG: WordPress REST API nonce is <code>{{ regenerateThumbnails.wpApiSettings.nonce }}</code>.</em></p>
 
 		<p v-html="regenerateThumbnails.i18n.Home.intro1"></p>
 		<p v-html="regenerateThumbnails.i18n.Home.intro2"></p>
@@ -37,7 +37,6 @@
 
 	export default {
 		data      : () => ({
-			restAPINonce        : regenerateThumbnails.wpApiSettings.nonce,
 			regenerateThumbnails: regenerateThumbnails,
 			posts               : [],
 		}),
