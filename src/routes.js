@@ -1,8 +1,17 @@
-import Home from './routes/Home.vue';
+import Main from './components/Main.vue';
+import Regenerate from './components/Regenerate.vue';
 
 export default [
 	{
 		path     : '/',
-		component: Home,
+		component: Main,
 	},
+	{
+		path     : '/regenerate/:id',
+		component: Regenerate,
+	},
+	{
+		path    : '*',
+		redirect: '/',
+	}
 ];

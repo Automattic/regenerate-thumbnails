@@ -1,7 +1,5 @@
 <template>
 	<div>
-		<p><em>DEBUG: WordPress REST API nonce is <code>{{ regenerateThumbnails.wpApiSettings.nonce }}</code>.</em></p>
-
 		<p v-html="regenerateThumbnails.i18n.Home.intro1"></p>
 		<p v-html="regenerateThumbnails.i18n.Home.intro2"></p>
 
@@ -11,11 +9,11 @@
 			<li
 				is="thumbnail-size"
 				v-for="(size, label) in regenerateThumbnails.data.thumbnailSizes"
-				v-bind:key="label"
-				v-bind:size="size"
-				v-bind:text="regenerateThumbnails.i18n.Home.thumbnailSizeItem"
-				v-bind:textCropped="regenerateThumbnails.i18n.Home.thumbnailSizeItemCropped"
-				v-bind:textProportional="regenerateThumbnails.i18n.Home.thumbnailSizeItemProportional"
+				:key="label"
+				:size="size"
+				:text="regenerateThumbnails.i18n.Home.thumbnailSizeItem"
+				:textCropped="regenerateThumbnails.i18n.Home.thumbnailSizeItemCropped"
+				:textProportional="regenerateThumbnails.i18n.Home.thumbnailSizeItemProportional"
 			></li>
 		</ul>
 
@@ -28,6 +26,8 @@
 				{{ post.title.rendered }}
 			</li>
 		</ul>
+
+		<p><em>DEBUG: WordPress REST API nonce is <code>{{ regenerateThumbnails.wpApiSettings.nonce }}</code>.</em></p>
 	</div>
 </template>
 
@@ -54,7 +54,3 @@
 		},
 	}
 </script>
-
-<style lang="scss">
-
-</style>

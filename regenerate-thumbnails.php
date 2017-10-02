@@ -180,7 +180,7 @@ class RegenerateThumbnails {
 							esc_url( admin_url( 'upload.php?mode=list' ) )
 						),
 						'thumbnailSizes'                => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
-						'thumbnailSizesText'            => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
+						'thumbnailSizesDescription'     => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
 						'thumbnailSizeItem'             => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemCropped'      => __( 'cropped to fit', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemProportional' => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
