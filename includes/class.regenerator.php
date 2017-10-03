@@ -429,8 +429,6 @@ class RegenerateThumbnails_Regenerator {
 
 		$metadata         = wp_get_attachment_metadata( $this->attachment->ID );
 		$registered_sizes = RegenerateThumbnails()->get_thumbnail_sizes();
-		$wp_upload_dir    = dirname( $this->fullsizepath ) . DIRECTORY_SEPARATOR;
-
 		foreach ( $registered_sizes as $size ) {
 			$filename = $this->get_thumbnail_filename( $editor, $metadata['width'], $metadata['height'], $size['width'], $size['height'], $size['crop'] );
 
@@ -438,6 +436,8 @@ class RegenerateThumbnails_Regenerator {
 
 			$response['registered_sizes'][] = $size;
 		}
+
+		$wp_upload_dir = dirname( $this->fullsizepath ) . DIRECTORY_SEPARATOR;
 
 		$response['unregistered_sizes'] = array();
 		foreach ( $metadata['sizes'] as $label => $size ) {
@@ -448,9 +448,9 @@ class RegenerateThumbnails_Regenerator {
 			}
 
 			$response['unregistered_sizes'][] = array(
-				'label'      => $label,
-				'width'      => $size['width'],
-				'height'     => $size['height'],
+				'label'  => $label,
+				'width'  => $size['width'],
+				'height' => $size['height'],
 				'fileexists' => file_exists( $wp_upload_dir . $size['file'] ),
 			);
 		}
