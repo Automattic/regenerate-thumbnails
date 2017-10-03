@@ -28,3 +28,50 @@ If you have command line access to your server, I highly recommend using [WP-CLI
 I personally use Photon on my own website.
 
 *Disclaimer: I work for Automattic but I would recommend Photon even if I didn't.*
+
+## Building The Plugin
+
+The latest release can be [downloaded from WordPress.org](https://wordpress.org/plugins/regenerate-thumbnails/), but if you wish to build your own development version, here's how:
+
+1. Make sure you have [Node.js](https://nodejs.org/) installed.
+
+2. Clone this repository inside your `plugins` directory:
+	```
+	$ git clone https://github.com/Viper007Bond/regenerate-thumbnails.git
+	$ cd regenerate-thumbnails
+	```
+
+3. Install [yarn](https://www.npmjs.com/package/yarn) package:
+	```
+	npm install -g yarn
+	```
+
+4. Install the other dependencies:
+	```
+	yarn
+	```
+
+5. Build the plugin's JavaScript file in production mode:
+	```
+	yarn build
+	```
+
+6. Activate the plugin and visit Tools → Regenerate Thumbnails.
+
+### Building The JavaScript File In Development Mode
+
+The development build will create a build without minifying or deduping code and will enable Vue.js's development mode as well.
+
+```
+yarn dev
+```
+
+Alternatively if you want to automatically rebuild the file any time one of the source files changes, use the `watch` command:
+
+```
+yarn watch
+```
+
+## Unit Tests
+
+To run the [PHPUnit](https://phpunit.de/) unit tests, first run the `install-wp-tests.sh` script from the `bin` directory. Then simply run `phpunit` from the plugin's root directory.
