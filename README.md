@@ -31,7 +31,7 @@ I personally use Photon on my own website.
 
 ## Building The Plugin
 
-The latest release can be [downloaded from WordPress.org](https://wordpress.org/plugins/regenerate-thumbnails/), but if you wish to build your own development version, here's how:
+The latest release can be [downloaded from WordPress.org](https://wordpress.org/plugins/regenerate-thumbnails/), but if you wish to build your own copy, here's how:
 
 1. Make sure you have [Node.js](https://nodejs.org/) installed.
 
