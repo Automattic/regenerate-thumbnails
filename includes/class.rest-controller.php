@@ -16,25 +16,16 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	public $namespace = 'regenerate-thumbnails/v1';
 
 	/**
-	 * The base prefix for the routes that this class adds.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @var string
-	 */
-	public $rest_base = 'regenerate';
-
-	/**
 	 * Register the new routes and endpoints.
 	 *
 	 * @since 3.0.0
 	 */
 	public function register_routes() {
-		register_rest_route( $this->namespace, '/' . $this->rest_base . '/(?P<id>[\d]+)', array(
+		register_rest_route( $this->namespace, '/regenerate/(?P<id>[\d]+)', array(
 			array(
 				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => array( $this, 'regenerate_item' ),
-				'permission_callback' => array( $this, 'regenerate_item_permissions_check' ),
+				'permission_callback' => array( $this, 'permissions_check' ),
 				'args'                => array(
 					'regeneration_args'           => array(
 						'default'           => array(),
@@ -48,6 +39,14 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 						'validate_callback' => array( $this, 'is_array' ),
 					),
 				),
+			),
+		) );
+
+		register_rest_route( $this->namespace, '/attachmentinfo/(?P<id>[\d]+)', array(
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'attachment_info' ),
+				'permission_callback' => array( $this, 'permissions_check' ),
 			),
 		) );
 	}
@@ -89,6 +88,28 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	}
 
 	/**
+	 * Return a bunch of information about the current attachment for use in the UI
+	 * including details about the thumbnails.
+	 *
+	 * @todo Unit tests
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return array|WP_Error The data array or a WP_Error object on error.
+	 */
+	public function attachment_info( $request ) {
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $request->get_param( 'id' ) );
+
+		if ( is_wp_error( $regenerator ) ) {
+			return $regenerator;
+		}
+
+		return $regenerator->get_attachment_info();
+	}
+
+	/**
 	 * Check to see if the current user is allowed to use this endpoint.
 	 *
 	 * @since 3.0.0
@@ -97,7 +118,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	 *
 	 * @return bool Whether the current user has permission to regenerate thumbnails.
 	 */
-	public function regenerate_item_permissions_check( $request ) {
+	public function permissions_check( $request ) {
 		return current_user_can( RegenerateThumbnails()->capability );
 	}
 

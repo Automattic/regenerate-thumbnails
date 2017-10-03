@@ -374,4 +374,102 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			$counter ++;
 		}
 	}
+
+	public function test_get_current_thumbnail_statuses() {
+		$attachment_id = $this->_create_attachment();
+		$attachment    = get_post( $attachment_id );
+
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
+		$statuses    = $regenerator->get_attachment_info();
+
+		$this->assertSame( $statuses, array(
+			'name'               => $attachment->post_title,
+			'fullsizeurl'        => wp_get_attachment_url( $attachment_id ),
+			'registered_sizes'   => array(
+				array(
+					'label'      => 'thumbnail',
+					'width'      => 150,
+					'height'     => 150,
+					'crop'       => true,
+					'fileexists' => true,
+				),
+				array(
+					'label'      => 'medium',
+					'width'      => 300,
+					'height'     => 300,
+					'crop'       => false,
+					'fileexists' => true,
+				),
+				array(
+					'label'      => 'medium_large',
+					'width'      => 768,
+					'height'     => 0,
+					'crop'       => false,
+					'fileexists' => true,
+				),
+				array(
+					'label'      => 'large',
+					'width'      => 1024,
+					'height'     => 1024,
+					'crop'       => false,
+					'fileexists' => true,
+				),
+			),
+			'unregistered_sizes' => array(),
+		) );
+	}
+
+	public function test_get_current_thumbnail_statuses_with_unregistered_size() {
+		add_image_size( 'regenerate-thumbnails-test', 500, 500 );
+		$attachment_id = $this->_create_attachment();
+		remove_image_size( 'regenerate-thumbnails-test' );
+
+		$attachment = get_post( $attachment_id );
+
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
+		$statuses    = $regenerator->get_attachment_info();
+
+		$this->assertSame( $statuses, array(
+			'name'               => $attachment->post_title,
+			'fullsizeurl'        => wp_get_attachment_url( $attachment_id ),
+			'registered_sizes'   => array(
+				array(
+					'label'      => 'thumbnail',
+					'width'      => 150,
+					'height'     => 150,
+					'crop'       => true,
+					'fileexists' => true,
+				),
+				array(
+					'label'      => 'medium',
+					'width'      => 300,
+					'height'     => 300,
+					'crop'       => false,
+					'fileexists' => true,
+				),
+				array(
+					'label'      => 'medium_large',
+					'width'      => 768,
+					'height'     => 0,
+					'crop'       => false,
+					'fileexists' => true,
+				),
+				array(
+					'label'      => 'large',
+					'width'      => 1024,
+					'height'     => 1024,
+					'crop'       => false,
+					'fileexists' => true,
+				),
+			),
+			'unregistered_sizes' => array(
+				array(
+					'label'      => 'regenerate-thumbnails-test',
+					'width'      => 500,
+					'height'     => 281,
+					'fileexists' => true,
+				),
+			),
+		) );
+	}
 }

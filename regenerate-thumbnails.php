@@ -243,17 +243,6 @@ class RegenerateThumbnails {
 	}
 
 	/**
-	 * Creates a nonce for a given set of image IDs.
-	 *
-	 * @param array $ids An array of attachment IDs to create the nonce for.
-	 *
-	 * @return string A nonce name.
-	 */
-	public function create_nonce_name( $ids ) {
-		return 'regenerate-thumbnails|' . implode( ',', $ids );
-	}
-
-	/**
 	 * Creates a nonced URL to the plugin's admin page for a given set of attachment IDs.
 	 *
 	 * @param array $ids An array of attachment IDs that should be regenerated.
@@ -261,17 +250,7 @@ class RegenerateThumbnails {
 	 * @return string The nonced URL to the admin page.
 	 */
 	public function create_page_url( $ids ) {
-		$url_args = array(
-			'page'     => 'regenerate-thumbnails',
-			'goback'   => 1,
-			'ids'      => implode( ',', $ids ),
-			'_wpnonce' => wp_create_nonce( $this->create_nonce_name( $ids ) ), // Can't use wp_nonce_url() as it escapes HTML entities
-		);
-
-		// https://core.trac.wordpress.org/ticket/17923
-		$url_args = array_map( 'rawurlencode', $url_args );
-
-		return add_query_arg( $url_args, admin_url( 'tools.php' ) );
+		return add_query_arg( 'page', 'regenerate-thumbnails', admin_url( 'tools.php' ) ) . '#/regenerate/' . implode( ',', $ids );
 	}
 
 	/**
@@ -283,7 +262,7 @@ class RegenerateThumbnails {
 	 * @return array The new list of actions.
 	 */
 	public function add_regenerate_link_to_media_list_view( $actions, $post ) {
-		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) ) {
+		if ( ! wp_attachment_is_image( $post ) || ! current_user_can( $this->capability ) ) {
 			return $actions;
 		}
 
@@ -298,7 +277,7 @@ class RegenerateThumbnails {
 	public function add_button_to_media_edit_page() {
 		global $post;
 
-		if ( 'image/' != substr( $post->post_mime_type, 0, 6 ) || ! current_user_can( $this->capability ) ) {
+		if ( ! wp_attachment_is_image( $post ) || ! current_user_can( $this->capability ) ) {
 			return;
 		}
 
@@ -382,7 +361,7 @@ class RegenerateThumbnails {
 			if ( in_array( $size, array( 'thumbnail', 'medium', 'medium_large', 'large' ) ) ) {
 				$thumbnail_sizes[ $size ]['width']  = get_option( $size . '_size_w' );
 				$thumbnail_sizes[ $size ]['height'] = get_option( $size . '_size_h' );
-				$thumbnail_sizes[ $size ]['crop']   = ( 'thumbnail' == $size ) ? get_option( 'thumbnail_crop' ) : false;
+				$thumbnail_sizes[ $size ]['crop']   = ( 'thumbnail' == $size ) ? (bool) get_option( 'thumbnail_crop' ) : false;
 			} elseif ( ! empty( $_wp_additional_image_sizes ) && ! empty( $_wp_additional_image_sizes[ $size ] ) ) {
 				$thumbnail_sizes[ $size ]['width']  = $_wp_additional_image_sizes[ $size ]['width'];
 				$thumbnail_sizes[ $size ]['height'] = $_wp_additional_image_sizes[ $size ]['height'];

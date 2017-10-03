@@ -1,5 +1,5 @@
-import Main from './components/Main.vue';
-import Regenerate from './components/Regenerate.vue';
+import Main from './routes/Main.vue';
+import RegenerateSingle from './routes/RegenerateSingle.vue';
 
 export default [
 	{
@@ -8,7 +8,7 @@ export default [
 	},
 	{
 		path     : '/regenerate/:id',
-		component: Regenerate,
+		component: RegenerateSingle,
 	},
 	{
 		path    : '*',
