@@ -170,27 +170,36 @@ class RegenerateThumbnails {
 					'thumbnailSizes' => $this->get_thumbnail_sizes(),
 				),
 				'i18n'          => array(
-					'Home' => array(
-						'intro1'                        => sprintf(
-							__( "Use this tool to regenerate the thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes.", 'regenerate-thumbnails' ),
-							esc_url( admin_url( 'options-media.php' ) )
-						),
-						'intro2'                        => sprintf(
-							__( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ),
-							esc_url( admin_url( 'upload.php?mode=list' ) )
-						),
-						'thumbnailSizes'                => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
-						'thumbnailSizesDescription'     => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
+					'common'           => array(
 						'thumbnailSizeItem'             => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemCropped'      => __( 'cropped to fit', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemProportional' => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
-						'commandLineInterface'          => __( 'Command Line Interface', 'regenerate-thumbnails' ),
-						'commandLineInterfaceText'      => sprintf(
+					),
+					'Home'             => array(
+						'intro1'                    => sprintf(
+							__( "Use this tool to regenerate the thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes.", 'regenerate-thumbnails' ),
+							esc_url( admin_url( 'options-media.php' ) )
+						),
+						'intro2'                    => sprintf(
+							__( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ),
+							esc_url( admin_url( 'upload.php?mode=list' ) )
+						),
+						'thumbnailSizes'            => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
+						'thumbnailSizesDescription' => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
+						'commandLineInterface'      => __( 'Command Line Interface', 'regenerate-thumbnails' ),
+						'commandLineInterfaceText'  => sprintf(
 							__( 'If you have command line access to your server via SSH, consider using <a href="%1$s">WP-CLI</a> instead of this plugin to regenerate thumbnails. It has <a href="%2$s">a built-in command</a> for regenerating thumbnails that is significantly faster than this plugin since making HTTP requests via the browser is not required.', 'regenerate-thumbnails' ),
 							'https://wp-cli.org/',
 							'https://developer.wordpress.org/cli/commands/media/regenerate/'
 						),
-					)
+					),
+					'RegenerateSingle' => array(
+						'error'             => __( '<strong>ERROR:</strong> {error}', 'regenerate-thumbnails' ),
+						'preview'           => __( 'Preview', 'regenerate-thumbnails' ),
+						'registeredSizes'   => __( 'These are the currently registered thumbnail sizes and the statuses for this attachment:', 'regenerate-thumbnails' ),
+						'unregisteredSizes' => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. They can probably be safely deleted.', 'regenerate-thumbnails' ),
+						'restAPIError'      => __( 'There was an error fetching about this attachment via the WordPress REST API. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
+					),
 				),
 			)
 		);

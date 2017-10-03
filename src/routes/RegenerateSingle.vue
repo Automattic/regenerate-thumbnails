@@ -1,7 +1,7 @@
 <template>
 	<div v-if="dataLoaded">
 		<div v-if="attachmentInfo.error">
-			<p><strong>ERROR:</strong> <span v-html="attachmentInfo.error"></span></p>
+			<p v-html="errorText"></p>
 		</div>
 		<div v-else>
 			<h2 class="title">{{ attachmentInfo.name }}</h2>
@@ -10,49 +10,51 @@
 				v-if="attachmentInfo.fullsizeurl"
 				:src="attachmentInfo.fullsizeurl"
 				class="image-preview"
-				alt="Preview"
+				:alt="regenerateThumbnails.i18n.RegenerateSingle.preview"
 			/>
 
-			<p>Thumbnail status for currently registered sizes:</p>
+			<p>{{ regenerateThumbnails.i18n.RegenerateSingle.registeredSizes }}</p>
 			<ul>
 				<li
 					is="thumbnail-status"
 					v-for="size in attachmentInfo.registered_sizes"
 					v-bind:key="size.label"
 					v-bind:size="size"
+					v-bind:i18n="regenerateThumbnails.i18n"
 				></li>
 			</ul>
 
 			<div v-if="attachmentInfo.unregistered_sizes.length">
-				<p>The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. They can probably be safely deleted.</p>
+				<p>{{ regenerateThumbnails.i18n.RegenerateSingle.unregisteredSizes }}</p>
 				<ul>
 					<li
 						is="thumbnail-status"
 						v-for="size in attachmentInfo.unregistered_sizes"
 						v-bind:key="size.label"
 						v-bind:size="size"
+						v-bind:i18n="regenerateThumbnails.i18n"
 					></li>
 				</ul>
 			</div>
 		</div>
 	</div>
 
-	<div v-else-if="errorMessage">
-		<p>There was an error fetching about this attachment via the WordPress REST API. The error was: <em>{{ errorMessage }}</em></p>
+	<div v-else-if="restAPIError">
+		<p v-html="restAPIError"></p>
 	</div>
 </template>
 
 <script>
+	require('../helpers/formatUnicorn');
 	import {WPRESTAPI} from '../helpers/wprestapi';
 	import ThumbnailStatus from "../components/ThumbnailStatus.vue";
 
 	export default {
-		components: {ThumbnailStatus},
 		data      : () => ({
 			regenerateThumbnails: regenerateThumbnails,
 			dataLoaded          : false,
 			attachmentInfo      : {},
-			errorMessage        : false,
+			restAPIError        : false,
 		}),
 		created() {
 			WPRESTAPI.get('regenerate-thumbnails/v1/attachmentinfo/' + this.$route.params.id)
@@ -61,9 +63,17 @@
 					this.dataLoaded = true;
 				})
 				.catch(error => {
-					this.errorMessage = error.response.data.message;
+					this.restAPIError = this.regenerateThumbnails.i18n.RegenerateSingle.restAPIError.formatUnicorn(error.response.data);
 					console.log(error);
 				});
+		},
+		computed  : {
+			errorText: function () {
+				return this.regenerateThumbnails.i18n.RegenerateSingle.error.formatUnicorn(this.attachmentInfo);
+			}
+		},
+		components: {
+			ThumbnailStatus
 		},
 	}
 </script>

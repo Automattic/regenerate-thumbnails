@@ -11,9 +11,9 @@
 				v-for="(size, label) in regenerateThumbnails.data.thumbnailSizes"
 				:key="label"
 				:size="size"
-				:text="regenerateThumbnails.i18n.Home.thumbnailSizeItem"
-				:textCropped="regenerateThumbnails.i18n.Home.thumbnailSizeItemCropped"
-				:textProportional="regenerateThumbnails.i18n.Home.thumbnailSizeItemProportional"
+				:text="regenerateThumbnails.i18n.common.thumbnailSizeItem"
+				:textCropped="regenerateThumbnails.i18n.common.thumbnailSizeItemCropped"
+				:textProportional="regenerateThumbnails.i18n.common.thumbnailSizeItemProportional"
 			></li>
 		</ul>
 
