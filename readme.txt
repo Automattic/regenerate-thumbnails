@@ -4,6 +4,7 @@ Donate link: http://www.viper007bond.com/donate/
 Tags: thumbnail, thumbnails
 Requires at least: 3.2
 Tested up to: 4.9
+Requires PHP: 5.2.4
 Stable tag: trunk
 
 Allows you to regenerate your thumbnails after changing the thumbnail sizes.
