@@ -3,6 +3,7 @@ Contributors: Viper007Bond
 Tags: thumbnail, thumbnails
 Requires at least: 4.7
 Tested up to: 4.9
+Requires PHP: 5.2.4
 Stable tag: trunk
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
