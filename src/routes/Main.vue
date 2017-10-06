@@ -20,13 +20,6 @@
 		<h2 class="title">{{ regenerateThumbnails.i18n.Home.commandLineInterface }}</h2>
 		<p v-html="regenerateThumbnails.i18n.Home.commandLineInterfaceText"></p>
 
-		<h2 class="title">AJAX Test</h2>
-		<ul v-if="posts && posts.length">
-			<li v-for="post in posts" :key="post.id">
-				{{ post.title.rendered }}
-			</li>
-		</ul>
-
 		<p><em>DEBUG: WordPress REST API nonce is <code>{{ regenerateThumbnails.wpApiSettings.nonce }}</code>.</em></p>
 	</div>
 </template>
@@ -40,15 +33,6 @@
 			regenerateThumbnails: regenerateThumbnails,
 			posts               : [],
 		}),
-		created() {
-			WPRESTAPI.get('wp/v2/posts')
-				.then(response => {
-					this.posts = response.data
-				})
-				.catch(error => {
-					console.log(error)
-				});
-		},
 		components: {
 			ThumbnailSize,
 		},
