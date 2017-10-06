@@ -6,6 +6,8 @@
 		<div v-else>
 			<h2 class="title">{{ attachmentInfo.name }}</h2>
 
+			<p><code>{{ attachmentInfo.relative_path }}</code></p>
+
 			<img
 				v-if="attachmentInfo.fullsizeurl"
 				:src="attachmentInfo.fullsizeurl"
@@ -82,5 +84,17 @@
 	.image-preview {
 		max-width: 500px;
 		max-height: 200px;
+	}
+
+	li {
+		margin-left: 25px;
+	}
+
+	li.exists {
+		list-style: url('images/yes.png');
+	}
+
+	li.notexists {
+		list-style: url('images/no.png');
 	}
 </style>

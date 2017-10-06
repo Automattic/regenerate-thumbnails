@@ -171,9 +171,10 @@ class RegenerateThumbnails {
 				),
 				'i18n'          => array(
 					'common'           => array(
-						'thumbnailSizeItem'             => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemCropped'      => __( 'cropped to fit', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemProportional' => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemWithCropMethod'    => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemWithoutCropMethod' => __( '<strong>{label}:</strong> {width}&#215;{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemIsCropped'         => __( 'cropped to fit', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemIsProportional'    => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
 					),
 					'Home'             => array(
 						'intro1'                    => sprintf(
@@ -196,8 +197,8 @@ class RegenerateThumbnails {
 					'RegenerateSingle' => array(
 						'error'             => __( '<strong>ERROR:</strong> {error}', 'regenerate-thumbnails' ),
 						'preview'           => __( 'Preview', 'regenerate-thumbnails' ),
-						'registeredSizes'   => __( 'These are the currently registered thumbnail sizes and the statuses for this attachment:', 'regenerate-thumbnails' ),
-						'unregisteredSizes' => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. They can probably be safely deleted.', 'regenerate-thumbnails' ),
+						'registeredSizes'   => __( 'These are the currently registered thumbnail sizes, whether they exist for this attachment, and their filenames:', 'regenerate-thumbnails' ),
+						'unregisteredSizes' => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
 						'restAPIError'      => __( 'There was an error fetching about this attachment via the WordPress REST API. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
 					),
 				),

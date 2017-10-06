@@ -423,35 +423,52 @@ class RegenerateThumbnails_Regenerator {
 		}
 
 		$response = array(
-			'name'        => $this->attachment->post_title,
-			'fullsizeurl' => wp_get_attachment_url( $this->attachment->ID ), // We can only guarantee that the fullsize image file exists
+			'name'               => $this->attachment->post_title,
+			'fullsizeurl'        => wp_get_attachment_url( $this->attachment->ID ), // We can only guarantee that the fullsize image file exists
+			'relative_path'      => _wp_get_attachment_relative_path( $this->fullsizepath ) . DIRECTORY_SEPARATOR . basename( $this->fullsizepath ),
+			'registered_sizes'   => array(),
+			'unregistered_sizes' => array(),
 		);
 
-		$metadata         = wp_get_attachment_metadata( $this->attachment->ID );
+		$metadata = wp_get_attachment_metadata( $this->attachment->ID );
+
+		// Check the status of all currently registered sizes
 		$registered_sizes = RegenerateThumbnails()->get_thumbnail_sizes();
 		foreach ( $registered_sizes as $size ) {
-			$filename = $this->get_thumbnail_filename( $editor, $metadata['width'], $metadata['height'], $size['width'], $size['height'], $size['crop'] );
-
-			$size['fileexists'] = file_exists( $filename );
+			$file               = $this->get_thumbnail_filename( $editor, $metadata['width'], $metadata['height'], $size['width'], $size['height'], $size['crop'] );
+			$size['filename']   = basename( $file );
+			$size['fileexists'] = file_exists( $file );
 
 			$response['registered_sizes'][] = $size;
 		}
 
 		$wp_upload_dir = dirname( $this->fullsizepath ) . DIRECTORY_SEPARATOR;
 
-		$response['unregistered_sizes'] = array();
+		// Look at the attachment metadata and see if we have any extra files from sizes that are no longer registered
 		foreach ( $metadata['sizes'] as $label => $size ) {
-			// @todo metadata contains old sizes and old files, but same names. gotta list those.
-
-			if ( ! empty( $registered_sizes[ $label ] ) ) {
+			if ( ! file_exists( $wp_upload_dir . $size['file'] ) ) {
 				continue;
 			}
 
+			// An unregistered size could match a registered size's dimensions. Ignore these.
+			// @todo: check to see if we'd be wrongly deleting these in the regeneration method
+			foreach ( $response['registered_sizes'] as $registered_size ) {
+				if ( $size['file'] == $registered_size['filename'] ) {
+					continue 2;
+				}
+			}
+
+			if ( ! empty( $registered_sizes[ $label ] ) ) {
+				/* translators: Used for listing old sizes of currently registered thumbnails */
+				$label = sprintf( __( '%s (old)', 'regenerate-thumbnails' ), $label );
+			}
+
 			$response['unregistered_sizes'][] = array(
-				'label'  => $label,
-				'width'  => $size['width'],
-				'height' => $size['height'],
-				'fileexists' => file_exists( $wp_upload_dir . $size['file'] ),
+				'label'      => $label,
+				'width'      => $size['width'],
+				'height'     => $size['height'],
+				'filename'   => $size['file'],
+				'fileexists' => true,
 			);
 		}
 

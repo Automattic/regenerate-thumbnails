@@ -1,9 +1,5 @@
 <template>
-	<li>
-		<img v-if="size.fileexists" src="images/yes.png" width="16" height="16" />
-		<img v-else src="images/no.png" width="16" height="16" />
-		<span v-html="thumbnailText"></span>
-	</li>
+	<li v-bind:class="[size.fileexists ? 'exists' : 'notexists']" v-html="thumbnailText"></li>
 </template>
 
 <script>
@@ -16,9 +12,13 @@
 		],
 		computed: {
 			thumbnailText: function () {
-				this.size.cropMethod = (this.size.crop) ? this.i18n.common.thumbnailSizeItemCropped : this.i18n.common.thumbnailSizeItemProportional;
+				if (typeof this.size.crop !== 'undefined') {
+					this.size.cropMethod = (this.size.crop) ? this.i18n.common.thumbnailSizeItemIsCropped : this.i18n.common.thumbnailSizeItemIsProportional;
 
-				return this.i18n.common.thumbnailSizeItem.formatUnicorn(this.size);
+					return this.i18n.common.thumbnailSizeItemWithCropMethod.formatUnicorn(this.size);
+				} else {
+					return this.i18n.common.thumbnailSizeItemWithoutCropMethod.formatUnicorn(this.size);
+				}
 			}
 		},
 	}
