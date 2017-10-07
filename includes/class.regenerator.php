@@ -437,9 +437,18 @@ class RegenerateThumbnails_Regenerator {
 		// Check the status of all currently registered sizes
 		$registered_sizes = RegenerateThumbnails()->get_thumbnail_sizes();
 		foreach ( $registered_sizes as $size ) {
-			$file               = $this->get_thumbnail_filename( $editor, $metadata['width'], $metadata['height'], $size['width'], $size['height'], $size['crop'] );
-			$size['filename']   = basename( $file );
-			$size['fileexists'] = file_exists( $file );
+			$downsize = image_downsize( $this->attachment->ID, $size['label'] );
+
+			// image_downsize() will return false if the thumbnail size is larger than the original
+			if ( $downsize && ! empty( $downsize[3] ) ) {
+				$file = $this->get_thumbnail_filename( $editor, $metadata['width'], $metadata['height'], $size['width'], $size['height'], $size['crop'] );
+
+				$size['filename']   = basename( $file );
+				$size['fileexists'] = file_exists( $file );
+			} else {
+				$size['filename']   = false;
+				$size['fileexists'] = false;
+			}
 
 			$response['registered_sizes'][] = $size;
 		}
@@ -455,7 +464,7 @@ class RegenerateThumbnails_Regenerator {
 			// An unregistered size could match a registered size's dimensions. Ignore these.
 			// @todo: check to see if we'd be wrongly deleting these in the regeneration method
 			foreach ( $response['registered_sizes'] as $registered_size ) {
-				if ( $size['file'] == $registered_size['filename'] ) {
+				if ( $size['file'] === $registered_size['filename'] ) {
 					continue 2;
 				}
 			}

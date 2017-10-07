@@ -12,12 +12,19 @@
 		],
 		computed: {
 			thumbnailText: function () {
-				if (typeof this.size.crop !== 'undefined') {
-					this.size.cropMethod = (this.size.crop) ? this.i18n.common.thumbnailSizeItemIsCropped : this.i18n.common.thumbnailSizeItemIsProportional;
+				// F{lename is false if the thumbnail is larger than the original
+				if (this.size.filename) {
+					// Crop type is undefined for unregistered sizes
+					if (typeof this.size.crop !== 'undefined') {
+						this.size.cropMethod = (this.size.crop) ? this.i18n.common.thumbnailSizeItemIsCropped : this.i18n.common.thumbnailSizeItemIsProportional;
 
-					return this.i18n.common.thumbnailSizeItemWithCropMethod.formatUnicorn(this.size);
+						return this.i18n.common.thumbnailSizeItemWithCropMethod.formatUnicorn(this.size);
+					} else {
+						return this.i18n.common.thumbnailSizeItemWithoutCropMethod.formatUnicorn(this.size);
+					}
+
 				} else {
-					return this.i18n.common.thumbnailSizeItemWithoutCropMethod.formatUnicorn(this.size);
+					return this.i18n.common.thumbnailSizeBiggerThanOriginal.formatUnicorn(this.size);
 				}
 			}
 		},

@@ -180,6 +180,7 @@ class RegenerateThumbnails {
 						'regenerateThumbnails'               => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemWithCropMethod'    => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemWithoutCropMethod' => __( '<strong>{label}:</strong> {width}&#215;{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
+						'thumbnailSizeBiggerThanOriginal'    => __( '<strong>{label}:</strong> {width}&#215;{height} pixels (thumbnail would be larger than original)', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemIsCropped'         => __( 'cropped to fit', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemIsProportional'    => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
 					),
