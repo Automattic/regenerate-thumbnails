@@ -6,7 +6,7 @@
 		<div v-else>
 			<h2 class="title">{{ attachmentInfo.name }}</h2>
 
-			<p><code>{{ attachmentInfo.relative_path }}</code></p>
+			<p v-html="filenameAndDimensions"></p>
 
 			<img
 				v-if="attachmentInfo.fullsizeurl"
@@ -113,12 +113,20 @@
 				});
 		},
 		computed  : {
-			errorText: function () {
+			errorText            : function () {
 				return this.regenerateThumbnails.i18n.RegenerateSingle.errorWithMessage.formatUnicorn(this.attachmentInfo);
-			}
+			},
+			filenameAndDimensions: function () {
+				return this.regenerateThumbnails.i18n.RegenerateSingle.filenameAndDimensions.formatUnicorn({
+					filename: this.attachmentInfo.relative_path,
+					width   : this.attachmentInfo.width,
+					height  : this.attachmentInfo.height,
+				});
+			},
 		},
 		methods   : {
 			regenerate      : function (event) {
+				// On second button click
 				if (this.regenerationComplete) {
 					history.back();
 					return;
@@ -127,16 +135,22 @@
 				event.target.disabled = true;
 				event.target.innerText = regenerateThumbnails.i18n.RegenerateSingle.regenerating;
 
+				// If this isn't done, the checkboxes revert to defaults
+				this.regenerateThumbnails.options.onlyMissingThumbnails = document.getElementById('regenthumbs-regenopt-onlymissing').checked;
+				this.regenerateThumbnails.options.deleteOldThumbnails = document.getElementById('regenthumbs-regenopt-deleteoldthumbnails').checked;
+				this.regenerateThumbnails.options.updatePostContents = document.getElementById('regenthumbs-regenopt-updateposts').checked;
+
 				WPRESTAPI.post('regenerate-thumbnails/v1/regenerate/' + this.$route.params.id, {
 					regeneration_args     : {
-						only_regenerate_missing_thumbnails : document.getElementById('regenthumbs-regenopt-onlymissing').checked,
-						delete_unregistered_thumbnail_files: document.getElementById('regenthumbs-regenopt-deleteoldthumbnails').checked,
+						only_regenerate_missing_thumbnails : this.regenerateThumbnails.options.onlyMissingThumbnails,
+						delete_unregistered_thumbnail_files: this.regenerateThumbnails.options.deleteOldThumbnails,
 					},
-					update_usages_in_posts: document.getElementById('regenthumbs-regenopt-updateposts').checked,
+					update_usages_in_posts: this.regenerateThumbnails.options.updatePostContents,
 				})
 					.then(response => {
 						this.regenerationComplete = true;
 						this.attachmentInfo = response.data;
+
 						event.target.innerText = regenerateThumbnails.i18n.RegenerateSingle.done;
 						event.target.disabled = false;
 					})

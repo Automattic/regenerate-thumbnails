@@ -205,10 +205,11 @@ class RegenerateThumbnails {
 						/* translators: Admin screen title. */
 						'title'                           => __( 'Regenerate Thumbnails: {name} &#8212; WordPress', 'regenerate-thumbnails' ),
 						'errorWithMessage'                => __( '<strong>ERROR:</strong> {error}', 'regenerate-thumbnails' ),
+						'filenameAndDimensions'           => __( '<code>{filename}</code> {width}&#215;{height} pixels', 'regenerate-thumbnails' ),
 						'preview'                         => __( 'Preview', 'regenerate-thumbnails' ),
 						'onlyRegenerateMissingThumbnails' => __( 'Skip regenerating existing correctly sized thumbnails (faster).', 'regenerate-thumbnails' ),
 						'updatePostContents'              => __( 'Update the content of posts that use this attachment to use the new sizes.', 'regenerate-thumbnails' ),
-						'deleteOldThumbnails'             => __( 'Delete old, unused thumbnails to free up server space.', 'regenerate-thumbnails' ),
+						'deleteOldThumbnails'             => __( "Delete old, unused thumbnails to free up server space. It's strongly recommended that you update the content of posts if you do this.", 'regenerate-thumbnails' ),
 						'regenerating'                    => __( 'Regenerating…', 'regenerate-thumbnails' ),
 						'done'                            => __( 'Done! Click here to go back.', 'regenerate-thumbnails' ),
 						'errorRegenerating'               => __( 'Error Regenerating', 'regenerate-thumbnails' ),

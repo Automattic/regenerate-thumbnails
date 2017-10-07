@@ -384,6 +384,8 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			'name'               => $attachment->post_title,
 			'fullsizeurl'        => wp_get_attachment_url( $attachment_id ),
 			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . '33772.jpg',
+			'width'              => 1920,
+			'height'             => 1080,
 			'registered_sizes'   => array(
 				array(
 					'label'      => 'thumbnail',
@@ -438,6 +440,8 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			'name'               => $attachment->post_title,
 			'fullsizeurl'        => wp_get_attachment_url( $attachment_id ),
 			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . '33772.jpg',
+			'width'              => 1920,
+			'height'             => 1080,
 			'registered_sizes'   => array(
 				array(
 					'label'      => 'thumbnail',
@@ -506,6 +510,8 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			'name'               => $attachment->post_title,
 			'fullsizeurl'        => wp_get_attachment_url( $attachment_id ),
 			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . '33772.jpg',
+			'width'              => 1920,
+			'height'             => 1080,
 			'registered_sizes'   => array(
 				array(
 					'label'      => 'thumbnail',

@@ -422,15 +422,17 @@ class RegenerateThumbnails_Regenerator {
 			);
 		}
 
+		$metadata = wp_get_attachment_metadata( $this->attachment->ID );
+
 		$response = array(
 			'name'               => $this->attachment->post_title,
 			'fullsizeurl'        => wp_get_attachment_url( $this->attachment->ID ), // We can only guarantee that the fullsize image file exists
 			'relative_path'      => _wp_get_attachment_relative_path( $this->fullsizepath ) . DIRECTORY_SEPARATOR . basename( $this->fullsizepath ),
+			'width'              => $metadata['width'],
+			'height'             => $metadata['height'],
 			'registered_sizes'   => array(),
 			'unregistered_sizes' => array(),
 		);
-
-		$metadata = wp_get_attachment_metadata( $this->attachment->ID );
 
 		// Check the status of all currently registered sizes
 		$registered_sizes = RegenerateThumbnails()->get_thumbnail_sizes();
