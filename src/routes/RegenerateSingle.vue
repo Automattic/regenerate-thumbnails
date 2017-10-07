@@ -1,5 +1,9 @@
 <template>
-	<div v-if="dataLoaded">
+	<div v-if="!dataLoaded">
+		<p>{{ regenerateThumbnails.i18n.common.loading }}</p>
+	</div>
+
+	<div v-else-if="dataLoaded">
 		<div v-if="attachmentInfo.error">
 			<p v-html="errorText"></p>
 		</div>

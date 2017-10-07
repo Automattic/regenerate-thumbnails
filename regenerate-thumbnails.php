@@ -178,6 +178,7 @@ class RegenerateThumbnails {
 				'i18n'          => array(
 					'common'           => array(
 						'regenerateThumbnails'               => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
+						'loading'                            => __( 'Loading…', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemWithCropMethod'    => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemWithoutCropMethod' => __( '<strong>{label}:</strong> {width}&#215;{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
 						'thumbnailSizeBiggerThanOriginal'    => __( '<strong>{label}:</strong> {width}&#215;{height} pixels (thumbnail would be larger than original)', 'regenerate-thumbnails' ),
