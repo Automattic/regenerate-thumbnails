@@ -1,6 +1,6 @@
 === Regenerate Thumbnails ===
 Contributors: Viper007Bond
-Tags: thumbnail, thumbnails
+Tags: thumbnail, thumbnails, post thumbnail, post thumbnails
 Requires at least: 4.7
 Tested up to: 4.9
 Requires PHP: 5.2.4
