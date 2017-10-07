@@ -371,16 +371,11 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_get_current_thumbnail_statuses_normal() {
-		$attachment_id = $this->_create_attachment();
-		$attachment    = get_post( $attachment_id );
-
-		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
-		$statuses    = $regenerator->get_attachment_info();
-
+	public function _get_current_thumbnail_statuses( $attachment_id ) {
+		$attachment   = get_post( $attachment_id );
 		$fullsizepath = get_attached_file( $attachment_id );
 
-		$this->assertSame( $statuses, array(
+		return array(
 			'name'               => $attachment->post_title,
 			'fullsizeurl'        => wp_get_attachment_url( $attachment_id ),
 			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . '33772.jpg',
@@ -421,7 +416,16 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 				),
 			),
 			'unregistered_sizes' => array(),
-		) );
+		);
+	}
+
+	public function test_get_current_thumbnail_statuses_normal() {
+		$attachment_id = $this->_create_attachment();
+
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
+		$statuses    = $regenerator->get_attachment_info();
+
+		$this->assertSame( $statuses, $this->_get_current_thumbnail_statuses( $attachment_id ) );
 	}
 
 	public function test_get_current_thumbnail_statuses_with_unregistered_size() {
@@ -429,68 +433,24 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$attachment_id = $this->_create_attachment();
 		remove_image_size( 'regenerate-thumbnails-test' );
 
-		$attachment = get_post( $attachment_id );
-
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
 		$statuses    = $regenerator->get_attachment_info();
 
-		$fullsizepath = get_attached_file( $attachment_id );
+		$expected_statuses = $this->_get_current_thumbnail_statuses( $attachment_id );
 
-		$this->assertSame( $statuses, array(
-			'name'               => $attachment->post_title,
-			'fullsizeurl'        => wp_get_attachment_url( $attachment_id ),
-			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . '33772.jpg',
-			'width'              => 1920,
-			'height'             => 1080,
-			'registered_sizes'   => array(
-				array(
-					'label'      => 'thumbnail',
-					'width'      => 150,
-					'height'     => 150,
-					'crop'       => true,
-					'filename'   => '33772-150x150.jpg',
-					'fileexists' => true,
-				),
-				array(
-					'label'      => 'medium',
-					'width'      => 300,
-					'height'     => 300,
-					'crop'       => false,
-					'filename'   => '33772-300x169.jpg',
-					'fileexists' => true,
-				),
-				array(
-					'label'      => 'medium_large',
-					'width'      => 768,
-					'height'     => 0,
-					'crop'       => false,
-					'filename'   => '33772-768x432.jpg',
-					'fileexists' => true,
-				),
-				array(
-					'label'      => 'large',
-					'width'      => 1024,
-					'height'     => 1024,
-					'crop'       => false,
-					'filename'   => '33772-1024x576.jpg',
-					'fileexists' => true,
-				),
-			),
-			'unregistered_sizes' => array(
-				array(
-					'label'      => 'regenerate-thumbnails-test',
-					'width'      => 500,
-					'height'     => 281,
-					'filename'   => '33772-500x281.jpg',
-					'fileexists' => true,
-				),
-			),
-		) );
+		$expected_statuses['unregistered_sizes'][] = array(
+			'label'      => 'regenerate-thumbnails-test',
+			'width'      => 500,
+			'height'     => 281,
+			'filename'   => '33772-500x281.jpg',
+			'fileexists' => true,
+		);
+
+		$this->assertSame( $statuses, $expected_statuses );
 	}
 
 	public function test_get_current_thumbnail_statuses_with_changed_sizes() {
 		$attachment_id = $this->_create_attachment();
-		$attachment    = get_post( $attachment_id );
 
 		// Now change the thumbnail sizes to something other than the defaults
 		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
@@ -504,78 +464,74 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			remove_filter( 'pre_option_' . $filter, $function );
 		}
 
-		$fullsizepath = get_attached_file( $attachment_id );
+		$expected_statuses = $this->_get_current_thumbnail_statuses( $attachment_id );
 
-		$this->assertSame( $statuses, array(
-			'name'               => $attachment->post_title,
-			'fullsizeurl'        => wp_get_attachment_url( $attachment_id ),
-			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . '33772.jpg',
-			'width'              => 1920,
-			'height'             => 1080,
-			'registered_sizes'   => array(
-				array(
-					'label'      => 'thumbnail',
-					'width'      => 100,
-					'height'     => 100,
-					'crop'       => false,
-					'filename'   => '33772-100x56.jpg',
-					'fileexists' => false,
-				),
-				array(
-					'label'      => 'medium',
-					'width'      => 350,
-					'height'     => 350,
-					'crop'       => false,
-					'filename'   => '33772-350x197.jpg',
-					'fileexists' => false,
-				),
-				array(
-					'label'      => 'medium_large',
-					'width'      => 500,
-					'height'     => 500,
-					'crop'       => false,
-					'filename'   => '33772-500x281.jpg',
-					'fileexists' => false,
-				),
-				array(
-					'label'      => 'large',
-					'width'      => 1500,
-					'height'     => 1500,
-					'crop'       => false,
-					'filename'   => '33772-1500x844.jpg',
-					'fileexists' => false,
-				),
+		$expected_statuses['registered_sizes'] = array(
+			array(
+				'label'      => 'thumbnail',
+				'width'      => 100,
+				'height'     => 100,
+				'crop'       => false,
+				'filename'   => '33772-100x56.jpg',
+				'fileexists' => false,
 			),
-			'unregistered_sizes' => array(
-				array(
-					'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'thumbnail' ),
-					'width'      => 150,
-					'height'     => 150,
-					'filename'   => '33772-150x150.jpg',
-					'fileexists' => true,
-				),
-				array(
-					'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'medium' ),
-					'width'      => 300,
-					'height'     => 169,
-					'filename'   => '33772-300x169.jpg',
-					'fileexists' => true,
-				),
-				array(
-					'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'medium_large' ),
-					'width'      => 768,
-					'height'     => 432,
-					'filename'   => '33772-768x432.jpg',
-					'fileexists' => true,
-				),
-				array(
-					'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'large' ),
-					'width'      => 1024,
-					'height'     => 576,
-					'filename'   => '33772-1024x576.jpg',
-					'fileexists' => true,
-				),
+			array(
+				'label'      => 'medium',
+				'width'      => 350,
+				'height'     => 350,
+				'crop'       => false,
+				'filename'   => '33772-350x197.jpg',
+				'fileexists' => false,
 			),
-		) );
+			array(
+				'label'      => 'medium_large',
+				'width'      => 500,
+				'height'     => 500,
+				'crop'       => false,
+				'filename'   => '33772-500x281.jpg',
+				'fileexists' => false,
+			),
+			array(
+				'label'      => 'large',
+				'width'      => 1500,
+				'height'     => 1500,
+				'crop'       => false,
+				'filename'   => '33772-1500x844.jpg',
+				'fileexists' => false,
+			),
+		);
+
+		$expected_statuses['unregistered_sizes'] = array(
+			array(
+				'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'thumbnail' ),
+				'width'      => 150,
+				'height'     => 150,
+				'filename'   => '33772-150x150.jpg',
+				'fileexists' => true,
+			),
+			array(
+				'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'medium' ),
+				'width'      => 300,
+				'height'     => 169,
+				'filename'   => '33772-300x169.jpg',
+				'fileexists' => true,
+			),
+			array(
+				'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'medium_large' ),
+				'width'      => 768,
+				'height'     => 432,
+				'filename'   => '33772-768x432.jpg',
+				'fileexists' => true,
+			),
+			array(
+				'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'large' ),
+				'width'      => 1024,
+				'height'     => 576,
+				'filename'   => '33772-1024x576.jpg',
+				'fileexists' => true,
+			),
+		);
+
+		$this->assertSame( $statuses, $expected_statuses );
 	}
 }
