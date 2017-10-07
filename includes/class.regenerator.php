@@ -65,7 +65,7 @@ class RegenerateThumbnails_Regenerator {
 		if ( 'site-icon' === get_post_meta( $attachment->ID, '_wp_attachment_context', true ) ) {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_is_site_icon',
-				__( "This attachment is being used as a site icon and therefore the thumbnails shouldn't be touched.", 'regenerate-thumbnails' ),
+				__( "This attachment is a site icon and therefore the thumbnails shouldn't be touched.", 'regenerate-thumbnails' ),
 				array(
 					'status'     => 415,
 					'attachment' => $attachment,
