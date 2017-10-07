@@ -15,6 +15,46 @@
 				:alt="regenerateThumbnails.i18n.RegenerateSingle.preview"
 			/>
 
+			<p>
+				<label>
+					<input
+						type="checkbox"
+						id="regenthumbs-regenopt-onlymissing"
+						:checked="regenerateThumbnails.options.onlyMissingThumbnails"
+					/>
+					{{ regenerateThumbnails.i18n.RegenerateSingle.onlyRegenerateMissingThumbnails }}
+				</label>
+			</p>
+			<p>
+				<label>
+					<input
+						type="checkbox"
+						id="regenthumbs-regenopt-updateposts"
+						:checked="regenerateThumbnails.options.updatePostContents"
+					/>
+					{{ regenerateThumbnails.i18n.RegenerateSingle.updatePostContents }}
+				</label>
+			</p>
+			<p>
+				<label>
+					<input
+						type="checkbox"
+						id="regenthumbs-regenopt-deleteoldthumbnails"
+						:checked="regenerateThumbnails.options.deleteOldThumbnails"
+						v-on:change="checkUpdatePosts"
+					/>
+					{{ regenerateThumbnails.i18n.RegenerateSingle.deleteOldThumbnails }}
+				</label>
+			</p>
+
+			<p v-if="regenerationError"><strong v-html="regenerationError"></strong></p>
+
+			<p class="submit">
+				<button class="button button-primary button-hero" v-on:click="regenerate">
+					{{ regenerateThumbnails.i18n.common.regenerateThumbnails }}
+				</button>
+			</p>
+
 			<p>{{ regenerateThumbnails.i18n.RegenerateSingle.registeredSizes }}</p>
 			<ul>
 				<li
@@ -57,11 +97,14 @@
 			dataLoaded          : false,
 			attachmentInfo      : {},
 			restAPIError        : false,
+			regenerationComplete: false,
+			regenerationError   : false,
 		}),
 		created() {
 			WPRESTAPI.get('regenerate-thumbnails/v1/attachmentinfo/' + this.$route.params.id)
 				.then(response => {
 					this.attachmentInfo = response.data;
+					document.getElementsByTagName('title')[0].innerHTML = this.regenerateThumbnails.i18n.RegenerateSingle.title.formatUnicorn(this.attachmentInfo);
 					this.dataLoaded = true;
 				})
 				.catch(error => {
@@ -71,8 +114,43 @@
 		},
 		computed  : {
 			errorText: function () {
-				return this.regenerateThumbnails.i18n.RegenerateSingle.error.formatUnicorn(this.attachmentInfo);
+				return this.regenerateThumbnails.i18n.RegenerateSingle.errorWithMessage.formatUnicorn(this.attachmentInfo);
 			}
+		},
+		methods   : {
+			regenerate      : function (event) {
+				if (this.regenerationComplete) {
+					history.back();
+					return;
+				}
+
+				event.target.disabled = true;
+				event.target.innerText = regenerateThumbnails.i18n.RegenerateSingle.regenerating;
+
+				WPRESTAPI.post('regenerate-thumbnails/v1/regenerate/' + this.$route.params.id, {
+					regeneration_args     : {
+						only_regenerate_missing_thumbnails : document.getElementById('regenthumbs-regenopt-onlymissing').checked,
+						delete_unregistered_thumbnail_files: document.getElementById('regenthumbs-regenopt-deleteoldthumbnails').checked,
+					},
+					update_usages_in_posts: document.getElementById('regenthumbs-regenopt-updateposts').checked,
+				})
+					.then(response => {
+						this.regenerationComplete = true;
+						this.attachmentInfo = response.data;
+						event.target.innerText = regenerateThumbnails.i18n.RegenerateSingle.done;
+						event.target.disabled = false;
+					})
+					.catch(error => {
+						event.target.innerText = regenerateThumbnails.i18n.RegenerateSingle.errorRegenerating;
+						this.regenerationError = this.regenerateThumbnails.i18n.RegenerateSingle.errorRegeneratingMessage.formatUnicorn(error.response.data);
+						console.log(error);
+					});
+			},
+			checkUpdatePosts: function (event) {
+				if (event.target.checked) {
+					document.getElementById('regenthumbs-regenopt-updateposts').checked = true;
+				}
+			},
 		},
 		components: {
 			ThumbnailStatus

@@ -169,8 +169,15 @@ class RegenerateThumbnails {
 				'data'          => array(
 					'thumbnailSizes' => $this->get_thumbnail_sizes(),
 				),
+				// TODO: Add UI to main page (or a settings page?) to control these defaults
+				'options'       => array(
+					'onlyMissingThumbnails' => true,
+					'updatePostContents'    => true,
+					'deleteOldThumbnails'   => false,
+				),
 				'i18n'          => array(
 					'common'           => array(
+						'regenerateThumbnails'               => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemWithCropMethod'    => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemWithoutCropMethod' => __( '<strong>{label}:</strong> {width}&#215;{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemIsCropped'         => __( 'cropped to fit', 'regenerate-thumbnails' ),
@@ -195,11 +202,20 @@ class RegenerateThumbnails {
 						),
 					),
 					'RegenerateSingle' => array(
-						'error'             => __( '<strong>ERROR:</strong> {error}', 'regenerate-thumbnails' ),
-						'preview'           => __( 'Preview', 'regenerate-thumbnails' ),
-						'registeredSizes'   => __( 'These are the currently registered thumbnail sizes, whether they exist for this attachment, and their filenames:', 'regenerate-thumbnails' ),
-						'unregisteredSizes' => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
-						'restAPIError'      => __( 'There was an error fetching about this attachment via the WordPress REST API. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
+						/* translators: Admin screen title. */
+						'title'                           => __( 'Regenerate Thumbnails: {name} &#8212; WordPress', 'regenerate-thumbnails' ),
+						'errorWithMessage'                => __( '<strong>ERROR:</strong> {error}', 'regenerate-thumbnails' ),
+						'preview'                         => __( 'Preview', 'regenerate-thumbnails' ),
+						'onlyRegenerateMissingThumbnails' => __( 'Skip regenerating existing correctly sized thumbnails (faster).', 'regenerate-thumbnails' ),
+						'updatePostContents'              => __( 'Update the content of posts that use this attachment to use the new sizes.', 'regenerate-thumbnails' ),
+						'deleteOldThumbnails'             => __( 'Delete old, unused thumbnails to free up server space.', 'regenerate-thumbnails' ),
+						'regenerating'                    => __( 'Regenerating…', 'regenerate-thumbnails' ),
+						'done'                            => __( 'Done! Click here to go back.', 'regenerate-thumbnails' ),
+						'errorRegenerating'               => __( 'Error Regenerating', 'regenerate-thumbnails' ),
+						'errorRegeneratingMessage'        => __( 'There was an error regenerating this attachment. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
+						'registeredSizes'                 => __( 'These are the currently registered thumbnail sizes, whether they exist for this attachment, and their filenames:', 'regenerate-thumbnails' ),
+						'unregisteredSizes'               => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
+						'restAPIError'                    => __( 'There was an error fetching about this attachment via the WordPress REST API. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
 					),
 				),
 			)

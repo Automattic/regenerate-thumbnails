@@ -84,14 +84,12 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 			}
 		}
 
-		return true;
+		return $this->attachment_info( $request );
 	}
 
 	/**
 	 * Return a bunch of information about the current attachment for use in the UI
 	 * including details about the thumbnails.
-	 *
-	 * @todo Unit tests
 	 *
 	 * @since 3.0.0
 	 *
