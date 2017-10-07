@@ -108,7 +108,9 @@
 					this.dataLoaded = true;
 				})
 				.catch(error => {
-					this.restAPIError = this.regenerateThumbnails.i18n.RegenerateSingle.restAPIError.formatUnicorn(error.response.data);
+					this.restAPIError = this.regenerateThumbnails.i18n.RegenerateSingle.errorWithMessage.formatUnicorn({
+						'error': error.response.data.message,
+					});
 					console.log(error);
 				});
 		},

@@ -217,7 +217,6 @@ class RegenerateThumbnails {
 						'errorRegeneratingMessage'        => __( 'There was an error regenerating this attachment. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
 						'registeredSizes'                 => __( 'These are the currently registered thumbnail sizes, whether they exist for this attachment, and their filenames:', 'regenerate-thumbnails' ),
 						'unregisteredSizes'               => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
-						'restAPIError'                    => __( 'There was an error fetching about this attachment via the WordPress REST API. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
 					),
 				),
 			)
