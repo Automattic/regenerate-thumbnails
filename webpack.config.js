@@ -1,5 +1,8 @@
-var path = require('path')
-var webpack = require('webpack')
+const config = require('./config.json');
+const path = require('path');
+const webpack = require('webpack');
+const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
 	entry      : './src/main.js',
@@ -50,11 +53,27 @@ module.exports = {
 	performance: {
 		hints: false
 	},
-	devtool    : '#eval-source-map'
-}
+	devtool    : '#eval-source-map',
+	plugins    : [
+		new BrowserSyncPlugin({
+				proxy      : config.WordPressInstallURL + '/wp-admin/tools.php?page=regenerate-thumbnails',
+				files      : [
+					'**/*.php'
+				],
+				reloadDelay: 0,
+				notify     : {
+					styles: {
+						top   : 'auto',
+						bottom: '0',
+					}
+				}
+			}
+		),
+	],
+};
 
 if (process.env.NODE_ENV === 'production') {
-	module.exports.devtool = '#source-map'
+	module.exports.devtool = '#source-map';
 	// http://vue-loader.vuejs.org/en/workflow/production.html
 	module.exports.plugins = (module.exports.plugins || []).concat([
 		new webpack.DefinePlugin({
@@ -62,6 +81,9 @@ if (process.env.NODE_ENV === 'production') {
 				NODE_ENV: '"production"'
 			}
 		}),
+		new CleanWebpackPlugin([
+			path.resolve(__dirname, './dist'),
+		]),
 		new webpack.optimize.UglifyJsPlugin({
 			sourceMap: true,
 			compress : {

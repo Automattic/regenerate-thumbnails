@@ -58,18 +58,24 @@ The latest release can be [downloaded from WordPress.org](https://wordpress.org/
 
 6. Activate the plugin and visit Tools → Regenerate Thumbnails.
 
-### Building The JavaScript File In Development Mode
+### Development Mode
 
-The development build will create a build without minifying or deduping code and will enable Vue.js's development mode as well.
-
-```
-yarn dev
-```
-
-Alternatively if you want to automatically rebuild the file any time one of the source files changes, use the `watch` command:
+If you're looking to make modifications to this plugin's Vue.js code, run the following command:
 
 ```
 yarn watch
+```
+
+This will do the following things:
+
+* Automatically rebuild the `build.js` file whenever any of the source files change.
+* Put Vue.js in development mode which will allow you to use [a browser extension](https://github.com/vuejs/vue-devtools#vue-devtools) to help with debugging.
+* Spawn a [Browsersync](https://www.browsersync.io/) server at [http://localhost:3030/](http://localhost:3030/) that will load a proxied version of your development WordPress install that automatically refresh the page in your browser when changes are made. By default, this assumes that your WordPress install lives at `localhost`. If this is not the case (for example you're using [Varying Vagrant Vagrants](https://varyingvagrantvagrants.org/)), then edit `config.json`.
+
+Alternatively if you just want to manually build a development copy of the Javascript, then run this command:
+
+```
+yarn dev
 ```
 
 ## Unit Tests
