@@ -4,7 +4,7 @@
 	</div>
 
 	<div v-else-if="dataLoaded">
-		<div v-if="attachmentInfo.error">
+		<div v-if="errorText">
 			<p v-html="errorText"></p>
 		</div>
 		<div v-else>
@@ -84,10 +84,6 @@
 			</div>
 		</div>
 	</div>
-
-	<div v-else-if="restAPIError">
-		<p v-html="restAPIError"></p>
-	</div>
 </template>
 
 <script>
@@ -99,8 +95,8 @@
 		data      : () => ({
 			regenerateThumbnails: regenerateThumbnails,
 			dataLoaded          : false,
+			errorText           : false,
 			attachmentInfo      : {},
-			restAPIError        : false,
 			regenerationComplete: false,
 			regenerationError   : false,
 		}),
@@ -108,20 +104,26 @@
 			WPRESTAPI.get('regenerate-thumbnails/v1/attachmentinfo/' + this.$route.params.id)
 				.then(response => {
 					this.attachmentInfo = response.data;
-					document.getElementsByTagName('title')[0].innerHTML = this.regenerateThumbnails.i18n.RegenerateSingle.title.formatUnicorn(this.attachmentInfo);
+
+					if (typeof this.attachmentInfo.error !== 'undefined') {
+						this.errorText = this.regenerateThumbnails.i18n.RegenerateSingle.errorWithMessage.formatUnicorn(this.attachmentInfo);
+					} else {
+						document.getElementsByTagName('title')[0].innerHTML = this.regenerateThumbnails.i18n.RegenerateSingle.title.formatUnicorn(this.attachmentInfo);
+					}
+
 					this.dataLoaded = true;
 				})
 				.catch(error => {
-					this.restAPIError = this.regenerateThumbnails.i18n.RegenerateSingle.errorWithMessage.formatUnicorn({
+					this.errorText = this.regenerateThumbnails.i18n.RegenerateSingle.errorWithMessage.formatUnicorn({
 						'error': error.response.data.message,
 					});
+
+					this.dataLoaded = true;
+
 					console.log(error);
 				});
 		},
 		computed  : {
-			errorText            : function () {
-				return this.regenerateThumbnails.i18n.RegenerateSingle.errorWithMessage.formatUnicorn(this.attachmentInfo);
-			},
 			filenameAndDimensions: function () {
 				return this.regenerateThumbnails.i18n.RegenerateSingle.filenameAndDimensions.formatUnicorn({
 					filename: this.attachmentInfo.relative_path,
