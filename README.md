@@ -70,7 +70,7 @@ This will do the following things:
 
 * Automatically rebuild the `build.js` file whenever any of the source files change.
 * Put Vue.js in development mode which will allow you to use [a browser extension](https://github.com/vuejs/vue-devtools#vue-devtools) to help with debugging.
-* Spawn a [Browsersync](https://www.browsersync.io/) server at [http://localhost:3030/](http://localhost:3030/) that will load a proxied version of your development WordPress install that automatically refresh the page in your browser when changes are made. By default, this assumes that your WordPress install lives at `localhost`. If this is not the case (for example you're using [Varying Vagrant Vagrants](https://varyingvagrantvagrants.org/)), then edit `config.json`.
+* Spawn a [Browsersync](https://www.browsersync.io/) server at [http://localhost:3030/](http://localhost:3030/) that will load a proxied version of your development WordPress install that automatically refresh the page in your browser when changes are made. By default, this assumes that your WordPress install lives at `localhost`. If this is not the case (for example you're using [Varying Vagrant Vagrants](https://varyingvagrantvagrants.org/)), then edit `browsersync-config.json`.
 
 Alternatively if you just want to manually build a development copy of the Javascript, then run this command:
 
