@@ -1,0 +1,6 @@
+{
+  "WordPressInstallURL": "http://localhost",
+
+  "BrowserSyncHost": "localhost",
+  "BrowserSyncPort": 3000
+}
