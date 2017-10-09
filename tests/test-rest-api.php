@@ -84,26 +84,6 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_UnitTestCase {
 		$this->assertResponseStatus( 200, $response );
 	}
 
-	public function test_attachment_doesnt_exist() {
-		wp_set_current_user( $this->administrator );
-
-		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/0' );
-		$response = $this->server->dispatch( $request );
-
-		$this->assertErrorResponse( 'regenerate_thumbnails_regenerator_attachment_doesnt_exist', $response, 404 );
-	}
-
-	public function test_not_attachment() {
-		wp_set_current_user( $this->administrator );
-
-		$post_id = self::factory()->post->create();
-
-		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $post_id );
-		$response = $this->server->dispatch( $request );
-
-		$this->assertErrorResponse( 'regenerate_thumbnails_regenerator_not_attachment', $response, 400 );
-	}
-
 	public function test_arg_regeneration_args_not_array() {
 		wp_set_current_user( $this->administrator );
 
