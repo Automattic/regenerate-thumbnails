@@ -62,7 +62,7 @@ class RegenerateThumbnails_Regenerator {
 		}
 
 		// Don't touch any attachments that are being used as a site icon. Their thumbnails are usually custom cropped.
-		if ( 'site-icon' === get_post_meta( $attachment->ID, '_wp_attachment_context', true ) ) {
+		if ( self::is_site_icon( $attachment ) ) {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_is_site_icon',
 				__( "This attachment is a site icon and therefore the thumbnails shouldn't be touched.", 'regenerate-thumbnails' ),
@@ -86,6 +86,19 @@ class RegenerateThumbnails_Regenerator {
 	 */
 	private function __construct( WP_Post $attachment ) {
 		$this->attachment = $attachment;
+	}
+
+	/**
+	 * Returns whether the attachment is or was a site icon.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param WP_Post $attachment The WP_Post object for the attachment that is being operated on.
+	 *
+	 * @return bool Whether the attachment is or was a site icon.
+	 */
+	public static function is_site_icon( WP_Post $attachment ) {
+		return ( 'site-icon' === get_post_meta( $attachment->ID, '_wp_attachment_context', true ) );
 	}
 
 	/**
