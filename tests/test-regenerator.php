@@ -61,8 +61,10 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$upload_dir = wp_get_upload_dir();
 		$upload_dir = $upload_dir['path'];
 
-		$filesystem = new WP_Filesystem_Direct( array() );
-		$filesystem->rmdir( trailingslashit( $upload_dir ), true );
+		if ( is_dir( $upload_dir ) ) {
+			$filesystem = new WP_Filesystem_Direct( array() );
+			$filesystem->rmdir( trailingslashit( $upload_dir ), true );
+		}
 	}
 
 	public function _create_attachment() {
@@ -127,8 +129,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$attachment_id = $this->_create_attachment();
 		$old_metadata  = wp_get_attachment_metadata( $attachment_id );
 
-		$upload_dir = wp_get_upload_dir();
-		$upload_dir = trailingslashit( $upload_dir['path'] );
+		$upload_dir = dirname( get_attached_file( $attachment_id ) ) . DIRECTORY_SEPARATOR;
 
 		$expected_default_thumbnail_sizes = array(
 			'thumbnail'    => array( 150, 150 ),
@@ -194,9 +195,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			'large'        => '33772-1024x576.jpg',
 		);
 
-		$upload_dir = wp_get_upload_dir();
-		$upload_dir = trailingslashit( $upload_dir['path'] );
-
+		$upload_dir = dirname( get_attached_file( $attachment_id ) ) . DIRECTORY_SEPARATOR;
 		$filemtimes = $this->_get_filemtimes( $upload_dir, $thumbnails );
 
 		// Delete some of the thumbnail files
@@ -244,8 +243,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$attachment_id = $this->_create_attachment();
 		$old_metadata  = wp_get_attachment_metadata( $attachment_id );
 
-		$upload_dir     = wp_get_upload_dir();
-		$thumbnail_file = trailingslashit( $upload_dir['path'] ) . $old_metadata['sizes']['regenerate-thumbnails-test']['file'];
+		$thumbnail_file = dirname( get_attached_file( $attachment_id ) ) . DIRECTORY_SEPARATOR . $old_metadata['sizes']['regenerate-thumbnails-test']['file'];
 
 		$this->assertFileExists( $thumbnail_file );
 
@@ -293,8 +291,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			$thumbnails[ $size ] = $size_data['file'];
 		}
 
-		$upload_dir = wp_get_upload_dir();
-		$upload_dir = trailingslashit( $upload_dir['path'] );
+		$upload_dir = dirname( get_attached_file( $attachment_id ) ) . DIRECTORY_SEPARATOR;
 
 		$filemtimes = $this->_get_filemtimes( $upload_dir, $thumbnails );
 
