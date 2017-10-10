@@ -17,13 +17,23 @@ class RegenerateThumbnails_Regenerator {
 	public $attachment;
 
 	/**
-	 * Stores the full path to the original image so that it can be passed between methods.
+	 * The full path to the original image so that it can be passed between methods.
 	 *
 	 * @since 3.0.0
 	 *
 	 * @var string
 	 */
 	public $fullsizepath;
+
+	/**
+	 * An array of thumbnail size(s) that were skipped during regeneration due to already existing.
+	 * A class variable is used so that the data can later be used to merge the size(s) back in.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @var array
+	 */
+	public $skipped_thumbnails = array();
 
 	/**
 	 * Generates an instance of this class after doing some setup.
@@ -107,6 +117,8 @@ class RegenerateThumbnails_Regenerator {
 	 * Can't be called in the get_instance() because it's static or __construct()
 	 * because the result is needed.
 	 *
+	 * @since 3.0.0
+	 *
 	 * @return true|WP_Error True if set, or WP_Error if the fullsize image is missing.
 	 */
 	public function set_fullsizepath() {
@@ -156,9 +168,9 @@ class RegenerateThumbnails_Regenerator {
 			'delete_unregistered_thumbnail_files' => false,
 		) );
 
-		$set = $this->set_fullsizepath();
-		if ( is_wp_error( $set ) ) {
-			return $set;
+		$set_fullsizepath = $this->set_fullsizepath();
+		if ( is_wp_error( $set_fullsizepath ) ) {
+			return $set_fullsizepath;
 		}
 
 		$old_metadata = wp_get_attachment_metadata( $this->attachment->ID );
@@ -171,29 +183,49 @@ class RegenerateThumbnails_Regenerator {
 		$new_metadata = wp_generate_attachment_metadata( $this->attachment->ID, $this->fullsizepath );
 
 		if ( $args['only_regenerate_missing_thumbnails'] ) {
-			// Certain sizes may have been temporarily removed by the file so that they
-			// weren't regenerated, so we need to add them back into the metadata.
-			$new_metadata['sizes'] = array_merge( $old_metadata['sizes'], $new_metadata['sizes'] );
+			// Thumbnail sizes that existed were removed and need to be added back to the metadata.
+			foreach ( $this->skipped_thumbnails as $skipped_thumbnail ) {
+				if ( ! empty( $old_metadata['sizes'][ $skipped_thumbnail ] ) ) {
+					$new_metadata['sizes'][ $skipped_thumbnail ] = $old_metadata['sizes'][ $skipped_thumbnail ];
+				}
+			}
+			$this->skipped_thumbnails = array();
 
 			remove_filter( 'intermediate_image_sizes_advanced', array( $this, 'filter_image_sizes_to_only_missing_thumbnails' ), 10 );
 		}
 
+		$wp_upload_dir = dirname( $this->fullsizepath ) . DIRECTORY_SEPARATOR;
+
 		// If the user wants to keep their storage usage down, we can iterate over the list of
 		// thumbnails in the old metadata and delete any that are no longer registered as valid sizes.
 		if ( $args['delete_unregistered_thumbnail_files'] ) {
-			$upload_dir = wp_get_upload_dir();
-			$upload_dir = trailingslashit( $upload_dir['path'] );
-
 			$intermediate_image_sizes = get_intermediate_image_sizes();
-			foreach ( $old_metadata['sizes'] as $size => $thumbnail ) {
-				if ( in_array( $size, $intermediate_image_sizes ) ) {
+			foreach ( $old_metadata['sizes'] as $old_size => $old_size_data ) {
+				if ( in_array( $old_size, $intermediate_image_sizes ) ) {
 					continue;
 				}
 
-				// @todo: Prefix with @ for release. Could wrap in file_exists() but that just adds overhead.
-				unlink( $upload_dir . $thumbnail['file'] );
+				wp_delete_file( $wp_upload_dir . $old_size_data['file'] );
 
-				unset( $new_metadata['sizes'][ $size ] );
+				unset( $new_metadata['sizes'][ $old_size ] );
+			}
+		} else {
+			// If not deleting, rename any size conflicts to avoid them being lost if the file still exists.
+			foreach ( $old_metadata['sizes'] as $old_size => $old_size_data ) {
+				if ( empty( $new_metadata['sizes'][ $old_size ] ) ) {
+					$new_metadata['sizes'][ $old_size ] = $old_metadata['sizes'][ $old_size ];
+					continue;
+				}
+
+				$new_size_data = $new_metadata['sizes'][ $old_size ];
+
+				if (
+					$new_size_data['width'] !== $old_size_data['width']
+					&& $new_size_data['height'] !== $old_size_data['height']
+					&& file_exists( $wp_upload_dir . $old_size_data['file'] )
+				) {
+					$new_metadata['sizes'][ $old_size . '_old_' . $old_size_data['width'] . 'x' . $old_size_data['height'] ] = $old_size_data;
+				}
 			}
 		}
 
@@ -205,29 +237,36 @@ class RegenerateThumbnails_Regenerator {
 	/**
 	 * Filters the list of thumbnail sizes to only include those which have missing files.
 	 *
-	 * @param array $sizes    An associative array of image sizes.
-	 * @param array $metadata An associative array of image metadata: width, height, file.
+	 * @since 3.0.0
+	 *
+	 * @param array $sizes             An associative array of registered thumbnail image sizes.
+	 * @param array $fullsize_metadata An associative array of fullsize image metadata: width, height, file.
 	 *
 	 * @return array An associative array of image sizes.
 	 */
-	public function filter_image_sizes_to_only_missing_thumbnails( $sizes, $metadata ) {
+	public function filter_image_sizes_to_only_missing_thumbnails( $sizes, $fullsize_metadata ) {
 		if ( ! $sizes ) {
 			return $sizes;
 		}
 
-		$set = $this->set_fullsizepath();
-		if ( is_wp_error( $set ) ) {
+		$set_fullsizepath = $this->set_fullsizepath();
+		if ( is_wp_error( $set_fullsizepath ) ) {
 			return $sizes;
 		}
 
 		$editor = wp_get_image_editor( $this->fullsizepath );
-
 		if ( is_wp_error( $editor ) ) {
 			return $sizes;
 		}
 
+		$metadata = wp_get_attachment_metadata( $this->attachment->ID );
+
 		// This is based on WP_Image_Editor_GD::multi_resize() and others
 		foreach ( $sizes as $size => $size_data ) {
+			if ( empty( $metadata['sizes'][ $size ] ) ) {
+				continue;
+			}
+
 			if ( ! isset( $size_data['width'] ) && ! isset( $size_data['height'] ) ) {
 				continue;
 			}
@@ -243,10 +282,26 @@ class RegenerateThumbnails_Regenerator {
 				$size_data['crop'] = false;
 			}
 
-			$filename = $this->get_thumbnail_filename( $editor, $metadata['width'], $metadata['height'], $size_data['width'], $size_data['height'], $size_data['crop'] );
+			$thumbnail = $this->get_thumbnail(
+				$editor,
+				$fullsize_metadata['width'],
+				$fullsize_metadata['height'],
+				$size_data['width'],
+				$size_data['height'],
+				$size_data['crop']
+			);
 
-			// The false check filters out thumbnails that would be larger than the fullsize image
-			if ( false === $filename || file_exists( $filename ) ) {
+			// The false check filters out thumbnails that would be larger than the fullsize image.
+			// The size comparison makes sure that the size is also correct.
+			if (
+				false === $thumbnail
+				|| (
+					$thumbnail['width'] === $metadata['sizes'][ $size ]['width']
+					&& $thumbnail['height'] === $metadata['sizes'][ $size ]['height']
+					&& file_exists( $thumbnail['filename'] )
+				)
+			) {
+				$this->skipped_thumbnails[] = $size;
 				unset( $sizes[ $size ] );
 			}
 		}
@@ -255,7 +310,9 @@ class RegenerateThumbnails_Regenerator {
 	}
 
 	/**
-	 * Generate the thumbnail filename for a given set of dimensions.
+	 * Generate the thumbnail filename and dimensions for a given set of constraint dimensions.
+	 *
+	 * @since 3.0.0
 	 *
 	 * @param WP_Image_Editor|WP_Error $editor           An instance of WP_Image_Editor, as returned by wp_get_image_editor().
 	 * @param int                      $fullsize_width   The width of the fullsize image.
@@ -264,9 +321,10 @@ class RegenerateThumbnails_Regenerator {
 	 * @param int                      $thumbnail_height The height of the thumbnail.
 	 * @param bool                     $crop             Whether to crop or not.
 	 *
-	 * @return string|false The filename, or false on failure to resize such as the thumbnail being larger than the fullsize image.
+	 * @return array|false An array of the filename, thumbnail width, and thumbnail height,
+	 *                     or false on failure to resize such as the thumbnail being larger than the fullsize image.
 	 */
-	public function get_thumbnail_filename( $editor, $fullsize_width, $fullsize_height, $thumbnail_width, $thumbnail_height, $crop ) {
+	public function get_thumbnail( $editor, $fullsize_width, $fullsize_height, $thumbnail_width, $thumbnail_height, $crop ) {
 		$dims = image_resize_dimensions( $fullsize_width, $fullsize_height, $thumbnail_width, $thumbnail_height, $crop );
 
 		if ( ! $dims ) {
@@ -278,12 +336,18 @@ class RegenerateThumbnails_Regenerator {
 		$suffix   = "{$dst_w}x{$dst_h}";
 		$file_ext = strtolower( pathinfo( $this->fullsizepath, PATHINFO_EXTENSION ) );
 
-		return $editor->generate_filename( $suffix, null, $file_ext );
+		return array(
+			'filename' => $editor->generate_filename( $suffix, null, $file_ext ),
+			'width'    => $dst_w,
+			'height'   => $dst_h,
+		);
 	}
 
 	/**
 	 * Update the post content of any public post types (posts and pages by default)
 	 * that make use of this attachment.
+	 *
+	 * @since 3.0.0
 	 *
 	 * @param array|string $args {
 	 *     Optional. Array or string of arguments for controlling the updating.
@@ -417,6 +481,8 @@ class RegenerateThumbnails_Regenerator {
 	/**
 	 * Returns information about the current attachment for use in the REST API.
 	 *
+	 * @since 3.0.0
+	 *
 	 * @return array The attachment name, fullsize URL, registered thumbnail size status, and any unregistered sizes.
 	 *               On error, the key "error" will be set with the error message as the value.
 	 */
@@ -431,7 +497,7 @@ class RegenerateThumbnails_Regenerator {
 		$editor = wp_get_image_editor( $this->fullsizepath );
 		if ( is_wp_error( $editor ) ) {
 			return array(
-				'error' => $set_fullsizepath->get_error_message(),
+				'error' => $editor->get_error_message(),
 			);
 		}
 
@@ -450,14 +516,11 @@ class RegenerateThumbnails_Regenerator {
 		// Check the status of all currently registered sizes
 		$registered_sizes = RegenerateThumbnails()->get_thumbnail_sizes();
 		foreach ( $registered_sizes as $size ) {
-			$downsize = image_downsize( $this->attachment->ID, $size['label'] );
+			$thumbnail = $this->get_thumbnail( $editor, $metadata['width'], $metadata['height'], $size['width'], $size['height'], $size['crop'] );
 
-			// image_downsize() will return false if the thumbnail size is larger than the original
-			if ( $downsize && ! empty( $downsize[3] ) ) {
-				$file = $this->get_thumbnail_filename( $editor, $metadata['width'], $metadata['height'], $size['width'], $size['height'], $size['crop'] );
-
-				$size['filename']   = basename( $file );
-				$size['fileexists'] = file_exists( $file );
+			if ( $thumbnail ) {
+				$size['filename']   = basename( $thumbnail['filename'] );
+				$size['fileexists'] = file_exists( $thumbnail['filename'] );
 			} else {
 				$size['filename']   = false;
 				$size['fileexists'] = false;

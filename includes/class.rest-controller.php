@@ -124,6 +124,8 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	 * Returns whether a variable is an array or not. This is needed because 3 arguments are
 	 * passed to validation callbacks but is_array() only accepts one argument.
 	 *
+	 * @since 3.0.0
+	 *
 	 * @see https://core.trac.wordpress.org/ticket/34659
 	 *
 	 * @param mixed           $param   The parameter value to validate.
