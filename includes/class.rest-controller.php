@@ -77,9 +77,9 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 			$posts_updated = $regenerator->update_usages_in_posts( $request->get_param( 'update_usages_in_posts_args' ) );
 
 			// If wp_update_post() failed for any posts, return that error
-			foreach ( $posts_updated as $post_updated_id => $result ) {
-				if ( is_wp_error( $result ) ) {
-					return $result;
+			foreach ( $posts_updated as $post_updated_id => $post_updated_result ) {
+				if ( is_wp_error( $post_updated_result ) ) {
+					return $post_updated_result;
 				}
 			}
 		}
