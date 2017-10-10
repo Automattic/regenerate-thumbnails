@@ -1,4 +1,4 @@
-const config = require('./browsersync-config.json');
+const BrowserSyncConfig = require('./browsersync-config.json');
 const path = require('path');
 const webpack = require('webpack');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
@@ -56,9 +56,9 @@ module.exports = {
 	devtool    : '#eval-source-map',
 	plugins    : [
 		new BrowserSyncPlugin({
-				proxy      : config.WordPressInstallURL + '/wp-admin/tools.php?page=regenerate-thumbnails',
-				host       : config.BrowserSyncHost,
-				port       : config.BrowserSyncPort,
+				proxy      : BrowserSyncConfig.WordPressInstallURL + '/wp-admin/tools.php?page=regenerate-thumbnails',
+				host       : BrowserSyncConfig.proxyHost,
+				port       : BrowserSyncConfig.proxyPort,
 				files      : [
 					'**/*.php'
 				],
