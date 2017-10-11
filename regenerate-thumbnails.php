@@ -222,6 +222,13 @@ class RegenerateThumbnails {
 				),
 			)
 		);
+
+		wp_enqueue_style(
+			'regenerate-thumbnails-progressbar',
+			plugins_url( 'css/progressbar.css', __FILE__ ),
+			array(),
+			( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? filemtime( dirname( __FILE__ ) . '/css/progressbar.css' ) : $this->version
+		);
 	}
 
 	/**

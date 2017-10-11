@@ -1,5 +1,5 @@
 <template>
-	<li v-bind:class="[size.fileexists ? 'exists' : 'notexists']" v-html="thumbnailText"></li>
+	<li :class="[size.fileexists ? 'exists' : 'notexists']" v-html="thumbnailText"></li>
 </template>
 
 <script>

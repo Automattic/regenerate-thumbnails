@@ -64,9 +64,9 @@
 				<li
 					is="thumbnail-status"
 					v-for="size in attachmentInfo.registered_sizes"
-					v-bind:key="size.label"
-					v-bind:size="size"
-					v-bind:l10n="regenerateThumbnails.l10n"
+					:key="size.label"
+					:size="size"
+					:l10n="regenerateThumbnails.l10n"
 				></li>
 			</ul>
 
@@ -76,9 +76,9 @@
 					<li
 						is="thumbnail-status"
 						v-for="size in attachmentInfo.unregistered_sizes"
-						v-bind:key="size.label"
-						v-bind:size="size"
-						v-bind:l10n="regenerateThumbnails.l10n"
+						:key="size.label"
+						:size="size"
+						:l10n="regenerateThumbnails.l10n"
 					></li>
 				</ul>
 			</div>

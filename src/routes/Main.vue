@@ -3,6 +3,8 @@
 		<p v-html="regenerateThumbnails.l10n.Home.intro1"></p>
 		<p v-html="regenerateThumbnails.l10n.Home.intro2"></p>
 
+		<progress-bar :progress="progress"></progress-bar>
+
 		<h2 class="title">{{ regenerateThumbnails.l10n.Home.thumbnailSizes }}</h2>
 		<p>{{ regenerateThumbnails.l10n.Home.thumbnailSizesDescription }}</p>
 		<ul>
@@ -24,14 +26,16 @@
 
 <script>
 	import {WPRESTAPI} from '../helpers/wprestapi';
+	import ProgressBar from '../components/ProgressBar.vue'
 	import ThumbnailSize from '../components/ThumbnailSize.vue'
 
 	export default {
 		data      : () => ({
 			regenerateThumbnails: regenerateThumbnails,
-			posts               : [],
+			progress            : 37,
 		}),
 		components: {
+			ProgressBar,
 			ThumbnailSize,
 		},
 	}

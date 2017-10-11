@@ -60,7 +60,8 @@ module.exports = {
 				host       : BrowserSyncConfig.proxyHost,
 				port       : BrowserSyncConfig.proxyPort,
 				files      : [
-					'**/*.php'
+					'**/*.php',
+					'css/progressbar.css'
 				],
 				reloadDelay: 0,
 				notify     : {
