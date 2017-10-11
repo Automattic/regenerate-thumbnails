@@ -1,24 +1,24 @@
 <template>
 	<div>
-		<p v-html="regenerateThumbnails.i18n.Home.intro1"></p>
-		<p v-html="regenerateThumbnails.i18n.Home.intro2"></p>
+		<p v-html="regenerateThumbnails.l10n.Home.intro1"></p>
+		<p v-html="regenerateThumbnails.l10n.Home.intro2"></p>
 
-		<h2 class="title">{{ regenerateThumbnails.i18n.Home.thumbnailSizes }}</h2>
-		<p>{{ regenerateThumbnails.i18n.Home.thumbnailSizesDescription }}</p>
+		<h2 class="title">{{ regenerateThumbnails.l10n.Home.thumbnailSizes }}</h2>
+		<p>{{ regenerateThumbnails.l10n.Home.thumbnailSizesDescription }}</p>
 		<ul>
 			<li
 				is="thumbnail-size"
 				v-for="(size, label) in regenerateThumbnails.data.thumbnailSizes"
 				:key="label"
 				:size="size"
-				:text="regenerateThumbnails.i18n.common.thumbnailSizeItemWithCropMethod"
-				:textCropped="regenerateThumbnails.i18n.common.thumbnailSizeItemIsCropped"
-				:textProportional="regenerateThumbnails.i18n.common.thumbnailSizeItemIsProportional"
+				:text="regenerateThumbnails.l10n.common.thumbnailSizeItemWithCropMethod"
+				:textCropped="regenerateThumbnails.l10n.common.thumbnailSizeItemIsCropped"
+				:textProportional="regenerateThumbnails.l10n.common.thumbnailSizeItemIsProportional"
 			></li>
 		</ul>
 
-		<h2 class="title">{{ regenerateThumbnails.i18n.Home.commandLineInterface }}</h2>
-		<p v-html="regenerateThumbnails.i18n.Home.commandLineInterfaceText"></p>
+		<h2 class="title">{{ regenerateThumbnails.l10n.Home.commandLineInterface }}</h2>
+		<p v-html="regenerateThumbnails.l10n.Home.commandLineInterfaceText"></p>
 	</div>
 </template>
 

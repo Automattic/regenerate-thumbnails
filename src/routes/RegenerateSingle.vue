@@ -1,6 +1,6 @@
 <template>
 	<div v-if="!dataLoaded">
-		<p>{{ regenerateThumbnails.i18n.common.loading }}</p>
+		<p>{{ regenerateThumbnails.l10n.common.loading }}</p>
 	</div>
 
 	<div v-else-if="dataLoaded">
@@ -16,7 +16,7 @@
 				v-if="attachmentInfo.fullsizeurl"
 				:src="attachmentInfo.fullsizeurl"
 				class="image-preview"
-				:alt="regenerateThumbnails.i18n.RegenerateSingle.preview"
+				:alt="regenerateThumbnails.l10n.RegenerateSingle.preview"
 			/>
 
 			<p>
@@ -26,7 +26,7 @@
 						id="regenthumbs-regenopt-onlymissing"
 						:checked="regenerateThumbnails.options.onlyMissingThumbnails"
 					/>
-					{{ regenerateThumbnails.i18n.RegenerateSingle.onlyRegenerateMissingThumbnails }}
+					{{ regenerateThumbnails.l10n.RegenerateSingle.onlyRegenerateMissingThumbnails }}
 				</label>
 			</p>
 			<p>
@@ -36,7 +36,7 @@
 						id="regenthumbs-regenopt-updateposts"
 						:checked="regenerateThumbnails.options.updatePostContents"
 					/>
-					{{ regenerateThumbnails.i18n.RegenerateSingle.updatePostContents }}
+					{{ regenerateThumbnails.l10n.RegenerateSingle.updatePostContents }}
 				</label>
 			</p>
 			<p>
@@ -47,7 +47,7 @@
 						:checked="regenerateThumbnails.options.deleteOldThumbnails"
 						v-on:change="checkUpdatePosts"
 					/>
-					{{ regenerateThumbnails.i18n.RegenerateSingle.deleteOldThumbnails }}
+					{{ regenerateThumbnails.l10n.RegenerateSingle.deleteOldThumbnails }}
 				</label>
 			</p>
 
@@ -55,30 +55,30 @@
 
 			<p class="submit">
 				<button class="button button-primary button-hero" v-on:click="regenerate">
-					{{ regenerateThumbnails.i18n.common.regenerateThumbnails }}
+					{{ regenerateThumbnails.l10n.common.regenerateThumbnails }}
 				</button>
 			</p>
 
-			<p>{{ regenerateThumbnails.i18n.RegenerateSingle.registeredSizes }}</p>
+			<p>{{ regenerateThumbnails.l10n.RegenerateSingle.registeredSizes }}</p>
 			<ul>
 				<li
 					is="thumbnail-status"
 					v-for="size in attachmentInfo.registered_sizes"
 					v-bind:key="size.label"
 					v-bind:size="size"
-					v-bind:i18n="regenerateThumbnails.i18n"
+					v-bind:l10n="regenerateThumbnails.l10n"
 				></li>
 			</ul>
 
 			<div v-if="attachmentInfo.unregistered_sizes.length">
-				<p>{{ regenerateThumbnails.i18n.RegenerateSingle.unregisteredSizes }}</p>
+				<p>{{ regenerateThumbnails.l10n.RegenerateSingle.unregisteredSizes }}</p>
 				<ul>
 					<li
 						is="thumbnail-status"
 						v-for="size in attachmentInfo.unregistered_sizes"
 						v-bind:key="size.label"
 						v-bind:size="size"
-						v-bind:i18n="regenerateThumbnails.i18n"
+						v-bind:l10n="regenerateThumbnails.l10n"
 					></li>
 				</ul>
 			</div>
@@ -106,15 +106,15 @@
 					this.attachmentInfo = response.data;
 
 					if (typeof this.attachmentInfo.error !== 'undefined') {
-						this.errorText = this.regenerateThumbnails.i18n.RegenerateSingle.errorWithMessage.formatUnicorn(this.attachmentInfo);
+						this.errorText = this.regenerateThumbnails.l10n.RegenerateSingle.errorWithMessage.formatUnicorn(this.attachmentInfo);
 					} else {
-						document.getElementsByTagName('title')[0].innerHTML = this.regenerateThumbnails.i18n.RegenerateSingle.title.formatUnicorn(this.attachmentInfo);
+						document.getElementsByTagName('title')[0].innerHTML = this.regenerateThumbnails.l10n.RegenerateSingle.title.formatUnicorn(this.attachmentInfo);
 					}
 
 					this.dataLoaded = true;
 				})
 				.catch(error => {
-					this.errorText = this.regenerateThumbnails.i18n.RegenerateSingle.errorWithMessage.formatUnicorn({
+					this.errorText = this.regenerateThumbnails.l10n.RegenerateSingle.errorWithMessage.formatUnicorn({
 						'error': error.response.data.message,
 					});
 
@@ -125,7 +125,7 @@
 		},
 		computed  : {
 			filenameAndDimensions: function () {
-				return this.regenerateThumbnails.i18n.RegenerateSingle.filenameAndDimensions.formatUnicorn({
+				return this.regenerateThumbnails.l10n.RegenerateSingle.filenameAndDimensions.formatUnicorn({
 					filename: this.attachmentInfo.relative_path,
 					width   : this.attachmentInfo.width,
 					height  : this.attachmentInfo.height,
@@ -141,7 +141,7 @@
 				}
 
 				event.target.disabled = true;
-				event.target.innerText = regenerateThumbnails.i18n.RegenerateSingle.regenerating;
+				event.target.innerText = regenerateThumbnails.l10n.RegenerateSingle.regenerating;
 
 				// If this isn't done, the checkboxes revert to defaults
 				this.regenerateThumbnails.options.onlyMissingThumbnails = document.getElementById('regenthumbs-regenopt-onlymissing').checked;
@@ -159,12 +159,12 @@
 						this.regenerationComplete = true;
 						this.attachmentInfo = response.data;
 
-						event.target.innerText = regenerateThumbnails.i18n.RegenerateSingle.done;
+						event.target.innerText = regenerateThumbnails.l10n.RegenerateSingle.done;
 						event.target.disabled = false;
 					})
 					.catch(error => {
-						event.target.innerText = regenerateThumbnails.i18n.RegenerateSingle.errorRegenerating;
-						this.regenerationError = this.regenerateThumbnails.i18n.RegenerateSingle.errorRegeneratingMessage.formatUnicorn(error.response.data);
+						event.target.innerText = regenerateThumbnails.l10n.RegenerateSingle.errorRegenerating;
+						this.regenerationError = this.regenerateThumbnails.l10n.RegenerateSingle.errorRegeneratingMessage.formatUnicorn(error.response.data);
 						console.log(error);
 					});
 			},

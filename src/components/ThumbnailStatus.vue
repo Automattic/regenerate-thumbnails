@@ -8,7 +8,7 @@
 	export default {
 		props   : [
 			'size',
-			'i18n',
+			'l10n',
 		],
 		computed: {
 			thumbnailText: function () {
@@ -16,15 +16,15 @@
 				if (this.size.filename) {
 					// Crop type is undefined for unregistered sizes
 					if (typeof this.size.crop !== 'undefined') {
-						this.size.cropMethod = (this.size.crop) ? this.i18n.common.thumbnailSizeItemIsCropped : this.i18n.common.thumbnailSizeItemIsProportional;
+						this.size.cropMethod = (this.size.crop) ? this.l10n.common.thumbnailSizeItemIsCropped : this.l10n.common.thumbnailSizeItemIsProportional;
 
-						return this.i18n.common.thumbnailSizeItemWithCropMethod.formatUnicorn(this.size);
+						return this.l10n.common.thumbnailSizeItemWithCropMethod.formatUnicorn(this.size);
 					} else {
-						return this.i18n.common.thumbnailSizeItemWithoutCropMethod.formatUnicorn(this.size);
+						return this.l10n.common.thumbnailSizeItemWithoutCropMethod.formatUnicorn(this.size);
 					}
 
 				} else {
-					return this.i18n.common.thumbnailSizeBiggerThanOriginal.formatUnicorn(this.size);
+					return this.l10n.common.thumbnailSizeBiggerThanOriginal.formatUnicorn(this.size);
 				}
 			}
 		},

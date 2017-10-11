@@ -175,7 +175,7 @@ class RegenerateThumbnails {
 					'updatePostContents'    => true,
 					'deleteOldThumbnails'   => false,
 				),
-				'i18n'          => array(
+				'l10n'          => array(
 					'common'           => array(
 						'regenerateThumbnails'               => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
 						'loading'                            => __( 'Loading…', 'regenerate-thumbnails' ),
