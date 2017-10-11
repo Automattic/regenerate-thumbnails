@@ -19,8 +19,6 @@
 
 		<h2 class="title">{{ regenerateThumbnails.i18n.Home.commandLineInterface }}</h2>
 		<p v-html="regenerateThumbnails.i18n.Home.commandLineInterfaceText"></p>
-
-		<p><em>DEBUG: WordPress REST API nonce is <code>{{ regenerateThumbnails.wpApiSettings.nonce }}</code>.</em></p>
 	</div>
 </template>
 
