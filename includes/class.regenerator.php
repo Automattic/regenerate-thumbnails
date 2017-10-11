@@ -399,48 +399,37 @@ class RegenerateThumbnails_Regenerator {
 				$content = $post->post_content;
 				$search  = $replace = array();
 
-				// Example: <img src="URL" alt="" width="100" height="75" class="size-thumbnail wp-image-1712" />
+				// Find all <img> tags for this attachment and update them
 				preg_match_all(
-					'#<img src="[^"]+"([^>]+)? width="[^"]+" height="[^"]+"([^>]+)size-([^"]+) wp-image-' . $this->attachment->ID . '"([^>]+)?/>#i',
+					'#<img [^>]+wp-image-' . $this->attachment->ID . '[^>]+/>#i',
 					$content,
 					$matches,
 					PREG_SET_ORDER
 				);
 				if ( $matches ) {
-					foreach ( $matches as $match ) {
-						$thumbnail = image_downsize( $this->attachment->ID, $match[3] );
+					foreach ( $matches as $img_tag ) {
+						preg_match( '# class="([^"]+)?size-([^" ]+)#i', $img_tag[0], $thumbnail_size );
 
-						if ( ! $thumbnail ) {
-							continue;
+						if ( $thumbnail_size ) {
+							$thumbnail = image_downsize( $this->attachment->ID, $thumbnail_size[2] );
+
+							if ( ! $thumbnail ) {
+								continue;
+							}
+
+							$search[] = $img_tag[0];
+
+							$img_tag[0] = preg_replace( '# src="[^"]+"#i', ' src="' . esc_url( $thumbnail[0] ) . '"', $img_tag[0] );
+							$img_tag[0] = preg_replace(
+								'# width="[^"]+" height="[^"]+"#i',
+								' width="' . esc_attr( $thumbnail[1] ) . '" height="' . esc_attr( $thumbnail[2] ) . '"',
+								$img_tag[0]
+							);
+
+							$replace[] = $img_tag[0];
 						}
-
-						$search[]  = $match[0];
-						$replace[] = '<img src="' . $thumbnail[0] . '"' . $match[1] . ' width="' . $thumbnail[1] . '" height="' . $thumbnail[2] . '"' . $match[2] . 'size-' . $match[3] . ' wp-image-' . $this->attachment->ID . '"' . $match[4] . '/>';
 					}
 				}
-
-				// Example: <img class="cssclass wp-image-123 size-large" title="img title" src="URL" alt="alt" width="500" height="375" />
-				// I believe this comes from TinyMCE reformatting the HTML
-				preg_match_all(
-					'#<img ([^>]+)wp-image-' . $this->attachment->ID . ' size-([^"]+)"([^>]+)? src="[^"]+"([^>]+)? width="[^"]+" height="[^"]+" />#i',
-					$content,
-					$matches,
-					PREG_SET_ORDER
-				);
-				if ( $matches ) {
-					foreach ( $matches as $match ) {
-						$thumbnail = image_downsize( $this->attachment->ID, $match[2] );
-
-						if ( ! $thumbnail ) {
-							continue;
-						}
-
-						$search[]  = $match[0];
-						$replace[] = '<img ' . $match[1] . 'wp-image-' . $this->attachment->ID . ' size-' . $match[2] . '"' . $match[3] . ' src="' . $thumbnail[0] . '"' . $match[4] . ' width="' . $thumbnail[1] . '" height="' . $thumbnail[2] . '" />';
-					}
-				}
-
-				// Process the <img> tags now
 				$content = str_replace( $search, $replace, $content );
 				$search  = $replace = array();
 
@@ -460,10 +449,9 @@ class RegenerateThumbnails_Regenerator {
 						}
 
 						$search[]  = $match[0];
-						$replace[] = '[caption id="attachment_' . $this->attachment->ID . '"' . $match[1] . ' width="' . $thumbnail[1] . '"]' . $match[2] . 'size-' . $match[3] . $match[4] . '[/caption]';
+						$replace[] = '[caption id="attachment_' . $this->attachment->ID . '"' . $match[1] . ' width="' . esc_attr( $thumbnail[1] ) . '"]' . $match[2] . 'size-' . $match[3] . $match[4] . '[/caption]';
 					}
 				}
-
 				$content = str_replace( $search, $replace, $content );
 
 				$updated_post_object = (object) array(
