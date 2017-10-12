@@ -27,16 +27,38 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 				'callback'            => array( $this, 'regenerate_item' ),
 				'permission_callback' => array( $this, 'permissions_check' ),
 				'args'                => array(
-					'regeneration_args'           => array(
+					'only_regenerate_missing_thumbnails'    => array(
+						'description' => __( "Whether to only regenerate missing thumbnails. It's faster with this enabled.", 'regenerate-thumbnails' ),
+						'type'        => 'boolean',
+						'default'     => true,
+					),
+					'delete_unregistered_thumbnail_files'   => array(
+						'description' => __( 'Whether to delete any old, now unregistered thumbnail files.', 'regenerate-thumbnails' ),
+						'type'        => 'boolean',
+						'default'     => false,
+					),
+					'update_usages_in_posts'                => array(
+						'description' => __( 'Whether to update the image tags in any posts that make use of this attachment.', 'regenerate-thumbnails' ),
+						'type'        => 'boolean',
+						'default'     => true,
+					),
+					'update_usages_in_posts_post_type'      => array(
+						'description'       => __( 'The types of posts to update. Defaults to all public post types.', 'regenerate-thumbnails' ),
+						'type'              => 'array',
 						'default'           => array(),
 						'validate_callback' => array( $this, 'is_array' ),
 					),
-					'update_usages_in_posts'      => array(
-						'default' => true,
-					),
-					'update_usages_in_posts_args' => array(
+					'update_usages_in_posts_post_ids'       => array(
+						'description'       => __( 'Specific post IDs to update rather than any posts that use this attachment.', 'regenerate-thumbnails' ),
+						'type'              => 'array',
 						'default'           => array(),
 						'validate_callback' => array( $this, 'is_array' ),
+					),
+					'update_usages_in_posts_posts_per_loop' => array(
+						'description'       => __( "Posts to process per loop. This is control memory usage and you likely don't need to adjust this.", 'regenerate-thumbnails' ),
+						'type'              => 'integer',
+						'default'           => 10,
+						'sanitize_callback' => 'absint',
 					),
 				),
 			),
@@ -67,14 +89,21 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 			return $regenerator;
 		}
 
-		$result = $regenerator->regenerate( $request->get_param( 'regeneration_args' ) );
+		$result = $regenerator->regenerate( array(
+			'only_regenerate_missing_thumbnails'  => $request->get_param( 'only_regenerate_missing_thumbnails' ),
+			'delete_unregistered_thumbnail_files' => $request->get_param( 'delete_unregistered_thumbnail_files' ),
+		) );
 
 		if ( is_wp_error( $result ) ) {
 			return $result;
 		}
 
 		if ( $request->get_param( 'update_usages_in_posts' ) ) {
-			$posts_updated = $regenerator->update_usages_in_posts( $request->get_param( 'update_usages_in_posts_args' ) );
+			$posts_updated = $regenerator->update_usages_in_posts( array(
+				'post_type'      => $request->get_param( 'update_usages_in_posts_post_type' ),
+				'post_ids'       => $request->get_param( 'update_usages_in_posts_post_ids' ),
+				'posts_per_loop' => $request->get_param( 'update_usages_in_posts_posts_per_loop' ),
+			) );
 
 			// If wp_update_post() failed for any posts, return that error
 			foreach ( $posts_updated as $post_updated_id => $post_updated_result ) {
@@ -126,7 +155,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @see https://core.trac.wordpress.org/ticket/34659
+	 * @see   https://core.trac.wordpress.org/ticket/34659
 	 *
 	 * @param mixed           $param   The parameter value to validate.
 	 * @param WP_REST_Request $request The REST request.
