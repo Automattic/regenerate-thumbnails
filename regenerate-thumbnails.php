@@ -176,15 +176,16 @@ class RegenerateThumbnails {
 				),
 				'l10n'          => array(
 					'common'           => array(
-						'regenerateThumbnails'               => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
-						'loading'                            => __( 'Loading…', 'regenerate-thumbnails' ),
-						'onlyRegenerateMissingThumbnails'    => __( 'Skip regenerating existing correctly sized thumbnails (faster).', 'regenerate-thumbnails' ),
-						'deleteOldThumbnails'                => __( "Delete old, unused thumbnails to free up server space. It's strongly recommended that you update the content of posts if you do this.", 'regenerate-thumbnails' ),
-						'thumbnailSizeItemWithCropMethod'    => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemWithoutCropMethod' => __( '<strong>{label}:</strong> {width}×{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
-						'thumbnailSizeBiggerThanOriginal'    => __( '<strong>{label}:</strong> {width}×{height} pixels (thumbnail would be larger than original)', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemIsCropped'         => __( 'cropped to fit', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemIsProportional'    => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
+						'regenerateThumbnails'                      => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
+						'loading'                                   => __( 'Loading…', 'regenerate-thumbnails' ),
+						'onlyRegenerateMissingThumbnails'           => __( 'Skip regenerating existing correctly sized thumbnails (faster).', 'regenerate-thumbnails' ),
+						'deleteOldThumbnails'                       => __( "Delete old, unused thumbnail files to free up server space. It's strongly recommended that you update the content of posts if you do this.", 'regenerate-thumbnails' ),
+						'thumbnailSizeItemWithCropMethodNoFilename' => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemWithCropMethod'           => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemWithoutCropMethod'        => __( '<strong>{label}:</strong> {width}×{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
+						'thumbnailSizeBiggerThanOriginal'           => __( '<strong>{label}:</strong> {width}×{height} pixels (thumbnail would be larger than original)', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemIsCropped'                => __( 'cropped to fit', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemIsProportional'           => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
 					),
 					'Home'             => array(
 						'intro1'                    => sprintf(

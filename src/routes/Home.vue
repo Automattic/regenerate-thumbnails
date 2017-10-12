@@ -53,7 +53,7 @@
 				v-for="(size, label) in regenerateThumbnails.data.thumbnailSizes"
 				:key="label"
 				:size="size"
-				:text="regenerateThumbnails.l10n.common.thumbnailSizeItemWithCropMethod"
+				:text="regenerateThumbnails.l10n.common.thumbnailSizeItemWithCropMethodNoFilename"
 				:textCropped="regenerateThumbnails.l10n.common.thumbnailSizeItemIsCropped"
 				:textProportional="regenerateThumbnails.l10n.common.thumbnailSizeItemIsProportional"
 			></li>
