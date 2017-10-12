@@ -1,13 +1,15 @@
-import Main from './routes/Main.vue';
+import Home from './routes/Home.vue';
 import RegenerateSingle from './routes/RegenerateSingle.vue';
 
 export default [
 	{
 		path     : '/',
-		component: Main,
+		name     : 'home',
+		component: Home,
 	},
 	{
-		path     : '/regenerate/:id',
+		path     : '/regenerate/:id(\\d+)',
+		name     : 'regenerate-single',
 		component: RegenerateSingle,
 	},
 	{

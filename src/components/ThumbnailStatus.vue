@@ -11,7 +11,7 @@
 			'l10n',
 		],
 		computed: {
-			thumbnailText: function () {
+			thumbnailText() {
 				// F{lename is false if the thumbnail is larger than the original
 				if (this.size.filename) {
 					// Crop type is undefined for unregistered sizes

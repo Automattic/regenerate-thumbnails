@@ -26,7 +26,7 @@
 						id="regenthumbs-regenopt-onlymissing"
 						:checked="regenerateThumbnails.options.onlyMissingThumbnails"
 					/>
-					{{ regenerateThumbnails.l10n.RegenerateSingle.onlyRegenerateMissingThumbnails }}
+					{{ regenerateThumbnails.l10n.common.onlyRegenerateMissingThumbnails }}
 				</label>
 			</p>
 			<p>
@@ -47,7 +47,7 @@
 						:checked="regenerateThumbnails.options.deleteOldThumbnails"
 						v-on:change="checkUpdatePosts"
 					/>
-					{{ regenerateThumbnails.l10n.RegenerateSingle.deleteOldThumbnails }}
+					{{ regenerateThumbnails.l10n.common.deleteOldThumbnails }}
 				</label>
 			</p>
 
@@ -92,14 +92,16 @@
 	import ThumbnailStatus from "../components/ThumbnailStatus.vue";
 
 	export default {
-		data      : () => ({
-			regenerateThumbnails: regenerateThumbnails,
-			dataLoaded          : false,
-			errorText           : false,
-			attachmentInfo      : {},
-			regenerationComplete: false,
-			regenerationError   : false,
-		}),
+		data() {
+			return {
+				regenerateThumbnails: regenerateThumbnails,
+				dataLoaded          : false,
+				errorText           : false,
+				attachmentInfo      : {},
+				regenerationComplete: false,
+				regenerationError   : false,
+			}
+		},
 		created() {
 			WPRESTAPI.get('regenerate-thumbnails/v1/attachmentinfo/' + this.$route.params.id)
 				.then(response => {
@@ -124,7 +126,7 @@
 				});
 		},
 		computed  : {
-			filenameAndDimensions: function () {
+			filenameAndDimensions() {
 				return this.regenerateThumbnails.l10n.RegenerateSingle.filenameAndDimensions.formatUnicorn({
 					filename: this.attachmentInfo.relative_path,
 					width   : this.attachmentInfo.width,
@@ -133,7 +135,7 @@
 			},
 		},
 		methods   : {
-			regenerate      : function (event) {
+			regenerate(event) {
 				// On second button click
 				if (this.regenerationComplete) {
 					history.back();
@@ -168,7 +170,7 @@
 						console.log(error);
 					});
 			},
-			checkUpdatePosts: function (event) {
+			checkUpdatePosts(event) {
 				if (event.target.checked) {
 					document.getElementById('regenthumbs-regenopt-updateposts').checked = true;
 				}

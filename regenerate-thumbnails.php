@@ -161,7 +161,6 @@ class RegenerateThumbnails {
 			'regenerate-thumbnails',
 			'regenerateThumbnails',
 			array(
-				// wp-api is too much and wp-api-request is 4.9+: https://core.trac.wordpress.org/changeset/41206
 				'wpApiSettings' => array(
 					'root'  => esc_url_raw( get_rest_url() ),
 					'nonce' => wp_create_nonce( 'wp_rest' ),
@@ -179,45 +178,42 @@ class RegenerateThumbnails {
 					'common'           => array(
 						'regenerateThumbnails'               => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
 						'loading'                            => __( 'Loading…', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemWithCropMethod'    => __( '<strong>{label}:</strong> {width}&#215;{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemWithoutCropMethod' => __( '<strong>{label}:</strong> {width}&#215;{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
-						'thumbnailSizeBiggerThanOriginal'    => __( '<strong>{label}:</strong> {width}&#215;{height} pixels (thumbnail would be larger than original)', 'regenerate-thumbnails' ),
+						'onlyRegenerateMissingThumbnails'    => __( 'Skip regenerating existing correctly sized thumbnails (faster).', 'regenerate-thumbnails' ),
+						'deleteOldThumbnails'                => __( "Delete old, unused thumbnails to free up server space. It's strongly recommended that you update the content of posts if you do this.", 'regenerate-thumbnails' ),
+						'thumbnailSizeItemWithCropMethod'    => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
+						'thumbnailSizeItemWithoutCropMethod' => __( '<strong>{label}:</strong> {width}×{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
+						'thumbnailSizeBiggerThanOriginal'    => __( '<strong>{label}:</strong> {width}×{height} pixels (thumbnail would be larger than original)', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemIsCropped'         => __( 'cropped to fit', 'regenerate-thumbnails' ),
 						'thumbnailSizeItemIsProportional'    => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
 					),
 					'Home'             => array(
 						'intro1'                    => sprintf(
-							__( "Use this tool to regenerate the thumbnails for all images that you have uploaded to your site. This is useful if you've changed any of the thumbnail dimensions on the <a href='%s'>media settings page</a> or switched themes.", 'regenerate-thumbnails' ),
+							__( 'When you change WordPress themes or change the sizes of your thumbnails at <a href="%s">Settings → Media</a>, images that you have previously uploaded to you media library will be missing thumbnail files for those new image sizes. This tool will allow you to create those missing thumbnail files for all images.', 'regenerate-thumbnails' ),
 							esc_url( admin_url( 'options-media.php' ) )
 						),
 						'intro2'                    => sprintf(
-							__( "You can regenerate specific images (rather than all images) from the <a href='%s'>Media</a> page. Hover over an image's row and click the link to resize just that one image or use the checkboxes and the &quot;Bulk Actions&quot; dropdown to resize multiple images.", 'regenerate-thumbnails' ),
+							__( 'To process a specific image, visit your media library and click the &quot;Regenerate Thumbnails&quot; link or button. To process multiple specific images, make sure you\'re in the <a href="%s">list view</a> and then use the Bulk Actions dropdown after selecting one or more images.', 'regenerate-thumbnails' ),
 							esc_url( admin_url( 'upload.php?mode=list' ) )
 						),
+						'regenerateAllImages'       => __( 'Regenerate All Images', 'regenerate-thumbnails' ),
+						'attachmentCount'           => __( 'You currently have {attachmentCount} image attachments that will be regenerated.', 'regenerate-thumbnails' ),
+						'updatePostContents'        => __( 'Update the content of posts to use the new sizes.', 'regenerate-thumbnails' ),
 						'thumbnailSizes'            => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
 						'thumbnailSizesDescription' => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
-						'commandLineInterface'      => __( 'Command Line Interface', 'regenerate-thumbnails' ),
-						'commandLineInterfaceText'  => sprintf(
-							__( 'If you have command line access to your server via SSH, consider using <a href="%1$s">WP-CLI</a> instead of this plugin to regenerate thumbnails. It has <a href="%2$s">a built-in command</a> for regenerating thumbnails that is significantly faster than this plugin since making HTTP requests via the browser is not required.', 'regenerate-thumbnails' ),
-							'https://wp-cli.org/',
-							'https://developer.wordpress.org/cli/commands/media/regenerate/'
-						),
 					),
 					'RegenerateSingle' => array(
 						/* translators: Admin screen title. */
-						'title'                           => __( 'Regenerate Thumbnails: {name} &#8212; WordPress', 'regenerate-thumbnails' ),
-						'errorWithMessage'                => __( '<strong>ERROR:</strong> {error}', 'regenerate-thumbnails' ),
-						'filenameAndDimensions'           => __( '<code>{filename}</code> {width}&#215;{height} pixels', 'regenerate-thumbnails' ),
-						'preview'                         => __( 'Preview', 'regenerate-thumbnails' ),
-						'onlyRegenerateMissingThumbnails' => __( 'Skip regenerating existing correctly sized thumbnails (faster).', 'regenerate-thumbnails' ),
-						'updatePostContents'              => __( 'Update the content of posts that use this attachment to use the new sizes.', 'regenerate-thumbnails' ),
-						'deleteOldThumbnails'             => __( "Delete old, unused thumbnails to free up server space. It's strongly recommended that you update the content of posts if you do this.", 'regenerate-thumbnails' ),
-						'regenerating'                    => __( 'Regenerating…', 'regenerate-thumbnails' ),
-						'done'                            => __( 'Done! Click here to go back.', 'regenerate-thumbnails' ),
-						'errorRegenerating'               => __( 'Error Regenerating', 'regenerate-thumbnails' ),
-						'errorRegeneratingMessage'        => __( 'There was an error regenerating this attachment. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
-						'registeredSizes'                 => __( 'These are the currently registered thumbnail sizes, whether they exist for this attachment, and their filenames:', 'regenerate-thumbnails' ),
-						'unregisteredSizes'               => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
+						'title'                    => __( 'Regenerate Thumbnails: {name} — WordPress', 'regenerate-thumbnails' ),
+						'errorWithMessage'         => __( '<strong>ERROR:</strong> {error}', 'regenerate-thumbnails' ),
+						'filenameAndDimensions'    => __( '<code>{filename}</code> {width}×{height} pixels', 'regenerate-thumbnails' ),
+						'preview'                  => __( 'Preview', 'regenerate-thumbnails' ),
+						'updatePostContents'       => __( 'Update the content of posts that use this attachment to use the new sizes.', 'regenerate-thumbnails' ),
+						'regenerating'             => __( 'Regenerating…', 'regenerate-thumbnails' ),
+						'done'                     => __( 'Done! Click here to go back.', 'regenerate-thumbnails' ),
+						'errorRegenerating'        => __( 'Error Regenerating', 'regenerate-thumbnails' ),
+						'errorRegeneratingMessage' => __( 'There was an error regenerating this attachment. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
+						'registeredSizes'          => __( 'These are the currently registered thumbnail sizes, whether they exist for this attachment, and their filenames:', 'regenerate-thumbnails' ),
+						'unregisteredSizes'        => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
 					),
 				),
 			)

@@ -13,7 +13,7 @@
 			'textProportional',
 		],
 		computed: {
-			thumbnail: function () {
+			thumbnail() {
 				this.size.cropMethod = (this.size.crop) ? this.textCropped : this.textProportional;
 
 				return this.text.formatUnicorn(this.size);
