@@ -6,6 +6,8 @@
  * @subpackage REST API
  */
 
+require( dirname( __FILE__ ) . '/helper.php' );
+
 /**
  * Tests for the REST API.
  * @group restapi
@@ -19,7 +21,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 	public static function wpSetUpBeforeClass( $factory ) {
 		Regenerate_Thumbnails_Tests_Helper::delete_upload_dir_contents();
 
-		self::$superadmin_id = $factory->user->create( array(
+		self::$superadmin_id  = $factory->user->create( array(
 			'role'       => 'administrator',
 			'user_login' => 'superadmin',
 		) );
