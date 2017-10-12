@@ -23,8 +23,6 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	 * Make sure a bunch of thumbnail options are what we expect them to be.
 	 */
 	public static function wpSetUpBeforeClass( $factory ) {
-		Regenerate_Thumbnails_Tests_Helper::delete_upload_dir_contents();
-
 		self::$default_size_functions = array(
 			'thumbnail_size_w'    => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_150' ),
 			'thumbnail_size_h'    => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_150' ),
