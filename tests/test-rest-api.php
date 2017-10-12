@@ -6,7 +6,7 @@
  * @subpackage REST API
  */
 
-require( dirname( __FILE__ ) . '/helper.php' );
+require_once( dirname( __FILE__ ) . '/helper.php' );
 
 /**
  * Tests for the REST API.

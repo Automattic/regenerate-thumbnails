@@ -6,7 +6,7 @@
  * @subpackage Regenerator
  */
 
-require( dirname( __FILE__ ) . '/functions-return-ints.php' );
+require_once( dirname( __FILE__ ) . '/helper.php' );
 require_once( ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php' );
 require_once( ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php' );
 
@@ -22,18 +22,18 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	 * Make sure a bunch of thumbnail options are what we expect them to be.
 	 */
 	public static function wpSetUpBeforeClass( $factory ) {
-		self::_delete_upload_dir_contents();
+		Regenerate_Thumbnails_Tests_Helper::delete_upload_dir_contents();
 
 		self::$default_size_functions = array(
-			'thumbnail_size_w'    => '__return_int_150',
-			'thumbnail_size_h'    => '__return_int_150',
-			'thumbnail_crop'      => '__return_int_1',
-			'medium_size_w'       => '__return_int_300',
-			'medium_size_h'       => '__return_int_300',
-			'medium_large_size_w' => '__return_int_768',
+			'thumbnail_size_w'    => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_150' ),
+			'thumbnail_size_h'    => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_150' ),
+			'thumbnail_crop'      => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_1' ),
+			'medium_size_w'       => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_300' ),
+			'medium_size_h'       => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_300' ),
+			'medium_large_size_w' => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_768' ),
 			'medium_large_size_h' => '__return_zero',
-			'large_size_w'        => '__return_int_1024',
-			'large_size_h'        => '__return_int_1024',
+			'large_size_w'        => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_1024' ),
+			'large_size_h'        => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_1024' ),
 		);
 
 		foreach ( self::$default_size_functions as $filter => $function ) {
@@ -54,17 +54,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			$this->markTestSkipped( "This system doesn't have an image editor engine capable of resizing images. Try installing Imagick or GD." );
 		}
 
-		self::_delete_upload_dir_contents();
-	}
-
-	public static function _delete_upload_dir_contents() {
-		$upload_dir = wp_get_upload_dir();
-		$upload_dir = $upload_dir['path'];
-
-		if ( is_dir( $upload_dir ) ) {
-			$filesystem = new WP_Filesystem_Direct( array() );
-			$filesystem->rmdir( trailingslashit( $upload_dir ), true );
-		}
+		Regenerate_Thumbnails_Tests_Helper::delete_upload_dir_contents();
 	}
 
 	public function _create_attachment() {
@@ -73,15 +63,15 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 
 	public function _get_custom_thumbnail_size_callbacks() {
 		return array(
-			'thumbnail_size_w'    => '__return_int_100',
-			'thumbnail_size_h'    => '__return_int_100',
+			'thumbnail_size_w'    => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_100' ),
+			'thumbnail_size_h'    => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_100' ),
 			'thumbnail_crop'      => '__return_zero',
-			'medium_size_w'       => '__return_int_350',
-			'medium_size_h'       => '__return_int_350',
-			'medium_large_size_w' => '__return_int_500',
-			'medium_large_size_h' => '__return_int_500',
-			'large_size_w'        => '__return_int_1500',
-			'large_size_h'        => '__return_int_1500',
+			'medium_size_w'       => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_350' ),
+			'medium_size_h'       => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_350' ),
+			'medium_large_size_w' => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_500' ),
+			'medium_large_size_h' => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_500' ),
+			'large_size_w'        => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_1500' ),
+			'large_size_h'        => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_1500' ),
 		);
 	}
 
