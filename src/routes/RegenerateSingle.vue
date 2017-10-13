@@ -29,6 +29,7 @@
 					{{ regenerateThumbnails.l10n.common.onlyRegenerateMissingThumbnails }}
 				</label>
 			</p>
+
 			<p>
 				<label>
 					<input
@@ -39,6 +40,7 @@
 					{{ regenerateThumbnails.l10n.RegenerateSingle.updatePostContents }}
 				</label>
 			</p>
+
 			<p>
 				<label>
 					<input

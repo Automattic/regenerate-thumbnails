@@ -188,19 +188,20 @@ class RegenerateThumbnails {
 						'thumbnailSizeItemIsProportional'           => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
 					),
 					'Home'             => array(
-						'intro1'                    => sprintf(
+						'intro1'                                => sprintf(
 							__( 'When you change WordPress themes or change the sizes of your thumbnails at <a href="%s">Settings → Media</a>, images that you have previously uploaded to you media library will be missing thumbnail files for those new image sizes. This tool will allow you to create those missing thumbnail files for all images.', 'regenerate-thumbnails' ),
 							esc_url( admin_url( 'options-media.php' ) )
 						),
-						'intro2'                    => sprintf(
+						'intro2'                                => sprintf(
 							__( 'To process a specific image, visit your media library and click the &quot;Regenerate Thumbnails&quot; link or button. To process multiple specific images, make sure you\'re in the <a href="%s">list view</a> and then use the Bulk Actions dropdown after selecting one or more images.', 'regenerate-thumbnails' ),
 							esc_url( admin_url( 'upload.php?mode=list' ) )
 						),
-						'regenerateAllImages'       => __( 'Regenerate All Images', 'regenerate-thumbnails' ),
-						'attachmentCount'           => __( 'You currently have {attachmentCount} image attachments that will be regenerated.', 'regenerate-thumbnails' ),
-						'updatePostContents'        => __( 'Update the content of posts to use the new sizes.', 'regenerate-thumbnails' ),
-						'thumbnailSizes'            => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
-						'thumbnailSizesDescription' => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
+						'regenerateAllImages'                   => __( 'Regenerate All Images', 'regenerate-thumbnails' ),
+						'RegenerateThumbnailsForAllAttachments' => __( 'Regenerate Thumbnails For All Attachments', 'regenerate-thumbnails' ),
+						'RegenerateThumbnailsForXAttachments'   => __( 'Regenerate Thumbnails For All {attachmentCount} Attachments', 'regenerate-thumbnails' ),
+						'updatePostContents'                    => __( 'Update the content of posts to use the new sizes.', 'regenerate-thumbnails' ),
+						'thumbnailSizes'                        => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
+						'thumbnailSizesDescription'             => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
 					),
 					'RegenerateSingle' => array(
 						/* translators: Admin screen title. */

@@ -27,7 +27,7 @@ php:
 
 # Test against these versions of WordPress.
 env:
-  - WP_VERSION=4.7 # Plugin minimum version
+  - WP_VERSION=4.9 # Plugin minimum version
   - WP_VERSION=latest
   - WP_VERSION=nightly
 
@@ -38,7 +38,7 @@ matrix:
   include:
   - php: 5.2
     dist: precise
-    env: WP_VERSION=4.7
+    env: WP_VERSION=4.9
   - php: 5.2
     dist: precise
     env: WP_VERSION=latest
@@ -47,7 +47,7 @@ matrix:
     env: WP_VERSION=nightly
   - php: 5.3
     dist: precise
-    env: WP_VERSION=4.7
+    env: WP_VERSION=4.9
   - php: 5.3
     dist: precise
     env: WP_VERSION=latest
@@ -56,15 +56,6 @@ matrix:
     env: WP_VERSION=nightly
 #  - php: 7.1
 #    env: WP_VERSION=latest WP_TRAVISCI=phpcs
-  exclude: # WordPress 4.7 doesn't like running unit tests under PHP 7.x, see https://travis-ci.org/Viper007Bond/regenerate-thumbnails/builds/281022291
-  - php: '7.0'
-    env: WP_VERSION=4.7
-  - php: 7.1
-    env: WP_VERSION=4.7
-  - php: 7.2
-    env: WP_VERSION=4.7
-  - php: nightly
-    env: WP_VERSION=4.7
 
 
 before_script:
