@@ -152,7 +152,7 @@ class RegenerateThumbnails {
 		wp_enqueue_script(
 			'regenerate-thumbnails',
 			plugins_url( 'dist/build.js', __FILE__ ),
-			array(),
+			array( 'wp-api-request' ),
 			( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? filemtime( dirname( __FILE__ ) . '/dist/build.js' ) : $this->version,
 			true
 		);

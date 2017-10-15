@@ -3,7 +3,7 @@
 </template>
 
 <script>
-	require('../helpers/formatUnicorn');
+	require('../helpers/formatUnicorn.js');
 
 	export default {
 		props   : [

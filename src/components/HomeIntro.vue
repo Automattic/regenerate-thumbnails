@@ -64,7 +64,7 @@
 </template>
 
 <script>
-	import {WPRESTAPI} from '../helpers/wprestapi';
+	import {WPRESTAPIAsync} from '../helpers/wprestapiasync.js';
 	import ThumbnailSize from '../components/ThumbnailSize.vue'
 
 	export default {
@@ -78,13 +78,12 @@
 			}
 		},
 		created() {
-			// The _fields parameter requires WordPress 4.9+ and allows for faster response downloads
-			WPRESTAPI.get('wp/v2/media?_fields=id', {
-				params: {
-					media_type: 'image',
-					per_page  : 1,
-				}
-			})
+			WPRESTAPIAsync.get('wp/v2/media?_fields=id', {
+					params: {
+						media_type: 'image',
+						per_page  : 1,
+					}
+				})
 				.then(response => {
 					this.ButtonText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForXAttachments.formatUnicorn({
 						'attachmentCount': response.headers['x-wp-total'],
@@ -102,7 +101,7 @@
 				this[prop] = event.target.checked;
 
 				// Check the update posts checkbox when the delete checkbox is checked
-				if ( 'checkboxDeleteOld' === prop && this[prop] ) {
+				if ('checkboxDeleteOld' === prop && this[prop]) {
 					this.checkboxUpdatePosts = true;
 				}
 			},

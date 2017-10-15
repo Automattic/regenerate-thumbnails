@@ -90,7 +90,7 @@
 
 <script>
 	require('../helpers/formatUnicorn');
-	import {WPRESTAPI} from '../helpers/wprestapi';
+	import {WPRESTAPIAsync} from '../helpers/wprestapiasync.js';
 	import ThumbnailStatus from "../components/ThumbnailStatus.vue";
 
 	export default {
@@ -105,7 +105,7 @@
 			}
 		},
 		created() {
-			WPRESTAPI.get('regenerate-thumbnails/v1/attachmentinfo/' + this.$route.params.id)
+			WPRESTAPIAsync.get('regenerate-thumbnails/v1/attachmentinfo/' + this.$route.params.id)
 				.then(response => {
 					this.attachmentInfo = response.data;
 
@@ -152,7 +152,7 @@
 				this.regenerateThumbnails.options.deleteOldThumbnails = document.getElementById('regenthumbs-regenopt-deleteoldthumbnails').checked;
 				this.regenerateThumbnails.options.updatePostContents = document.getElementById('regenthumbs-regenopt-updateposts').checked;
 
-				WPRESTAPI.post('regenerate-thumbnails/v1/regenerate/' + this.$route.params.id, {
+				WPRESTAPIAsync.post('regenerate-thumbnails/v1/regenerate/' + this.$route.params.id, {
 					regeneration_args     : {
 						only_regenerate_missing_thumbnails : this.regenerateThumbnails.options.onlyMissingThumbnails,
 						delete_unregistered_thumbnail_files: this.regenerateThumbnails.options.deleteOldThumbnails,

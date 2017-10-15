@@ -3,7 +3,6 @@
 </template>
 
 <script>
-	import {WPRESTAPI} from '../helpers/wprestapi';
 	import HomeIntro from '../components/HomeIntro.vue'
 	import RegenerateAll from '../components/RegenerateAll.vue'
 
