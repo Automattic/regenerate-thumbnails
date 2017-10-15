@@ -86,7 +86,7 @@
 				})
 				.then(response => {
 					this.ButtonText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForXAttachments.formatUnicorn({
-						'attachmentCount': response.headers['x-wp-total'],
+						'attachmentCount': response.headers['x-wp-total'].toLocaleString(),
 					});
 				})
 				.catch(error => {
