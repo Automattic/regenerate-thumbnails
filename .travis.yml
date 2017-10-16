@@ -114,11 +114,3 @@ script:
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
       phpcs
     fi
-
-notifications:
-  webhooks:
-    urls:
-      - $GITTER_IM_URL
-    on_success: always
-    on_failure: always
-    on_start: never
