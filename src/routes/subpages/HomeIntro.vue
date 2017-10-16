@@ -64,8 +64,8 @@
 </template>
 
 <script>
-	import {WPRESTAPIAsync} from '../helpers/wprestapiasync.js';
-	import ThumbnailSize from '../components/ThumbnailSize.vue'
+	import {WPRESTAPIAsync} from '../../helpers/wprestapiasync.js'
+	import ThumbnailSize from '../../components/ThumbnailSize.vue'
 
 	export default {
 		data() {

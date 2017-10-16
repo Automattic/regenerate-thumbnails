@@ -13,7 +13,7 @@
 </template>
 
 <script>
-	import ProgressBar from '../components/ProgressBar.vue'
+	import ProgressBar from '../../components/ProgressBar.vue'
 
 	export default {
 		props     : [

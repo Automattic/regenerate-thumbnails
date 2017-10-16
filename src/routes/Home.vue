@@ -3,8 +3,8 @@
 </template>
 
 <script>
-	import HomeIntro from '../components/HomeIntro.vue'
-	import RegenerateAll from '../components/RegenerateAll.vue'
+	import HomeIntro from './subpages/HomeIntro.vue'
+	import HomeRegenerateAll from './subpages/HomeRegenerateAll.vue'
 
 	export default {
 		data() {
@@ -23,7 +23,7 @@
 					};
 				}
 
-				this.currentView = RegenerateAll;
+				this.currentView = HomeRegenerateAll;
 			},
 		},
 		components: {
