@@ -36,13 +36,15 @@
 				do {
 					wp.apiRequest({
 						namespace: 'wp/v2',
-						endpoint : 'media?_fields=id,title',
+						endpoint : 'media',
 						data     : {
-							media_type: 'image',
-							orderby   : 'id',
-							order     : 'asc',
-							page      : page,
-							per_page  : 10,
+							_fields           : ['id', 'title'],
+							media_type        : 'image',
+							exclude_site_icons: 1,
+							orderby           : 'id',
+							order             : 'asc',
+							page              : page,
+							per_page          : 10,
 						},
 						type     : 'GET',
 						dataType : 'json',

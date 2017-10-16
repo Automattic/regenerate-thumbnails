@@ -128,6 +128,7 @@ class RegenerateThumbnails {
 	public function rest_api_init() {
 		$this->rest_api = new RegenerateThumbnails_REST_Controller();
 		$this->rest_api->register_routes();
+		$this->rest_api->register_filters();
 	}
 
 	/**

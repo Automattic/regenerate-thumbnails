@@ -78,10 +78,12 @@
 			}
 		},
 		created() {
-			WPRESTAPIAsync.get('wp/v2/media?_fields=id', {
+			WPRESTAPIAsync.get('wp/v2/media', {
 					params: {
-						media_type: 'image',
-						per_page  : 1,
+						_fields           : 'id',
+						media_type        : 'image',
+						exclude_site_icons: 1,
+						per_page          : 1,
 					}
 				})
 				.then(response => {

@@ -74,6 +74,42 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	}
 
 	/**
+	 * Register a filter to allow excluding site icons via a query parameter.
+	 *
+	 * @since 3.0.0
+	 */
+	public function register_filters() {
+		add_filter( 'rest_attachment_query', array( $this, 'maybe_filter_out_site_icons' ), 10, 2 );
+	}
+
+	/**
+	 * If the exclude_site_icons parameter is set on a media (attachment) request,
+	 * filter out any attachments that are or were being used as a site icon.
+	 *
+	 * @param array           $args    Key value array of query var to query value.
+	 * @param WP_REST_Request $request The request used.
+	 *
+	 * @return array Key value array of query var to query value.
+	 */
+	public function maybe_filter_out_site_icons( $args, $request ) {
+		if ( empty( $request['exclude_site_icons'] ) ) {
+			return $args;
+		}
+
+		if ( ! isset( $args['meta_query'] ) ) {
+			$args['meta_query'] = array();
+		}
+
+		$args['meta_query'][] = array(
+			'key'     => '_wp_attachment_context',
+			'value'   => 'site-icon',
+			'compare' => 'NOT EXISTS',
+		);
+
+		return $args;
+	}
+
+	/**
 	 * Regenerate the thumbnails for a specific media item.
 	 *
 	 * @since 3.0.0
