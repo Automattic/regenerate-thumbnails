@@ -1,6 +1,12 @@
 <template>
 	<div>
 		<progress-bar :progress="progress"></progress-bar>
+
+		<ol v-if="results" v-bind:start="listStart">
+			<li v-for="result in results" :key="result.id">
+				Regenerated {{ result.name }}
+			</li>
+		</ol>
 	</div>
 </template>
 
@@ -8,10 +14,15 @@
 	import ProgressBar from '../components/ProgressBar.vue'
 
 	export default {
+		props     : [
+			'settings',
+		],
 		data() {
 			return {
 				regenerateThumbnails: regenerateThumbnails,
+				listStart           : 1,
 				progress            : 0,
+				results             : [],
 			}
 		},
 		mounted   : function () {
@@ -20,6 +31,7 @@
 				let page = 1;
 				let total = 0;
 				let totalPages = 0;
+				let maxListItems = 10;
 
 				do {
 					wp.apiRequest({
@@ -44,8 +56,13 @@
 							attachments.forEach(attachment => {
 								wp.apiRequest({
 									namespace: 'regenerate-thumbnails/v1',
-									endpoint : 'attachmentinfo/' + attachment.id,
-									type     : 'GET',
+									endpoint : 'regenerate/' + attachment.id,
+									data     : {
+										only_regenerate_missing_thumbnails : this.settings.onlyMissing,
+										delete_unregistered_thumbnail_files: this.settings.deleteOld,
+										update_usages_in_posts             : this.settings.updatePosts,
+									},
+									type     : 'POST',
 									dataType : 'json',
 									async    : false,
 									context  : this
@@ -54,16 +71,24 @@
 										processed++;
 										this.progress = Math.round((processed / total) * 100);
 
+										this.results.push(attachment);
+
+										if (this.results.length > maxListItems) {
+											this.results = this.results.slice(maxListItems * -1);
+											this.listStart = processed - maxListItems + 1;
+										}
+
 										console.log(attachment);
 									})
-									.fail(function (error) {
+									.fail(error => {
 										processed++;
+										this.progress = Math.round((processed / total) * 100);
 										console.log('ERROR!', error);
 									});
 							});
 						})
-						.fail(function (error) {
-							console.log(error);
+						.fail(error => {
+							console.log('ERROR!', error);
 						});
 
 					page++;
