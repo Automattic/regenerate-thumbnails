@@ -135,4 +135,22 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 
 		$this->assertResponseStatus( 200, $response );
 	}
+
+	public function test_exclude_site_icons_from_results() {
+		wp_set_current_user( self::$superadmin_id );
+
+		$request  = new WP_REST_Request( 'GET', '/wp/v2/media' );
+		$request->set_param( 'include', array( $this->attachment_id ) );
+		$request->set_param( 'exclude_site_icons', 1 );
+		$response = $this->server->dispatch( $request );
+		$this->assertContains( $this->attachment_id, wp_list_pluck( $response->data, 'id' ) );
+
+		update_post_meta( $this->attachment_id, '_wp_attachment_context', 'site-icon' );
+
+		$request = new WP_REST_Request( 'GET', '/wp/v2/media' );
+		$request->set_param( 'include', array( $this->attachment_id ) );
+		$request->set_param( 'exclude_site_icons', 1 );
+		$response = $this->server->dispatch( $request );
+		$this->assertNotContains( $this->attachment_id, wp_list_pluck( $response->data, 'id' ) );
+	}
 }
