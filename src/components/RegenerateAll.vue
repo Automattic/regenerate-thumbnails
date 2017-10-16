@@ -2,11 +2,13 @@
 	<div>
 		<progress-bar :progress="progress"></progress-bar>
 
-		<ol v-if="results" v-bind:start="listStart">
-			<li v-for="result in results" :key="result.id">
-				Regenerated {{ result.name }}
-			</li>
-		</ol>
+		<div id="regenerate-thumbnails-log">
+			<ol v-if="results" v-bind:start="listStart">
+				<li v-for="result in results" :key="result.id">
+					Regenerated {{ result.name }}
+				</li>
+			</ol>
+		</div>
 	</div>
 </template>
 
@@ -31,7 +33,7 @@
 				let page = 1;
 				let total = 0;
 				let totalPages = 0;
-				let maxListItems = 10;
+				let MaxLogItems = 500; // To keep the DOM size from going insane
 
 				do {
 					wp.apiRequest({
@@ -44,7 +46,7 @@
 							orderby           : 'id',
 							order             : 'asc',
 							page              : page,
-							per_page          : 10,
+							per_page          : 50,
 						},
 						type     : 'GET',
 						dataType : 'json',
@@ -75,12 +77,10 @@
 
 										this.results.push(attachment);
 
-										if (this.results.length > maxListItems) {
-											this.results = this.results.slice(maxListItems * -1);
-											this.listStart = processed - maxListItems + 1;
+										if (this.results.length > MaxLogItems) {
+											this.results = this.results.slice(MaxLogItems * -1);
+											this.listStart = processed - MaxLogItems + 1;
 										}
-
-										console.log(attachment);
 									})
 									.fail(error => {
 										processed++;
@@ -98,6 +98,15 @@
 				while (page <= totalPages);
 			});
 		},
+		updated   : function () {
+			this.$nextTick(function () {
+				let logBox = document.getElementById('regenerate-thumbnails-log');
+
+				if (logBox.scrollHeight - logBox.scrollTop <= logBox.clientHeight + 25) {
+					logBox.scrollTop = logBox.scrollHeight - logBox.clientHeight;
+				}
+			});
+		},
 		components: {
 			ProgressBar,
 		},
@@ -106,6 +115,11 @@
 
 <style lang="scss" scoped>
 	.ui-progressbar {
-		margin-top: 20px;
+		margin: 20px auto;
+	}
+
+	#regenerate-thumbnails-log {
+		height: 250px;
+		overflow: auto;
 	}
 </style>
