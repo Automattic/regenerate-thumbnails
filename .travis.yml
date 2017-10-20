@@ -28,7 +28,7 @@ php:
 # Test against these versions of WordPress.
 env:
 #  - WP_VERSION=4.9 # Plugin minimum version
-  - WP_VERSION=latest
+#  - WP_VERSION=latest
   - WP_VERSION=nightly
 
 # Some additional environments to test:
@@ -39,18 +39,18 @@ matrix:
 #  - php: 5.2
 #    dist: precise
 #    env: WP_VERSION=4.9
-  - php: 5.2
-    dist: precise
-    env: WP_VERSION=latest
+#  - php: 5.2
+#    dist: precise
+#    env: WP_VERSION=latest
   - php: 5.2
     dist: precise
     env: WP_VERSION=nightly
 #  - php: 5.3
 #    dist: precise
 #    env: WP_VERSION=4.9
-  - php: 5.3
-    dist: precise
-    env: WP_VERSION=latest
+#  - php: 5.3
+#    dist: precise
+#    env: WP_VERSION=latest
   - php: 5.3
     dist: precise
     env: WP_VERSION=nightly
