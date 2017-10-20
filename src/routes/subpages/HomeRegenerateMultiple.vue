@@ -35,6 +35,10 @@
 			let totalPages = 0;
 			let maxLogItems = 500; // To keep the DOM size from going insane
 
+			let titleElement = document.getElementsByTagName('title')[0];
+			let title = titleElement.innerHTML;
+			titleElement.innerHTML = vue.progress + '% | ' + title;
+
 			// Prompt the user to confirm if they try to leave the page
 			window.onbeforeunload = function () {
 				return true;
@@ -63,8 +67,6 @@
 						totalItems = jqXHR.getResponseHeader('x-wp-total');
 						totalPages = jqXHR.getResponseHeader('x-wp-totalpages');
 
-						console.log(attachments);
-
 						processAttachment(attachments);
 					})
 					.fail((jqXHR, textStatus, errorThrown) => {
@@ -74,8 +76,6 @@
 
 			function processAttachment(attachments) {
 				let attachment = attachments.shift();
-
-				console.log(attachment);
 
 				wp.apiRequest({
 					namespace: 'regenerate-thumbnails/v1',
@@ -98,6 +98,8 @@
 					.always(() => {
 						processed++;
 						vue.progress = Math.round((processed / totalItems) * 100);
+
+						titleElement.innerHTML = vue.progress + '% | ' + title;
 
 						// Keep the log size under control
 						if (vue.results.length > maxLogItems) {
@@ -138,7 +140,7 @@
 	}
 
 	#regenerate-thumbnails-log {
-		height: 250px;
+		height: 500px;
 		overflow: auto;
 	}
 </style>
