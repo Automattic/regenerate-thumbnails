@@ -25,11 +25,9 @@
 
 				switch (what) {
 					case 'all':
-						this.settings.regenerate = what;
-						break;
 					case 'featured-images':
-						alert('Not implemented yet.');
-						return;
+						this.settings.regenerateWhat = what;
+						break;
 				}
 
 				this.currentView = HomeRegenerateMultiple;

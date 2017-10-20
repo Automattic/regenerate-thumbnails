@@ -210,8 +210,8 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 		$page     = $request->get_param( 'page' );
 		$per_page = $request->get_param( 'per_page' );
 
-		$featured_image_ids = $wpdb->get_col( $wpdb->prepare(
-			"SELECT meta_value FROM $wpdb->postmeta WHERE meta_key = '_thumbnail_id' ORDER BY post_id LIMIT %d OFFSET %d",
+		$featured_image_ids = $wpdb->get_results( $wpdb->prepare(
+			"SELECT meta_value as id FROM $wpdb->postmeta WHERE meta_key = '_thumbnail_id' ORDER BY post_id LIMIT %d OFFSET %d",
 			$per_page,
 			( $per_page * $page ) - $per_page
 		) );

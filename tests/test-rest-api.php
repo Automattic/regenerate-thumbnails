@@ -161,7 +161,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 		for ( $i = 1; $i <= 5; $i ++ ) {
 			$post_id          = self::factory()->post->create( array() );
 			$attachment_id    = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/test-image.jpg' );
-			$attachment_ids[] = $attachment_id;
+			$attachment_ids[] = (object) array( 'id' => $attachment_id );
 
 			set_post_thumbnail( $post_id, $attachment_id );
 		}

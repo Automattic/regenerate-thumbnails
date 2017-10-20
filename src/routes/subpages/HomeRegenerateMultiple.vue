@@ -47,18 +47,32 @@
 			processPageOfAttachments();
 
 			function processPageOfAttachments() {
+				let namespace = 'wp/v2';
+				let endpoint = 'media';
+				let data = {
+					page    : page,
+					per_page: 5,
+				};
+
+				switch (vue.settings.regenerateWhat) {
+					case 'featured-images':
+						namespace = 'regenerate-thumbnails/v1';
+						endpoint = 'featuredimages';
+						break;
+					case 'all':
+					default:
+						data._fields = 'id';
+						data.media_type = 'image';
+						data.exclude_site_icons = 1;
+						data.orderby = 'id';
+						data.order = 'asc';
+						break;
+				}
+
 				wp.apiRequest({
-					namespace: 'wp/v2',
-					endpoint : 'media',
-					data     : {
-						_fields           : 'id',
-						media_type        : 'image',
-						exclude_site_icons: 1,
-						orderby           : 'id',
-						order             : 'asc',
-						page              : page,
-						per_page          : 5,
-					},
+					namespace: namespace,
+					endpoint : endpoint,
+					data     : data,
 					type     : 'GET',
 					dataType : 'json',
 					context  : vue,
