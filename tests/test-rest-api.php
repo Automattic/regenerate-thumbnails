@@ -136,10 +136,49 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 		$this->assertResponseStatus( 200, $response );
 	}
 
+	public function test_featuredimages_logged_out() {
+		wp_set_current_user( 0 );
+
+		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/featuredimages' );
+		$response = $this->server->dispatch( $request );
+
+		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+	}
+
+	public function test_featuredimages_without_permission() {
+		wp_set_current_user( self::$contributor_id );
+
+		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/featuredimages' );
+		$response = $this->server->dispatch( $request );
+
+		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+	}
+
+	public function test_featuredimages() {
+		wp_set_current_user( self::$superadmin_id );
+
+		$attachment_ids = array();
+		for ( $i = 1; $i <= 5; $i ++ ) {
+			$post_id          = self::factory()->post->create( array() );
+			$attachment_id    = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/test-image.jpg' );
+			$attachment_ids[] = $attachment_id;
+
+			set_post_thumbnail( $post_id, $attachment_id );
+		}
+
+		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/featuredimages' );
+		$response = $this->server->dispatch( $request );
+
+		$this->assertResponseStatus( 200, $response );
+		$this->assertEquals( $attachment_ids, $response->data );
+		$this->assertSame( 5, $response->headers['X-WP-Total'] );
+		$this->assertSame( 1, $response->headers['X-WP-TotalPages'] );
+	}
+
 	public function test_exclude_site_icons_from_results() {
 		wp_set_current_user( self::$superadmin_id );
 
-		$request  = new WP_REST_Request( 'GET', '/wp/v2/media' );
+		$request = new WP_REST_Request( 'GET', '/wp/v2/media' );
 		$request->set_param( 'include', array( $this->attachment_id ) );
 		$request->set_param( 'exclude_site_icons', 1 );
 		$response = $this->server->dispatch( $request );

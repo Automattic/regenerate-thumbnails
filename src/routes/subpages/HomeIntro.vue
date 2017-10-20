@@ -3,8 +3,6 @@
 		<p v-html="regenerateThumbnails.l10n.Home.intro1"></p>
 		<p v-html="regenerateThumbnails.l10n.Home.intro2"></p>
 
-		<h2 class="title">{{ regenerateThumbnails.l10n.Home.regenerateAllImages }}</h2>
-
 		<p>
 			<label>
 				<input
@@ -41,9 +39,15 @@
 			</label>
 		</p>
 
-		<p class="submit">
-			<button class="button button-primary button-hero" v-on:click="regenerate">
-				{{ ButtonText }}
+		<p>
+			<button class="button button-primary button-hero" v-on:click="regenerate('all')">
+				{{ ButtonAllText }}
+			</button>
+		</p>
+
+		<p v-if="usingFeaturedImages">
+			<button class="button button-primary button-hero" v-on:click="regenerate('featured-images')">
+				{{ ButtonFeaturedImagesText }}
 			</button>
 		</p>
 
@@ -64,40 +68,77 @@
 </template>
 
 <script>
-	import {WPRESTAPIAsync} from '../../helpers/wprestapiasync.js'
 	import ThumbnailSize from '../../components/ThumbnailSize.vue'
 
 	export default {
 		data() {
 			return {
-				regenerateThumbnails: regenerateThumbnails,
-				ButtonText          : regenerateThumbnails.l10n.Home.RegenerateThumbnailsForAllAttachments,
-				checkboxOnlyMissing : regenerateThumbnails.options.onlyMissingThumbnails,
-				checkboxUpdatePosts : regenerateThumbnails.options.updatePostContents,
-				checkboxDeleteOld   : regenerateThumbnails.options.deleteOldThumbnails,
+				regenerateThumbnails    : regenerateThumbnails,
+				usingFeaturedImages     : true,
+				ButtonAllText           : regenerateThumbnails.l10n.Home.RegenerateThumbnailsForAllAttachments,
+				ButtonFeaturedImagesText: regenerateThumbnails.l10n.Home.RegenerateThumbnailsForFeaturedImagesOnly,
+				checkboxOnlyMissing     : regenerateThumbnails.options.onlyMissingThumbnails,
+				checkboxUpdatePosts     : regenerateThumbnails.options.updatePostContents,
+				checkboxDeleteOld       : regenerateThumbnails.options.deleteOldThumbnails,
 			}
 		},
 		created() {
-			WPRESTAPIAsync.get('wp/v2/media', {
-					params: {
-						_fields           : 'id',
-						media_type        : 'image',
-						exclude_site_icons: 1,
-						per_page          : 1,
-					}
-				})
-				.then(response => {
-					this.ButtonText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForXAttachments.formatUnicorn({
-						'attachmentCount': response.headers['x-wp-total'].toLocaleString(),
+			// TODO: Probably better to preload this rather than fetch via AJAX
+
+			// Update button with total attachment count
+			wp.apiRequest({
+				namespace: 'wp/v2',
+				endpoint : 'media',
+				data     : {
+					_fields           : 'id',
+					media_type        : 'image',
+					exclude_site_icons: 1,
+					per_page          : 1,
+				},
+				type     : 'GET',
+				dataType : 'json',
+				context  : this
+			})
+				.done((data, textStatus, jqXHR) => {
+					this.ButtonAllText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForXAttachments.formatUnicorn({
+						'attachmentCount': jqXHR.getResponseHeader('x-wp-total').toLocaleString(),
 					});
 				})
-				.catch(error => {
-					console.log(error);
+				.fail((jqXHR, textStatus, errorThrown) => {
+					console.log('ERROR!', jqXHR, textStatus, errorThrown);
+				});
+
+			// Update button with total featured images count
+			wp.apiRequest({
+				namespace: 'regenerate-thumbnails/v1',
+				endpoint : 'featuredimages',
+				data     : {
+					per_page: 1,
+				},
+				type     : 'GET',
+				dataType : 'json',
+				context  : this
+			})
+				.done((data, textStatus, jqXHR) => {
+					this.ButtonAllText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForXAttachments.formatUnicorn({
+						'attachmentCount': jqXHR.getResponseHeader('x-wp-total').toLocaleString(),
+					});
+
+					if (jqXHR.getResponseHeader('x-wp-total') < 1) {
+						this.usingFeaturedImages = false;
+					} else {
+						this.ButtonFeaturedImagesText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForXFeaturedImagesOnly.formatUnicorn({
+							'attachmentCount': jqXHR.getResponseHeader('x-wp-total').toLocaleString(),
+						});
+					}
+				})
+				.fail((jqXHR, textStatus, errorThrown) => {
+					console.log('ERROR!', jqXHR, textStatus, errorThrown);
 				});
 		},
 		methods   : {
-			regenerate() {
-				this.$emit('regenerate');
+			regenerate(what) {
+				this.$emit('regenerate', what);
 			},
 			checkboxChange(prop, event) {
 				this[prop] = event.target.checked;

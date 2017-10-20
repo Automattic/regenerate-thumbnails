@@ -9,6 +9,8 @@ Version:      3.0.0 Alpha
 Author:       Alex Mills (Viper007Bond)
 Author URI:   https://alex.blog/
 Text Domain:  regenerate-thumbnails
+License:      GPL2
+License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 
 **************************************************************************/
 
@@ -162,10 +164,6 @@ class RegenerateThumbnails {
 			'regenerate-thumbnails',
 			'regenerateThumbnails',
 			array(
-				'wpApiSettings' => array(
-					'root'  => esc_url_raw( get_rest_url() ),
-					'nonce' => wp_create_nonce( 'wp_rest' ),
-				),
 				'data'          => array(
 					'thumbnailSizes' => $this->get_thumbnail_sizes(),
 				),
@@ -189,20 +187,21 @@ class RegenerateThumbnails {
 						'thumbnailSizeItemIsProportional'           => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
 					),
 					'Home'             => array(
-						'intro1'                                => sprintf(
+						'intro1'                                     => sprintf(
 							__( 'When you change WordPress themes or change the sizes of your thumbnails at <a href="%s">Settings → Media</a>, images that you have previously uploaded to you media library will be missing thumbnail files for those new image sizes. This tool will allow you to create those missing thumbnail files for all images.', 'regenerate-thumbnails' ),
 							esc_url( admin_url( 'options-media.php' ) )
 						),
-						'intro2'                                => sprintf(
+						'intro2'                                     => sprintf(
 							__( 'To process a specific image, visit your media library and click the &quot;Regenerate Thumbnails&quot; link or button. To process multiple specific images, make sure you\'re in the <a href="%s">list view</a> and then use the Bulk Actions dropdown after selecting one or more images.', 'regenerate-thumbnails' ),
 							esc_url( admin_url( 'upload.php?mode=list' ) )
 						),
-						'regenerateAllImages'                   => __( 'Regenerate All Images', 'regenerate-thumbnails' ),
-						'RegenerateThumbnailsForAllAttachments' => __( 'Regenerate Thumbnails For All Attachments', 'regenerate-thumbnails' ),
-						'RegenerateThumbnailsForXAttachments'   => __( 'Regenerate Thumbnails For All {attachmentCount} Attachments', 'regenerate-thumbnails' ),
-						'updatePostContents'                    => __( 'Update the content of posts to use the new sizes.', 'regenerate-thumbnails' ),
-						'thumbnailSizes'                        => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
-						'thumbnailSizesDescription'             => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
+						'updatePostContents'                         => __( 'Update the content of posts to use the new sizes.', 'regenerate-thumbnails' ),
+						'RegenerateThumbnailsForAllAttachments'      => __( 'Regenerate Thumbnails For All Attachments', 'regenerate-thumbnails' ),
+						'RegenerateThumbnailsForXAttachments'        => __( 'Regenerate Thumbnails For All {attachmentCount} Attachments', 'regenerate-thumbnails' ),
+						'RegenerateThumbnailsForFeaturedImagesOnly'  => __( 'Regenerate Thumbnails For Featured Images Only', 'regenerate-thumbnails' ),
+						'RegenerateThumbnailsForXFeaturedImagesOnly' => __( 'Regenerate Thumbnails For The {attachmentCount} Featured Images Only', 'regenerate-thumbnails' ),
+						'thumbnailSizes'                             => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
+						'thumbnailSizesDescription'                  => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
 					),
 					'RegenerateSingle' => array(
 						/* translators: Admin screen title. */
@@ -234,14 +233,24 @@ class RegenerateThumbnails {
 	 * The main Regenerate Thumbnails interface, as displayed at Tools → Regenerate Thumbnails.
 	 */
 	public function regenerate_interface() {
-		if ( ! current_user_can( $this->capability ) ) {
-			wp_die( __( 'Cheatin&#8217; uh?' ) );
-		}
+		global $wp_version;
 
 		?>
 
 		<div class="wrap">
 			<h1><?php esc_html_e( 'Regenerate Thumbnails', 'regenerate-thumbnails' ); ?></h1>
+
+		<?php
+
+		if ( version_compare( $wp_version, '4.9-alpha-41206', '<' ) ) {
+			echo '<p>' . sprintf(
+					__( 'This plugin requires WordPress 4.9 or newer. You are on version %1$s. Please <a href="%2$s">upgrade</a>.' ),
+					esc_html( $wp_version ),
+					esc_url( admin_url( 'update-core.php' ) )
+				) . '</p>';
+		} else {
+
+			?>
 
 			<div id="regenerate-thumbnails-app">
 				<div class="notice notice-error hide-if-js">
@@ -250,9 +259,12 @@ class RegenerateThumbnails {
 
 				<router-view><p class="hide-if-no-js"><?php esc_html_e( 'Loading…', 'regenerate-thumbnails' ); ?></p></router-view>
 			</div>
-		</div>
 
-		<?php
+			<?php
+
+		} // version_compare()
+
+		echo '</div>';
 	}
 
 	/**

@@ -4,7 +4,7 @@
 
 <script>
 	import HomeIntro from './subpages/HomeIntro.vue'
-	import HomeRegenerateAll from './subpages/HomeRegenerateAll.vue'
+	import HomeRegenerateMultiple from './subpages/HomeRegenerateMultiple.vue'
 
 	export default {
 		data() {
@@ -14,8 +14,8 @@
 			}
 		},
 		methods   : {
-			regenerate() {
-				if ( HomeIntro === this.currentView ) {
+			regenerate(what) {
+				if (HomeIntro === this.currentView) {
 					this.settings = {
 						onlyMissing: document.getElementById('regenthumbs-regenopt-onlymissing').checked,
 						updatePosts: document.getElementById('regenthumbs-regenopt-updateposts').checked,
@@ -23,7 +23,16 @@
 					};
 				}
 
-				this.currentView = HomeRegenerateAll;
+				switch (what) {
+					case 'all':
+						this.settings.regenerate = what;
+						break;
+					case 'featured-images':
+						alert('Not implemented yet.');
+						return;
+				}
+
+				this.currentView = HomeRegenerateMultiple;
 			},
 		},
 		components: {

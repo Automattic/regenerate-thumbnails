@@ -71,6 +71,15 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 				'permission_callback' => array( $this, 'permissions_check' ),
 			),
 		) );
+
+		register_rest_route( $this->namespace, '/featuredimages', array(
+			array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'featured_images' ),
+				'permission_callback' => array( $this, 'permissions_check' ),
+				'args'                => $this->get_paging_collection_params(),
+			),
+		) );
 	}
 
 	/**
@@ -107,6 +116,20 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 		);
 
 		return $args;
+	}
+
+	/**
+	 * Retrieves the paging query params for the collections.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @return array Query parameters for the collection.
+	 */
+	public function get_paging_collection_params() {
+		return array_intersect_key(
+			parent::get_collection_params(),
+			array_flip( array( 'page', 'per_page' ) )
+		);
 	}
 
 	/**
@@ -170,6 +193,63 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 		}
 
 		return $regenerator->get_attachment_info();
+	}
+
+	/**
+	 * Return attachment IDs that are being used as featured images.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param WP_REST_Request $request Full data about the request.
+	 *
+	 * @return WP_REST_Response|WP_Error Response object on success, or WP_Error object on failure.
+	 */
+	public function featured_images( $request ) {
+		global $wpdb;
+
+		$page     = $request->get_param( 'page' );
+		$per_page = $request->get_param( 'per_page' );
+
+		$featured_image_ids = $wpdb->get_col( $wpdb->prepare(
+			"SELECT meta_value FROM $wpdb->postmeta WHERE meta_key = '_thumbnail_id' ORDER BY post_id LIMIT %d OFFSET %d",
+			$per_page,
+			( $per_page * $page ) - $per_page
+		) );
+
+		$total     = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->postmeta WHERE meta_key = '_thumbnail_id'" );
+		$max_pages = ceil( $total / $per_page );
+
+		if ( $page > $max_pages && $total > 0 ) {
+			return new WP_Error( 'rest_post_invalid_page_number', __( 'The page number requested is larger than the number of pages available.' ), array( 'status' => 400 ) );
+		}
+
+		$response = rest_ensure_response( $featured_image_ids );
+
+		$response->header( 'X-WP-Total', (int) $total );
+		$response->header( 'X-WP-TotalPages', (int) $max_pages );
+
+		$request_params = $request->get_query_params();
+		$base           = add_query_arg( $request_params, rest_url( $this->namespace . '/featuredimages' ) );
+
+		if ( $page > 1 ) {
+			$prev_page = $page - 1;
+
+			if ( $prev_page > $max_pages ) {
+				$prev_page = $max_pages;
+			}
+
+			$prev_link = add_query_arg( 'page', $prev_page, $base );
+			$response->link_header( 'prev', $prev_link );
+		}
+
+		if ( $max_pages > $page ) {
+			$next_page = $page + 1;
+			$next_link = add_query_arg( 'page', $next_page, $base );
+
+			$response->link_header( 'next', $next_link );
+		}
+
+		return $response;
 	}
 
 	/**

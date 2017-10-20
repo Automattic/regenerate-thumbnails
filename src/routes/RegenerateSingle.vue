@@ -2,8 +2,7 @@
 	<div v-if="!dataLoaded">
 		<p>{{ regenerateThumbnails.l10n.common.loading }}</p>
 	</div>
-
-	<div v-else-if="dataLoaded">
+	<div v-else>
 		<div v-if="errorText">
 			<p v-html="errorText"></p>
 		</div>
@@ -90,10 +89,12 @@
 
 <script>
 	require('../helpers/formatUnicorn');
-	import {WPRESTAPIAsync} from '../helpers/wprestapiasync.js';
 	import ThumbnailStatus from "../components/ThumbnailStatus.vue";
 
 	export default {
+		props     : [
+			'id',
+		],
 		data() {
 			return {
 				regenerateThumbnails: regenerateThumbnails,
@@ -105,9 +106,15 @@
 			}
 		},
 		created() {
-			WPRESTAPIAsync.get('regenerate-thumbnails/v1/attachmentinfo/' + this.$route.params.id)
-				.then(response => {
-					this.attachmentInfo = response.data;
+			wp.apiRequest({
+				namespace: 'regenerate-thumbnails/v1',
+				endpoint : 'attachmentinfo/' + this.id,
+				type     : 'GET',
+				dataType : 'json',
+				context  : this
+			})
+				.done((data, textStatus, jqXHR) => {
+					this.attachmentInfo = data;
 
 					if (typeof this.attachmentInfo.error !== 'undefined') {
 						this.errorText = this.regenerateThumbnails.l10n.RegenerateSingle.errorWithMessage.formatUnicorn(this.attachmentInfo);
@@ -117,14 +124,14 @@
 
 					this.dataLoaded = true;
 				})
-				.catch(error => {
+				.fail((jqXHR, textStatus, errorThrown) => {
 					this.errorText = this.regenerateThumbnails.l10n.RegenerateSingle.errorWithMessage.formatUnicorn({
-						'error': error.response.data.message,
+						'error': jqXHR.responseJSON.message,
 					});
 
 					this.dataLoaded = true;
 
-					console.log(error);
+					console.log('ERROR!', jqXHR, textStatus, errorThrown);
 				});
 		},
 		computed  : {
@@ -152,24 +159,32 @@
 				this.regenerateThumbnails.options.deleteOldThumbnails = document.getElementById('regenthumbs-regenopt-deleteoldthumbnails').checked;
 				this.regenerateThumbnails.options.updatePostContents = document.getElementById('regenthumbs-regenopt-updateposts').checked;
 
-				WPRESTAPIAsync.post('regenerate-thumbnails/v1/regenerate/' + this.$route.params.id, {
-					regeneration_args     : {
-						only_regenerate_missing_thumbnails : this.regenerateThumbnails.options.onlyMissingThumbnails,
-						delete_unregistered_thumbnail_files: this.regenerateThumbnails.options.deleteOldThumbnails,
+				wp.apiRequest({
+					namespace: 'regenerate-thumbnails/v1',
+					endpoint : 'regenerate/' + this.id,
+					data     : {
+						regeneration_args     : {
+							only_regenerate_missing_thumbnails : this.regenerateThumbnails.options.onlyMissingThumbnails,
+							delete_unregistered_thumbnail_files: this.regenerateThumbnails.options.deleteOldThumbnails,
+						},
+						update_usages_in_posts: this.regenerateThumbnails.options.updatePostContents,
 					},
-					update_usages_in_posts: this.regenerateThumbnails.options.updatePostContents,
+					type     : 'POST',
+					dataType : 'json',
+					context  : this
 				})
-					.then(response => {
+					.done((data, textStatus, jqXHR) => {
 						this.regenerationComplete = true;
-						this.attachmentInfo = response.data;
+						this.attachmentInfo = data;
 
 						event.target.innerText = regenerateThumbnails.l10n.RegenerateSingle.done;
 						event.target.disabled = false;
 					})
-					.catch(error => {
+					.fail((jqXHR, textStatus, errorThrown) => {
 						event.target.innerText = regenerateThumbnails.l10n.RegenerateSingle.errorRegenerating;
-						this.regenerationError = this.regenerateThumbnails.l10n.RegenerateSingle.errorRegeneratingMessage.formatUnicorn(error.response.data);
-						console.log(error);
+						this.regenerationError = this.regenerateThumbnails.l10n.RegenerateSingle.errorRegeneratingMessage.formatUnicorn(jqXHR.responseJSON);
+
+						console.log('ERROR!', jqXHR, textStatus, errorThrown);
 					});
 			},
 			checkUpdatePosts(event) {
