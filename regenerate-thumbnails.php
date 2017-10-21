@@ -215,10 +215,14 @@ class RegenerateThumbnails {
 					'unregisteredSizes'        => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
 				),
 				'RegenerateMultiple' => array(
-					'logRegeneratedItem' => __( 'Regenerated {name}', 'regenerate-thumbnails' ),
-					'logSkippedItem'     => __( 'Skipped {name}. {reason}', 'regenerate-thumbnails' ),
 					'pause'              => __( 'Pause', 'regenerate-thumbnails' ),
 					'resume'             => __( 'Resume', 'regenerate-thumbnails' ),
+					'logRegeneratedItem' => __( 'Regenerated {name}', 'regenerate-thumbnails' ),
+					'logSkippedItem'     => __( 'Skipped {name}. {reason}', 'regenerate-thumbnails' ),
+					'duration'           => __( 'All done in {duration}.', 'regenerate-thumbnails' ),
+					'hours'              => __( '{count} hours', 'regenerate-thumbnails' ),
+					'minutes'            => __( '{count} minutes', 'regenerate-thumbnails' ),
+					'seconds'            => __( '{count} seconds', 'regenerate-thumbnails' ),
 				),
 			),
 		);

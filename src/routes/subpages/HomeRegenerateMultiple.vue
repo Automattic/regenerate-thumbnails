@@ -2,10 +2,14 @@
 	<div>
 		<progress-bar :progress="progress"></progress-bar>
 
-		<p v-if="progress < 100">
-			<button class="button button-secondary button-large" v-on:click="togglePause">
+		<p>
+			<button v-if="progress < 100" class="button button-secondary button-large" v-on:click="togglePause">
 				{{ isPaused ? this.regenerateThumbnails.l10n.RegenerateMultiple.resume : this.regenerateThumbnails.l10n.RegenerateMultiple.pause }}
 			</button>
+
+			<span v-else>
+				<strong>{{ duration }}</strong>
+			</span>
 		</p>
 
 		<div id="regenerate-thumbnails-log">
@@ -33,6 +37,7 @@
 				progress            : 0,
 				logItems            : [],
 				isPaused            : false,
+				duration            : false,
 			}
 		},
 		mounted   : function () {
@@ -42,6 +47,7 @@
 			let page = 1;
 			let totalPages = 0;
 			let maxLogItems = 500; // To keep the DOM size from going insane
+			let startTime = Date.now();
 
 			let titleElement = document.getElementsByTagName('title')[0];
 			let title = titleElement.innerHTML;
@@ -111,6 +117,7 @@
 			function processAttachment(attachments) {
 				if (vue.isPaused) {
 					setTimeout(function () {
+						startTime = startTime + 1000;
 						processAttachment(attachments);
 					}, 1000);
 
@@ -158,6 +165,32 @@
 						if (vue.logItems.length > maxLogItems) {
 							vue.logItems = vue.logItems.slice(maxLogItems * -1);
 							vue.listStart = processed - maxLogItems + 1;
+						}
+						
+						// If done, show how long it took
+						if (processed == totalItems) {
+							let secondsTaken = (Date.now() - startTime) / 1000;
+							let durationString = '';
+
+							if (secondsTaken > 3600) {
+								let hoursTaken = secondsTaken / 3600;
+								durationString = vue.regenerateThumbnails.l10n.RegenerateMultiple.hours.formatUnicorn({
+									count: hoursTaken.toFixed(1),
+								});
+							} else if (secondsTaken > 60) {
+								let minutesTaken = secondsTaken / 3600;
+								durationString = vue.regenerateThumbnails.l10n.RegenerateMultiple.minutes.formatUnicorn({
+									count: minutesTaken.toFixed(1),
+								});
+							} else {
+								durationString = vue.regenerateThumbnails.l10n.RegenerateMultiple.seconds.formatUnicorn({
+									count: secondsTaken.toFixed(),
+								});
+							}
+
+							vue.duration = vue.regenerateThumbnails.l10n.RegenerateMultiple.duration.formatUnicorn({
+								duration: durationString,
+							});
 						}
 
 						// Process the next attachment, or next page if we've run out
