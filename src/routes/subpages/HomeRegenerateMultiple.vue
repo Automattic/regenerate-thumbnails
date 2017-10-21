@@ -3,9 +3,9 @@
 		<progress-bar :progress="progress"></progress-bar>
 
 		<div id="regenerate-thumbnails-log">
-			<ol v-if="results" :start="listStart">
-				<li v-for="result in results" :key="result.id">
-					Regenerated {{ result.name }}
+			<ol v-if="logItems" :start="listStart">
+				<li v-for="logItem in logItems" :key="logItem.id">
+					{{ logItem.message }}
 				</li>
 			</ol>
 		</div>
@@ -13,6 +13,7 @@
 </template>
 
 <script>
+	require('../../helpers/formatUnicorn.js');
 	import ProgressBar from '../../components/ProgressBar.vue'
 
 	export default {
@@ -24,7 +25,7 @@
 				regenerateThumbnails: regenerateThumbnails,
 				listStart           : 1,
 				progress            : 0,
-				results             : [],
+				logItems            : [],
 			}
 		},
 		mounted   : function () {
@@ -44,9 +45,21 @@
 				return true;
 			};
 
-			processPageOfAttachments();
+			if (Array.isArray(vue.settings.regenerateWhat)) {
+				// A little transformation of the data
+				let attachments = [];
+				for (let id of vue.settings.regenerateWhat) {
+					attachments.push({id: id});
+				}
 
-			function processPageOfAttachments() {
+				totalItems = vue.settings.regenerateWhat.length;
+
+				processAttachment(attachments);
+			} else {
+				processChunkOfAttachments();
+			}
+
+			function processChunkOfAttachments() {
 				let namespace = 'wp/v2';
 				let endpoint = 'media';
 				let data = {
@@ -104,10 +117,21 @@
 					context  : vue,
 				})
 					.done((result, textStatus, jqXHR) => {
-						vue.results.push(result);
+						vue.logItems.push({
+							id     : result.id,
+							message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logRegeneratedItem.formatUnicorn(result),
+						});
 					})
 					.fail((jqXHR, textStatus, errorThrown) => {
 						console.log('ERROR!', jqXHR, textStatus, errorThrown);
+
+						vue.logItems.push({
+							id     : jqXHR.responseJSON.data.attachment.ID,
+							message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
+								name  : jqXHR.responseJSON.data.attachment.post_title,
+								reason: jqXHR.responseJSON.message,
+							}),
+						});
 					})
 					.always(() => {
 						processed++;
@@ -116,8 +140,8 @@
 						titleElement.innerHTML = vue.progress + '% | ' + title;
 
 						// Keep the log size under control
-						if (vue.results.length > maxLogItems) {
-							vue.results = vue.results.slice(maxLogItems * -1);
+						if (vue.logItems.length > maxLogItems) {
+							vue.logItems = vue.logItems.slice(maxLogItems * -1);
 							vue.listStart = processed - maxLogItems + 1;
 						}
 
@@ -126,7 +150,7 @@
 							processAttachment(attachments);
 						} else if (page < totalPages) {
 							page++;
-							processPageOfAttachments();
+							processChunkOfAttachments();
 						}
 					});
 			}

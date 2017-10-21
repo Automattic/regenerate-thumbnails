@@ -39,17 +39,26 @@
 			</label>
 		</p>
 
-		<p>
-			<button class="button button-primary button-hero" v-on:click="regenerate('all')">
-				{{ ButtonAllText }}
-			</button>
-		</p>
+		<div v-if="regenerateThumbnails.data.thumbnailIDs">
+			<p>
+				<button class="button button-primary button-hero" v-on:click="regenerate(regenerateThumbnails.data.thumbnailIDs)">
+					{{ regenerateThumbnails.l10n.Home.RegenerateThumbnailsForXAttachments }}
+				</button>
+			</p>
+		</div>
+		<div v-else>
+			<p>
+				<button class="button button-primary button-hero" v-on:click="regenerate('all')">
+					{{ ButtonAllText }}
+				</button>
+			</p>
 
-		<p v-if="usingFeaturedImages">
-			<button class="button button-primary button-hero" v-on:click="regenerate('featured-images')">
-				{{ ButtonFeaturedImagesText }}
-			</button>
-		</p>
+			<p v-if="usingFeaturedImages">
+				<button class="button button-primary button-hero" v-on:click="regenerate('featured-images')">
+					{{ ButtonFeaturedImagesText }}
+				</button>
+			</p>
+		</div>
 
 		<h2 class="title">{{ regenerateThumbnails.l10n.Home.thumbnailSizes }}</h2>
 		<p>{{ regenerateThumbnails.l10n.Home.thumbnailSizesDescription }}</p>
@@ -68,6 +77,7 @@
 </template>
 
 <script>
+	require('../../helpers/formatUnicorn.js');
 	import ThumbnailSize from '../../components/ThumbnailSize.vue'
 
 	export default {
@@ -83,6 +93,10 @@
 			}
 		},
 		created() {
+			if ( this.regenerateThumbnails.data.thumbnailIDs ) {
+				return;
+			}
+
 			// TODO: Probably better to preload this rather than fetch via AJAX
 
 			// Update button with total attachment count
@@ -100,7 +114,7 @@
 				context  : this
 			})
 				.done((data, textStatus, jqXHR) => {
-					this.ButtonAllText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForXAttachments.formatUnicorn({
+					this.ButtonAllText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForAllXAttachments.formatUnicorn({
 						'attachmentCount': jqXHR.getResponseHeader('x-wp-total').toLocaleString(),
 					});
 				})
@@ -120,7 +134,7 @@
 				context  : this
 			})
 				.done((data, textStatus, jqXHR) => {
-					this.ButtonAllText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForXAttachments.formatUnicorn({
+					this.ButtonAllText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForAllXAttachments.formatUnicorn({
 						'attachmentCount': jqXHR.getResponseHeader('x-wp-total').toLocaleString(),
 					});
 

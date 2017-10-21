@@ -23,13 +23,7 @@
 					};
 				}
 
-				switch (what) {
-					case 'all':
-					case 'featured-images':
-						this.settings.regenerateWhat = what;
-						break;
-				}
-
+				this.settings.regenerateWhat = what;
 				this.currentView = HomeRegenerateMultiple;
 			},
 		},

@@ -170,6 +170,7 @@ class RegenerateThumbnails_Regenerator {
 
 		$set_fullsizepath = $this->set_fullsizepath();
 		if ( is_wp_error( $set_fullsizepath ) ) {
+			$set_fullsizepath->add_data( array( 'attachment' => $this->attachment ) );
 			return $set_fullsizepath;
 		}
 
@@ -471,22 +472,19 @@ class RegenerateThumbnails_Regenerator {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @return array The attachment name, fullsize URL, registered thumbnail size status, and any unregistered sizes.
-	 *               On error, the key "error" will be set with the error message as the value.
+	 * @return array|WP_Error The attachment name, fullsize URL, registered thumbnail size status, and any unregistered sizes, or WP_Error on error.
 	 */
 	public function get_attachment_info() {
 		$set_fullsizepath = $this->set_fullsizepath();
 		if ( is_wp_error( $set_fullsizepath ) ) {
-			return array(
-				'error' => $set_fullsizepath->get_error_message(),
-			);
+			$set_fullsizepath->add_data( array( 'attachment' => $this->attachment ) );
+			return $set_fullsizepath;
 		}
 
 		$editor = wp_get_image_editor( $this->fullsizepath );
 		if ( is_wp_error( $editor ) ) {
-			return array(
-				'error' => $editor->get_error_message(),
-			);
+			$editor->add_data( array( 'attachment' => $this->attachment ) );
+			return $editor;
 		}
 
 		$metadata = wp_get_attachment_metadata( $this->attachment->ID );

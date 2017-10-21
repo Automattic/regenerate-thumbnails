@@ -111,7 +111,7 @@ class RegenerateThumbnails {
 		// For the bulk action dropdowns
 		add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_via_javascript' ) );
 		add_action( 'admin_action_bulk_regenerate_thumbnails', array( $this, 'bulk_action_handler' ) ); // Top drowndown
-		add_action( 'admin_action_-1', array( $this, 'bulk_action_handler' ) ); // Bottom dropdown (assumes top dropdown = default value)
+		add_action( 'admin_action_-1', array( $this, 'bulk_action_handler' ) ); // Bottom dropdown
 
 		// Add a regenerate button to the non-modal edit media page
 		add_action( 'attachment_submitbox_misc_actions', array( $this, 'add_button_to_media_edit_page' ), 99 );
@@ -160,66 +160,78 @@ class RegenerateThumbnails {
 			true
 		);
 
-		wp_localize_script(
-			'regenerate-thumbnails',
-			'regenerateThumbnails',
-			array(
-				'data'          => array(
-					'thumbnailSizes' => $this->get_thumbnail_sizes(),
+		$script_data = array(
+			'data'    => array(
+				'thumbnailSizes' => $this->get_thumbnail_sizes(),
+			),
+			// TODO: Add UI to main page (or a settings page?) to control these defaults
+			'options' => array(
+				'onlyMissingThumbnails' => true,
+				'updatePostContents'    => true,
+				'deleteOldThumbnails'   => false,
+			),
+			'l10n'    => array(
+				'common'             => array(
+					'regenerateThumbnails'                      => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
+					'loading'                                   => __( 'Loading…', 'regenerate-thumbnails' ),
+					'onlyRegenerateMissingThumbnails'           => __( 'Skip regenerating existing correctly sized thumbnails (faster).', 'regenerate-thumbnails' ),
+					'deleteOldThumbnails'                       => __( "Delete old, unused thumbnail files to free up server space. It's strongly recommended that you update the content of posts if you do this.", 'regenerate-thumbnails' ),
+					'thumbnailSizeItemWithCropMethodNoFilename' => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
+					'thumbnailSizeItemWithCropMethod'           => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
+					'thumbnailSizeItemWithoutCropMethod'        => __( '<strong>{label}:</strong> {width}×{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
+					'thumbnailSizeBiggerThanOriginal'           => __( '<strong>{label}:</strong> {width}×{height} pixels (thumbnail would be larger than original)', 'regenerate-thumbnails' ),
+					'thumbnailSizeItemIsCropped'                => __( 'cropped to fit', 'regenerate-thumbnails' ),
+					'thumbnailSizeItemIsProportional'           => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
 				),
-				// TODO: Add UI to main page (or a settings page?) to control these defaults
-				'options'       => array(
-					'onlyMissingThumbnails' => true,
-					'updatePostContents'    => true,
-					'deleteOldThumbnails'   => false,
+				'Home'               => array(
+					'intro1'                                     => sprintf(
+						__( 'When you change WordPress themes or change the sizes of your thumbnails at <a href="%s">Settings → Media</a>, images that you have previously uploaded to you media library will be missing thumbnail files for those new image sizes. This tool will allow you to create those missing thumbnail files for all images.', 'regenerate-thumbnails' ),
+						esc_url( admin_url( 'options-media.php' ) )
+					),
+					'intro2'                                     => sprintf(
+						__( 'To process a specific image, visit your media library and click the &quot;Regenerate Thumbnails&quot; link or button. To process multiple specific images, make sure you\'re in the <a href="%s">list view</a> and then use the Bulk Actions dropdown after selecting one or more images.', 'regenerate-thumbnails' ),
+						esc_url( admin_url( 'upload.php?mode=list' ) )
+					),
+					'updatePostContents'                         => __( 'Update the content of posts to use the new sizes.', 'regenerate-thumbnails' ),
+					'RegenerateThumbnailsForAllAttachments'      => __( 'Regenerate Thumbnails For All Attachments', 'regenerate-thumbnails' ),
+					'RegenerateThumbnailsForAllXAttachments'     => __( 'Regenerate Thumbnails For All {attachmentCount} Attachments', 'regenerate-thumbnails' ),
+					'RegenerateThumbnailsForFeaturedImagesOnly'  => __( 'Regenerate Thumbnails For Featured Images Only', 'regenerate-thumbnails' ),
+					'RegenerateThumbnailsForXFeaturedImagesOnly' => __( 'Regenerate Thumbnails For The {attachmentCount} Featured Images Only', 'regenerate-thumbnails' ),
+					'thumbnailSizes'                             => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
+					'thumbnailSizesDescription'                  => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
 				),
-				'l10n'          => array(
-					'common'           => array(
-						'regenerateThumbnails'                      => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
-						'loading'                                   => __( 'Loading…', 'regenerate-thumbnails' ),
-						'onlyRegenerateMissingThumbnails'           => __( 'Skip regenerating existing correctly sized thumbnails (faster).', 'regenerate-thumbnails' ),
-						'deleteOldThumbnails'                       => __( "Delete old, unused thumbnail files to free up server space. It's strongly recommended that you update the content of posts if you do this.", 'regenerate-thumbnails' ),
-						'thumbnailSizeItemWithCropMethodNoFilename' => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemWithCropMethod'           => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemWithoutCropMethod'        => __( '<strong>{label}:</strong> {width}×{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
-						'thumbnailSizeBiggerThanOriginal'           => __( '<strong>{label}:</strong> {width}×{height} pixels (thumbnail would be larger than original)', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemIsCropped'                => __( 'cropped to fit', 'regenerate-thumbnails' ),
-						'thumbnailSizeItemIsProportional'           => __( 'proportionally resized to fit inside dimensions', 'regenerate-thumbnails' ),
-					),
-					'Home'             => array(
-						'intro1'                                     => sprintf(
-							__( 'When you change WordPress themes or change the sizes of your thumbnails at <a href="%s">Settings → Media</a>, images that you have previously uploaded to you media library will be missing thumbnail files for those new image sizes. This tool will allow you to create those missing thumbnail files for all images.', 'regenerate-thumbnails' ),
-							esc_url( admin_url( 'options-media.php' ) )
-						),
-						'intro2'                                     => sprintf(
-							__( 'To process a specific image, visit your media library and click the &quot;Regenerate Thumbnails&quot; link or button. To process multiple specific images, make sure you\'re in the <a href="%s">list view</a> and then use the Bulk Actions dropdown after selecting one or more images.', 'regenerate-thumbnails' ),
-							esc_url( admin_url( 'upload.php?mode=list' ) )
-						),
-						'updatePostContents'                         => __( 'Update the content of posts to use the new sizes.', 'regenerate-thumbnails' ),
-						'RegenerateThumbnailsForAllAttachments'      => __( 'Regenerate Thumbnails For All Attachments', 'regenerate-thumbnails' ),
-						'RegenerateThumbnailsForXAttachments'        => __( 'Regenerate Thumbnails For All {attachmentCount} Attachments', 'regenerate-thumbnails' ),
-						'RegenerateThumbnailsForFeaturedImagesOnly'  => __( 'Regenerate Thumbnails For Featured Images Only', 'regenerate-thumbnails' ),
-						'RegenerateThumbnailsForXFeaturedImagesOnly' => __( 'Regenerate Thumbnails For The {attachmentCount} Featured Images Only', 'regenerate-thumbnails' ),
-						'thumbnailSizes'                             => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
-						'thumbnailSizesDescription'                  => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
-					),
-					'RegenerateSingle' => array(
-						/* translators: Admin screen title. */
-						'title'                    => __( 'Regenerate Thumbnails: {name} — WordPress', 'regenerate-thumbnails' ),
-						'errorWithMessage'         => __( '<strong>ERROR:</strong> {error}', 'regenerate-thumbnails' ),
-						'filenameAndDimensions'    => __( '<code>{filename}</code> {width}×{height} pixels', 'regenerate-thumbnails' ),
-						'preview'                  => __( 'Preview', 'regenerate-thumbnails' ),
-						'updatePostContents'       => __( 'Update the content of posts that use this attachment to use the new sizes.', 'regenerate-thumbnails' ),
-						'regenerating'             => __( 'Regenerating…', 'regenerate-thumbnails' ),
-						'done'                     => __( 'Done! Click here to go back.', 'regenerate-thumbnails' ),
-						'errorRegenerating'        => __( 'Error Regenerating', 'regenerate-thumbnails' ),
-						'errorRegeneratingMessage' => __( 'There was an error regenerating this attachment. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
-						'registeredSizes'          => __( 'These are the currently registered thumbnail sizes, whether they exist for this attachment, and their filenames:', 'regenerate-thumbnails' ),
-						'unregisteredSizes'        => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
-					),
+				'RegenerateSingle'   => array(
+					/* translators: Admin screen title. */
+					'title'                    => __( 'Regenerate Thumbnails: {name} — WordPress', 'regenerate-thumbnails' ),
+					'errorWithMessage'         => __( '<strong>ERROR:</strong> {error}', 'regenerate-thumbnails' ),
+					'filenameAndDimensions'    => __( '<code>{filename}</code> {width}×{height} pixels', 'regenerate-thumbnails' ),
+					'preview'                  => __( 'Preview', 'regenerate-thumbnails' ),
+					'updatePostContents'       => __( 'Update the content of posts that use this attachment to use the new sizes.', 'regenerate-thumbnails' ),
+					'regenerating'             => __( 'Regenerating…', 'regenerate-thumbnails' ),
+					'done'                     => __( 'Done! Click here to go back.', 'regenerate-thumbnails' ),
+					'errorRegenerating'        => __( 'Error Regenerating', 'regenerate-thumbnails' ),
+					'errorRegeneratingMessage' => __( 'There was an error regenerating this attachment. The error was: <em>{message}</em>', 'regenerate-thumbnails' ),
+					'registeredSizes'          => __( 'These are the currently registered thumbnail sizes, whether they exist for this attachment, and their filenames:', 'regenerate-thumbnails' ),
+					'unregisteredSizes'        => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
 				),
-			)
+				'RegenerateMultiple' => array(
+					'logRegeneratedItem' => __( 'Regenerated {name}', 'regenerate-thumbnails' ),
+					'logSkippedItem'     => __( 'Skipped {name}. {reason}', 'regenerate-thumbnails' ),
+				),
+			),
 		);
+
+		// Bulk regeneration
+		if ( ! empty( $_GET['ids'] ) ) {
+			$script_data['data']['thumbnailIDs'] = array_map( 'intval', explode( ',', $_GET['ids'] ) );
+
+			$script_data['l10n']['Home']['RegenerateThumbnailsForXAttachments'] = sprintf(
+				__( 'Regenerate Thumbnails For The %d Selected Attachments', 'regenerate-thumbnails' ),
+				count( $script_data['data']['thumbnailIDs'] )
+			);
+		}
+
+		wp_localize_script( 'regenerate-thumbnails', 'regenerateThumbnails', $script_data );
 
 		wp_enqueue_style(
 			'regenerate-thumbnails-progressbar',
@@ -235,12 +247,8 @@ class RegenerateThumbnails {
 	public function regenerate_interface() {
 		global $wp_version;
 
-		?>
-
-		<div class="wrap">
-			<h1><?php esc_html_e( 'Regenerate Thumbnails', 'regenerate-thumbnails' ); ?></h1>
-
-		<?php
+		echo '<div class="wrap">';
+		echo '<h1>' . esc_html__( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</h1>';
 
 		if ( version_compare( $wp_version, '4.9-alpha-41206', '<' ) ) {
 			echo '<p>' . sprintf(
@@ -289,14 +297,14 @@ class RegenerateThumbnails {
 	}
 
 	/**
-	 * Creates a nonced URL to the plugin's admin page for a given set of attachment IDs.
+	 * Helper function to create a URL to regenerate a single image.
 	 *
-	 * @param array $ids An array of attachment IDs that should be regenerated.
+	 * @param int $id The attachment ID that should be regenerated.
 	 *
-	 * @return string The nonced URL to the admin page.
+	 * @return string The URL to the admin page.
 	 */
-	public function create_page_url( $ids ) {
-		return add_query_arg( 'page', 'regenerate-thumbnails', admin_url( 'tools.php' ) ) . '#/regenerate/' . implode( ',', $ids );
+	public function create_page_url( $id ) {
+		return add_query_arg( 'page', 'regenerate-thumbnails', admin_url( 'tools.php' ) ) . '#/regenerate/' . $id;
 	}
 
 	/**
@@ -308,11 +316,15 @@ class RegenerateThumbnails {
 	 * @return array The new list of actions.
 	 */
 	public function add_regenerate_link_to_media_list_view( $actions, $post ) {
-		if ( ! wp_attachment_is_image( $post ) || ! current_user_can( $this->capability ) ) {
+		if (
+			! current_user_can( $this->capability ) ||
+			! wp_attachment_is_image( $post ) ||
+			'site-icon' === get_post_meta( $post->ID, '_wp_attachment_context', true )
+		) {
 			return $actions;
 		}
 
-		$actions['regenerate_thumbnails'] = '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+		$actions['regenerate_thumbnails'] = '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
 
 		return $actions;
 	}
@@ -323,12 +335,16 @@ class RegenerateThumbnails {
 	public function add_button_to_media_edit_page() {
 		global $post;
 
-		if ( ! wp_attachment_is_image( $post ) || ! current_user_can( $this->capability ) ) {
+		if (
+			! current_user_can( $this->capability ) ||
+			! wp_attachment_is_image( $post ) ||
+			'site-icon' === get_post_meta( $post->ID, '_wp_attachment_context', true )
+		) {
 			return;
 		}
 
 		echo '<div class="misc-pub-section misc-pub-regenerate-thumbnails">';
-		echo '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+		echo '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
 		echo '</div>';
 	}
 
@@ -345,10 +361,18 @@ class RegenerateThumbnails {
 	 * @return array The new array of form fields.
 	 */
 	public function add_button_to_edit_media_modal_fields_area( $form_fields, $post ) {
+		if (
+			! current_user_can( $this->capability ) ||
+			! wp_attachment_is_image( $post ) ||
+			'site-icon' === get_post_meta( $post->ID, '_wp_attachment_context', true )
+		) {
+			return $form_fields;
+		}
+
 		$form_fields['regenerate_thumbnails'] = array(
 			'label'         => '',
 			'input'         => 'html',
-			'html'          => '<a href="' . esc_url( $this->create_page_url( array( $post->ID ) ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>',
+			'html'          => '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>',
 			'show_in_modal' => true,
 			'show_in_edit'  => false,
 		);
@@ -363,10 +387,15 @@ class RegenerateThumbnails {
 		if ( ! current_user_can( $this->capability ) ) {
 			return;
 		}
+
 		?>
 		<script type="text/javascript">
 			jQuery(document).ready(function ($) {
-				$('select[name^="action"] option:last-child').before('<option value="bulk_regenerate_thumbnails"><?php echo esc_attr( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) ); ?></option>');
+				$('select[name^="action"] option:last-child').before(
+					$('<option/>')
+						.attr('value', 'bulk_regenerate_thumbnails')
+						.text('<?php echo esc_js( __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) ); ?>')
+				);
 			});
 		</script>
 		<?php
@@ -388,7 +417,14 @@ class RegenerateThumbnails {
 
 		check_admin_referer( 'bulk-media' );
 
-		wp_safe_redirect( $this->create_page_url( array_map( 'intval', $_REQUEST['media'] ) ) );
+		wp_safe_redirect(
+			add_query_arg( array(
+				'page' => 'regenerate-thumbnails',
+				'ids'  => implode( ',', $_REQUEST['media'] ),
+			),
+				admin_url( 'tools.php' )
+			) );
+
 		exit();
 	}
 

@@ -88,7 +88,7 @@
 </template>
 
 <script>
-	require('../helpers/formatUnicorn');
+	require('../helpers/formatUnicorn.js');
 	import ThumbnailStatus from "../components/ThumbnailStatus.vue";
 
 	export default {
