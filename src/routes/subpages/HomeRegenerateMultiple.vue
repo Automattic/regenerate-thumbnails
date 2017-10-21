@@ -2,7 +2,7 @@
 	<div>
 		<progress-bar :progress="progress"></progress-bar>
 
-		<p>
+		<p v-if="progress < 100">
 			<button class="button button-secondary button-large" v-on:click="togglePause">
 				{{ isPaused ? this.regenerateThumbnails.l10n.RegenerateMultiple.resume : this.regenerateThumbnails.l10n.RegenerateMultiple.pause }}
 			</button>
