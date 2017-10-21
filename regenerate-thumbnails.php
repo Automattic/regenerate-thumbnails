@@ -217,6 +217,8 @@ class RegenerateThumbnails {
 				'RegenerateMultiple' => array(
 					'logRegeneratedItem' => __( 'Regenerated {name}', 'regenerate-thumbnails' ),
 					'logSkippedItem'     => __( 'Skipped {name}. {reason}', 'regenerate-thumbnails' ),
+					'pause'              => __( 'Pause', 'regenerate-thumbnails' ),
+					'resume'             => __( 'Resume', 'regenerate-thumbnails' ),
 				),
 			),
 		);

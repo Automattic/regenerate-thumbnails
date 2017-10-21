@@ -2,6 +2,12 @@
 	<div>
 		<progress-bar :progress="progress"></progress-bar>
 
+		<p>
+			<button class="button button-secondary button-large" v-on:click="togglePause">
+				{{ isPaused ? this.regenerateThumbnails.l10n.RegenerateMultiple.resume : this.regenerateThumbnails.l10n.RegenerateMultiple.pause }}
+			</button>
+		</p>
+
 		<div id="regenerate-thumbnails-log">
 			<ol v-if="logItems" :start="listStart">
 				<li v-for="logItem in logItems" :key="logItem.id">
@@ -26,6 +32,7 @@
 				listStart           : 1,
 				progress            : 0,
 				logItems            : [],
+				isPaused            : false,
 			}
 		},
 		mounted   : function () {
@@ -102,6 +109,14 @@
 			}
 
 			function processAttachment(attachments) {
+				if (vue.isPaused) {
+					setTimeout(function () {
+						processAttachment(attachments);
+					}, 1000);
+
+					return;
+				}
+
 				let attachment = attachments.shift();
 
 				wp.apiRequest({
@@ -166,6 +181,11 @@
 				}
 			});
 		},
+		methods   : {
+			togglePause() {
+				this.isPaused = !this.isPaused;
+			},
+		},
 		components: {
 			ProgressBar,
 		},
@@ -178,7 +198,7 @@
 	}
 
 	#regenerate-thumbnails-log {
-		height: 500px;
+		height: 495px;
 		overflow: auto;
 	}
 </style>
