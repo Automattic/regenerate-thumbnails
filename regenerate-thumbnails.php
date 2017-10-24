@@ -175,7 +175,7 @@ class RegenerateThumbnails {
 					'regenerateThumbnails'                      => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
 					'loading'                                   => __( 'Loading…', 'regenerate-thumbnails' ),
 					'onlyRegenerateMissingThumbnails'           => __( 'Skip regenerating existing correctly sized thumbnails (faster).', 'regenerate-thumbnails' ),
-					'deleteOldThumbnails'                       => __( "Delete old, unused thumbnail files to free up server space. It's strongly recommended that you update the content of posts if you do this.", 'regenerate-thumbnails' ),
+					'deleteOldThumbnails'                       => __( "Delete thumbnail files for old unregistered sizes in order to free up server space. You risk broken images if you do this so it's strongly recommended that you update the content of posts to reduce the risk.", 'regenerate-thumbnails' ),
 					'thumbnailSizeItemWithCropMethodNoFilename' => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
 					'thumbnailSizeItemWithCropMethod'           => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
 					'thumbnailSizeItemWithoutCropMethod'        => __( '<strong>{label}:</strong> {width}×{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),

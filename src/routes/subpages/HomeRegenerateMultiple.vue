@@ -166,7 +166,7 @@
 							vue.logItems = vue.logItems.slice(maxLogItems * -1);
 							vue.listStart = processed - maxLogItems + 1;
 						}
-						
+
 						// If done, show how long it took
 						if (processed == totalItems) {
 							let secondsTaken = (Date.now() - startTime) / 1000;
