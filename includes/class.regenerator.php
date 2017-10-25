@@ -119,7 +119,7 @@ class RegenerateThumbnails_Regenerator {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @return true|WP_Error True if set, or WP_Error if the fullsize image is missing.
+	 * @return true|WP_Error True if the class variable was set, or WP_Error if the fullsize image is missing.
 	 */
 	public function set_fullsizepath() {
 		if ( $this->fullsizepath ) {

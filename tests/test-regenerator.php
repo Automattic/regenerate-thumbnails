@@ -124,7 +124,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 
 	public function test_regenerate_thumbnails_to_new_sizes() {
 		$this->attachment_id = $this->_create_attachment();
-		$old_metadata  = wp_get_attachment_metadata( $this->attachment_id );
+		$old_metadata        = wp_get_attachment_metadata( $this->attachment_id );
 
 		$upload_dir = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
 
@@ -238,7 +238,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		add_image_size( 'regenerate-thumbnails-test', 500, 500 );
 
 		$this->attachment_id = $this->_create_attachment();
-		$old_metadata  = wp_get_attachment_metadata( $this->attachment_id );
+		$old_metadata        = wp_get_attachment_metadata( $this->attachment_id );
 
 		$thumbnail_file = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR . $old_metadata['sizes']['regenerate-thumbnails-test']['file'];
 
