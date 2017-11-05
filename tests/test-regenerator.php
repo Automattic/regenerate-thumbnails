@@ -373,6 +373,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			'name'               => $attachment->post_title,
 			'fullsizeurl'        => wp_get_attachment_url( $this->attachment_id ),
 			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . '33772.jpg',
+			'edit_url'           => get_edit_post_link( $attachment->ID, 'raw' ),
 			'width'              => 1920,
 			'height'             => 1080,
 			'registered_sizes'   => array(
@@ -414,6 +415,12 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function test_get_current_thumbnail_statuses_normal() {
+		// To get edit_url to work correctly
+		$admin_id = self::factory()->user->create( array(
+			'role' => 'administrator',
+		) );
+		wp_set_current_user( $admin_id );
+
 		$this->attachment_id = $this->_create_attachment();
 
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $this->attachment_id );
