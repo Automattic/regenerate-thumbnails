@@ -119,7 +119,7 @@
 					});
 				})
 				.fail((jqXHR, textStatus, errorThrown) => {
-					console.log('ERROR!', jqXHR, textStatus, errorThrown);
+					console.log('Regenerate Thumbnails: Error getting the total attachment count.', jqXHR, textStatus, errorThrown);
 				});
 
 			// Update button with total featured images count
@@ -147,7 +147,7 @@
 					}
 				})
 				.fail((jqXHR, textStatus, errorThrown) => {
-					console.log('ERROR!', jqXHR, textStatus, errorThrown);
+					console.log('Regenerate Thumbnails: Error getting the total featured images count.', jqXHR, textStatus, errorThrown);
 				});
 		},
 		methods   : {
