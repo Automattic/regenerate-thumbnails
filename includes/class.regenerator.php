@@ -493,6 +493,7 @@ class RegenerateThumbnails_Regenerator {
 			'name'               => $this->attachment->post_title,
 			'fullsizeurl'        => wp_get_attachment_url( $this->attachment->ID ), // We can only guarantee that the fullsize image file exists
 			'relative_path'      => _wp_get_attachment_relative_path( $this->fullsizepath ) . DIRECTORY_SEPARATOR . basename( $this->fullsizepath ),
+			'edit_url'           => get_edit_post_link( $this->attachment->ID, 'raw' ),
 			'width'              => $metadata['width'],
 			'height'             => $metadata['height'],
 			'registered_sizes'   => array(),
