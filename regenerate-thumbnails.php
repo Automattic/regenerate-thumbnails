@@ -12,6 +12,21 @@ Text Domain:  regenerate-thumbnails
 License:      GPL2
 License URI:  https://www.gnu.org/licenses/gpl-2.0.html
 
+**************************************************************************
+
+Regenerate Thumbnails is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+any later version.
+
+Regenerate Thumbnails is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Regenerate Thumbnails. If not, see https://www.gnu.org/licenses/gpl-2.0.html.
+
 **************************************************************************/
 
 require( dirname( __FILE__ ) . '/includes/class.regenerator.php' );
@@ -223,6 +238,7 @@ class RegenerateThumbnails {
 					'hours'              => __( '{count} hours', 'regenerate-thumbnails' ),
 					'minutes'            => __( '{count} minutes', 'regenerate-thumbnails' ),
 					'seconds'            => __( '{count} seconds', 'regenerate-thumbnails' ),
+					'error'              => __( "Unable to fetch a list of attachment IDs to process from the WordPress REST API. You can check your browser's console for details.", 'regenerate-thumbnails' ),
 				),
 			),
 		);

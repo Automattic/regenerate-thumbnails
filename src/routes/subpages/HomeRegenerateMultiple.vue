@@ -3,20 +3,24 @@
 		<progress-bar :progress="progress"></progress-bar>
 
 		<p>
-			<button v-if="progress < 100" class="button button-secondary button-large" v-on:click="togglePause">
+			<button v-if="!finishedMessage && progress < 100" class="button button-secondary button-large" v-on:click="togglePause">
 				{{ isPaused ? this.regenerateThumbnails.l10n.RegenerateMultiple.resume : this.regenerateThumbnails.l10n.RegenerateMultiple.pause }}
 			</button>
-
-			<span v-else>
-				<strong>{{ duration }}</strong>
-			</span>
 		</p>
+
+		<div v-if="finishedMessage">
+			<p><strong>{{ finishedMessage }}</strong></p>
+
+			<div v-if="errorItems" id="regenerate-thumbnails-error-log">
+				<ol>
+					<li v-for="errorItem in errorItems" :key="errorItem.id" v-html="errorItem.message"></li>
+				</ol>
+			</div>
+		</div>
 
 		<div id="regenerate-thumbnails-log">
 			<ol v-if="logItems" :start="listStart">
-				<li v-for="logItem in logItems" :key="logItem.id">
-					{{ logItem.message }}
-				</li>
+				<li v-for="logItem in logItems" :key="logItem.id" v-html="logItem.message"></li>
 			</ol>
 		</div>
 	</div>
@@ -36,8 +40,9 @@
 				listStart           : 1,
 				progress            : 0,
 				logItems            : [],
+				errorItems          : [],
 				isPaused            : false,
-				duration            : false,
+				finishedMessage     : false,
 			}
 		},
 		mounted   : function () {
@@ -48,6 +53,7 @@
 			let totalPages = 0;
 			let maxLogItems = 500; // To keep the DOM size from going insane
 			let startTime = Date.now();
+			let chunkErrorRetry = 3;
 
 			let titleElement = document.getElementsByTagName('title')[0];
 			let title = titleElement.innerHTML;
@@ -104,17 +110,26 @@
 					context  : vue,
 				})
 					.done((attachments, textStatus, jqXHR) => {
+						chunkErrorRetry = 3;
+
 						totalItems = jqXHR.getResponseHeader('x-wp-total');
 						totalPages = jqXHR.getResponseHeader('x-wp-totalpages');
 
 						processAttachment(attachments);
 					})
 					.fail((jqXHR, textStatus, errorThrown) => {
-						console.log('ERROR!', jqXHR, textStatus, errorThrown);
+						console.log('Regenerate Thumbnails: Error getting a chunk of thumbnail IDs to process.', jqXHR, textStatus, errorThrown);
+						if (chunkErrorRetry > 1) {
+							chunkErrorRetry--;
+							processChunkOfAttachments();
+						} else {
+							vue.finishedMessage = vue.regenerateThumbnails.l10n.RegenerateMultiple.error;
+						}
 					});
 			}
 
 			function processAttachment(attachments) {
+				// Is there a better way to do this?
 				if (vue.isPaused) {
 					setTimeout(function () {
 						startTime = startTime + 1000;
@@ -139,21 +154,42 @@
 					context  : vue,
 				})
 					.done((result, textStatus, jqXHR) => {
+						// Make the attachment name clickable
+						let a = document.createElement('a');
+						a.href = result.edit_url;
+						a.textContent = result.name;
+						result.name = a.outerHTML;
+
 						vue.logItems.push({
 							id     : result.id,
 							message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logRegeneratedItem.formatUnicorn(result),
 						});
 					})
 					.fail((jqXHR, textStatus, errorThrown) => {
-						console.log('ERROR!', jqXHR, textStatus, errorThrown);
+						console.log('Regenerate Thumbnails: Error while trying to regenerate attachment ID ' + attachment.id, jqXHR, textStatus, errorThrown);
 
-						vue.logItems.push({
-							id     : jqXHR.responseJSON.data.attachment.ID,
-							message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
-								name  : jqXHR.responseJSON.data.attachment.post_title,
-								reason: jqXHR.responseJSON.message,
-							}),
-						});
+						let item = {};
+						if (undefined !== jqXHR.responseJSON.data.attachment) {
+							item = {
+								id     : jqXHR.responseJSON.data.attachment.ID,
+								message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
+									name  : jqXHR.responseJSON.data.attachment.post_title,
+									reason: jqXHR.responseJSON.message,
+								}),
+							};
+						} else {
+							item = {
+								id     : attachment.id,
+								message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
+									name  : 'Attachment ID ' + attachment.id,
+									reason: jqXHR.responseJSON.message,
+								}),
+							};
+						}
+
+						console.log(item);
+						vue.logItems.push(item);
+						vue.errorItems.push(item);
 					})
 					.always(() => {
 						processed++;
@@ -188,7 +224,7 @@
 								});
 							}
 
-							vue.duration = vue.regenerateThumbnails.l10n.RegenerateMultiple.duration.formatUnicorn({
+							vue.finishedMessage = vue.regenerateThumbnails.l10n.RegenerateMultiple.duration.formatUnicorn({
 								duration: durationString,
 							});
 						}
@@ -232,6 +268,11 @@
 
 	#regenerate-thumbnails-log {
 		height: 495px;
+		overflow: auto;
+	}
+
+	#regenerate-thumbnails-error-log {
+		max-height: 250px;
 		overflow: auto;
 	}
 </style>
