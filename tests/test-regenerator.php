@@ -226,26 +226,55 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_dont_delete_unregistered_thumbnail_files() {
+	public function test_delete_unregistered_thumbnail_files_no() {
 		$this->_delete_unregistered_thumbnail_files_helper( false );
 	}
 
-	public function test_delete_unregistered_thumbnail_files() {
+	public function test_delete_unregistered_thumbnail_files_yes() {
 		$this->_delete_unregistered_thumbnail_files_helper( true );
 	}
 
 	public function _delete_unregistered_thumbnail_files_helper( $delete_unregistered_thumbnail_files ) {
-		add_image_size( 'regenerate-thumbnails-test', 500, 500 );
+		add_image_size( 'regenerate-thumbnails-test-inmeta', 521, 567 );
+		add_image_size( 'regenerate-thumbnails-test-notinmeta', 621, 667 );
 
+		// Both test thumbnails will be created on upload
 		$this->attachment_id = $this->_create_attachment();
 		$old_metadata        = wp_get_attachment_metadata( $this->attachment_id );
 
-		$thumbnail_file = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR . $old_metadata['sizes']['regenerate-thumbnails-test']['file'];
+		copy( DIR_TESTDATA . '/images/33772.jpg', DIR_TESTDATA . '/images/33772-123x456.jpg' );
+		$attachment_to_keep_id = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772-123x456.jpg' );
 
-		$this->assertFileExists( $thumbnail_file );
+		$this->assertArrayHasKey( 'regenerate-thumbnails-test-inmeta', $old_metadata['sizes'] );
+		$this->assertArrayHasKey( 'regenerate-thumbnails-test-notinmeta', $old_metadata['sizes'] );
 
-		remove_image_size( 'regenerate-thumbnails-test' );
+		$thumbnail_file_inmeta    = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR . $old_metadata['sizes']['regenerate-thumbnails-test-inmeta']['file'];
+		$thumbnail_file_notinmeta = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR . $old_metadata['sizes']['regenerate-thumbnails-test-notinmeta']['file'];
+		$thumbnail_file_to_keep   = get_attached_file( $attachment_to_keep_id );
 
+		$this->assertFileExists( $thumbnail_file_inmeta );
+		$this->assertFileExists( $thumbnail_file_notinmeta );
+		$this->assertFileExists( $thumbnail_file_to_keep );
+
+		remove_image_size( 'regenerate-thumbnails-test-notinmeta' );
+
+		// After this, "inmeta" will be in the meta and "notinmeta" will exist but not be in the meta
+		require_once( ABSPATH . 'wp-admin/includes/admin.php' );
+		$step2_metadata = wp_generate_attachment_metadata( $this->attachment_id, get_attached_file( $this->attachment_id ) );
+		wp_update_attachment_metadata( $this->attachment_id, $step2_metadata );
+
+		$step2_metadata = wp_get_attachment_metadata( $this->attachment_id );
+
+		$this->assertArrayHasKey( 'regenerate-thumbnails-test-inmeta', $step2_metadata['sizes'] );
+		$this->assertArrayNotHasKey( 'regenerate-thumbnails-test-notinmeta', $step2_metadata['sizes'] );
+
+		$this->assertFileExists( $thumbnail_file_inmeta );
+		$this->assertFileExists( $thumbnail_file_notinmeta );
+		$this->assertFileExists( $thumbnail_file_to_keep );
+
+		remove_image_size( 'regenerate-thumbnails-test-inmeta' );
+
+		// Now let's verify that the regenerate() method works as expected
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $this->attachment_id );
 		$regenerator->regenerate( array(
 			'delete_unregistered_thumbnail_files' => $delete_unregistered_thumbnail_files,
@@ -254,12 +283,17 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$new_metadata = wp_get_attachment_metadata( $this->attachment_id );
 
 		if ( $delete_unregistered_thumbnail_files ) {
-			$this->assertFileNotExists( $thumbnail_file );
-			$this->assertArrayNotHasKey( 'regenerate-thumbnails-test', $new_metadata['sizes'] );
+			$this->assertFileNotExists( $thumbnail_file_inmeta );
+			$this->assertArrayNotHasKey( 'regenerate-thumbnails-test-inmeta', $new_metadata['sizes'] );
+			$this->assertFileNotExists( $thumbnail_file_notinmeta );
+			$this->assertArrayNotHasKey( 'regenerate-thumbnails-test-notinmeta', $new_metadata['sizes'] );
 		} else {
-			$this->assertFileExists( $thumbnail_file );
-			$this->assertArrayHasKey( 'regenerate-thumbnails-test', $new_metadata['sizes'] );
+			$this->assertFileExists( $thumbnail_file_inmeta );
+			$this->assertArrayHasKey( 'regenerate-thumbnails-test-inmeta', $new_metadata['sizes'] );
+			$this->assertFileExists( $thumbnail_file_notinmeta );
 		}
+
+		$this->assertFileExists( $thumbnail_file_to_keep );
 	}
 
 	public function test_verify_that_site_icons_are_not_regenerated() {

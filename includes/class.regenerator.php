@@ -163,6 +163,8 @@ class RegenerateThumbnails_Regenerator {
 	 * @return mixed|WP_Error Metadata for attachment (see wp_generate_attachment_metadata()), or WP_Error on error.
 	 */
 	public function regenerate( $args = array() ) {
+		global $wpdb;
+
 		$args = wp_parse_args( $args, array(
 			'only_regenerate_missing_thumbnails'  => true,
 			'delete_unregistered_thumbnail_files' => false,
@@ -171,6 +173,7 @@ class RegenerateThumbnails_Regenerator {
 		$set_fullsizepath = $this->set_fullsizepath();
 		if ( is_wp_error( $set_fullsizepath ) ) {
 			$set_fullsizepath->add_data( array( 'attachment' => $this->attachment ) );
+
 			return $set_fullsizepath;
 		}
 
@@ -197,9 +200,8 @@ class RegenerateThumbnails_Regenerator {
 
 		$wp_upload_dir = dirname( $this->fullsizepath ) . DIRECTORY_SEPARATOR;
 
-		// If the user wants to keep their storage usage down, we can iterate over the list of
-		// thumbnails in the old metadata and delete any that are no longer registered as valid sizes.
 		if ( $args['delete_unregistered_thumbnail_files'] ) {
+			// Delete old sizes that are still in the metadata
 			$intermediate_image_sizes = get_intermediate_image_sizes();
 			foreach ( $old_metadata['sizes'] as $old_size => $old_size_data ) {
 				if ( in_array( $old_size, $intermediate_image_sizes ) ) {
@@ -209,6 +211,43 @@ class RegenerateThumbnails_Regenerator {
 				wp_delete_file( $wp_upload_dir . $old_size_data['file'] );
 
 				unset( $new_metadata['sizes'][ $old_size ] );
+			}
+
+			$relative_path = dirname( $new_metadata['file'] ) . DIRECTORY_SEPARATOR;
+
+			// It's possible to upload an image with a filename like image-123x456.jpg and it shouldn't be deleted
+			$whitelist = $wpdb->get_col( $wpdb->prepare(
+				"SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value REGEXP %s",
+				'^' . preg_quote( $relative_path ) . '[^' . preg_quote( DIRECTORY_SEPARATOR ) . ']+-[0-9]+x[0-9]+\.'
+			) );
+			$whitelist = array_map( 'basename', $whitelist );
+
+			$filelist = array();
+			foreach ( scandir( $wp_upload_dir ) as $file ) {
+				if ( '.' == $file || '..' == $file || ! is_file( $wp_upload_dir . $file ) ) {
+					continue;
+				}
+
+				$filelist[] = $file;
+			}
+
+			$registered_thumbnails = array();
+			foreach ( $new_metadata['sizes'] as $size ) {
+				$registered_thumbnails[] = $size['file'];
+			}
+
+			$fullsize_parts = pathinfo( $this->fullsizepath );
+
+			foreach ( $filelist as $file ) {
+				if ( in_array( $file, $whitelist ) || in_array( $file, $registered_thumbnails ) ) {
+					continue;
+				}
+
+				if ( ! preg_match( '#' . preg_quote( $fullsize_parts['filename'], '#' ) . '-[0-9]+x[0-9]+\.' . preg_quote( $fullsize_parts['extension'], '#' ) . '#', $file ) ) {
+					continue;
+				}
+
+				wp_delete_file( $wp_upload_dir . $file );
 			}
 		} else {
 			// If not deleting, rename any size conflicts to avoid them being lost if the file still exists.
@@ -478,12 +517,14 @@ class RegenerateThumbnails_Regenerator {
 		$set_fullsizepath = $this->set_fullsizepath();
 		if ( is_wp_error( $set_fullsizepath ) ) {
 			$set_fullsizepath->add_data( array( 'attachment' => $this->attachment ) );
+
 			return $set_fullsizepath;
 		}
 
 		$editor = wp_get_image_editor( $this->fullsizepath );
 		if ( is_wp_error( $editor ) ) {
 			$editor->add_data( array( 'attachment' => $this->attachment ) );
+
 			return $editor;
 		}
 
