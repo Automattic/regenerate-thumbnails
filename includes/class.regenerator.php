@@ -216,8 +216,16 @@ class RegenerateThumbnails_Regenerator {
 			$relative_path = dirname( $new_metadata['file'] ) . DIRECTORY_SEPARATOR;
 
 			// It's possible to upload an image with a filename like image-123x456.jpg and it shouldn't be deleted
-			$whitelist = $wpdb->get_col( $wpdb->prepare(
-				"SELECT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value REGEXP %s",
+			$whitelist = $wpdb->get_col( $wpdb->prepare( "
+				SELECT
+					meta_value
+				FROM
+					{$wpdb->postmeta}
+				WHERE
+					meta_key = '_wp_attached_file'
+					AND meta_value REGEXP %s
+				/* Regenerate Thumbnails */
+				",
 				'^' . preg_quote( $relative_path ) . '[^' . preg_quote( DIRECTORY_SEPARATOR ) . ']+-[0-9]+x[0-9]+\.'
 			) );
 			$whitelist = array_map( 'basename', $whitelist );
@@ -243,7 +251,7 @@ class RegenerateThumbnails_Regenerator {
 					continue;
 				}
 
-				if ( ! preg_match( '#' . preg_quote( $fullsize_parts['filename'], '#' ) . '-[0-9]+x[0-9]+\.' . preg_quote( $fullsize_parts['extension'], '#' ) . '#', $file ) ) {
+				if ( ! preg_match( '#^' . preg_quote( $fullsize_parts['filename'], '#' ) . '-[0-9]+x[0-9]+\.' . preg_quote( $fullsize_parts['extension'], '#' ) . '$#', $file ) ) {
 					continue;
 				}
 
