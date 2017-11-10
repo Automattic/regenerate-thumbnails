@@ -179,11 +179,10 @@ class RegenerateThumbnails {
 			'data'    => array(
 				'thumbnailSizes' => $this->get_thumbnail_sizes(),
 			),
-			// TODO: Add UI to main page (or a settings page?) to control these defaults
 			'options' => array(
-				'onlyMissingThumbnails' => true,
-				'updatePostContents'    => true,
-				'deleteOldThumbnails'   => false,
+				'onlyMissingThumbnails' => apply_filters( 'regenerate_thumbs_options_onlymissingthumbnails', true ),
+				'updatePostContents'    => apply_filters( 'regenerate_thumbs_options_updatepostcontents', true ),
+				'deleteOldThumbnails'   => apply_filters( 'regenerate_thumbs_options_deleteoldthumbnails', false ),
 			),
 			'l10n'    => array(
 				'common'             => array(
