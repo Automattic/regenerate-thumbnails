@@ -88,7 +88,7 @@
 		data() {
 			return {
 				regenerateThumbnails    : regenerateThumbnails,
-				usingFeaturedImages     : true,
+				usingFeaturedImages     : false,
 				ButtonAllText           : regenerateThumbnails.l10n.Home.RegenerateThumbnailsForAllAttachments,
 				ButtonFeaturedImagesText: regenerateThumbnails.l10n.Home.RegenerateThumbnailsForFeaturedImagesOnly,
 				checkboxOnlyMissing     : regenerateThumbnails.options.onlyMissingThumbnails,
@@ -163,6 +163,7 @@
 						this.ButtonFeaturedImagesText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForXFeaturedImagesOnly.formatUnicorn({
 							'attachmentCount': jqXHR.getResponseHeader('x-wp-total').toLocaleString(),
 						});
+						this.usingFeaturedImages = true;
 					}
 				})
 				.fail((jqXHR, textStatus, errorThrown) => {
