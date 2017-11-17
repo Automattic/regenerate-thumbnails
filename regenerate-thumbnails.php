@@ -167,6 +167,23 @@ class RegenerateThumbnails {
 			return;
 		}
 
+		// Pre-4.9 compatibility
+		if ( ! wp_script_is( 'wp-api-request', 'registered' ) ) {
+			wp_register_script(
+				'wp-api-request',
+				plugins_url( 'includes/api-request.min.js', __FILE__ ),
+				array( 'jquery' ),
+				'4.9',
+				true
+			);
+
+			wp_localize_script( 'wp-api-request', 'wpApiSettings', array(
+				'root'          => esc_url_raw( get_rest_url() ),
+				'nonce'         => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
+				'versionString' => 'wp/v2/',
+			) );
+		}
+
 		wp_enqueue_script(
 			'regenerate-thumbnails',
 			plugins_url( 'dist/build.js', __FILE__ ),
