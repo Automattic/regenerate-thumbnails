@@ -11,7 +11,7 @@
 		<div v-if="finishedMessage">
 			<p><strong>{{ finishedMessage }}</strong></p>
 
-			<div v-if="errorItems" id="regenerate-thumbnails-error-log">
+			<div v-if="errorItems.length" id="regenerate-thumbnails-error-log">
 				<h2 class="title">{{ regenerateThumbnails.l10n.RegenerateMultiple.errorsEncountered }}</h2>
 
 				<ol>
