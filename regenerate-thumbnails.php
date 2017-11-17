@@ -293,9 +293,9 @@ class RegenerateThumbnails {
 		echo '<div class="wrap">';
 		echo '<h1>' . esc_html__( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</h1>';
 
-		if ( version_compare( $wp_version, '4.9-alpha-41206', '<' ) ) {
+		if ( version_compare( $wp_version, '4.7', '<' ) ) {
 			echo '<p>' . sprintf(
-					__( 'This plugin requires WordPress 4.9 or newer. You are on version %1$s. Please <a href="%2$s">upgrade</a>.' ),
+					__( 'This plugin requires WordPress 4.7 or newer. You are on version %1$s. Please <a href="%2$s">upgrade</a>.' ),
 					esc_html( $wp_version ),
 					esc_url( admin_url( 'update-core.php' ) )
 				) . '</p>';
