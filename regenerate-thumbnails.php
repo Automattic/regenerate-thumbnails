@@ -444,12 +444,14 @@ class RegenerateThumbnails {
 		check_admin_referer( 'bulk-media' );
 
 		wp_safe_redirect(
-			add_query_arg( array(
-				'page' => 'regenerate-thumbnails',
-				'ids'  => implode( ',', $_REQUEST['media'] ),
-			),
+			add_query_arg(
+				array(
+					'page' => 'regenerate-thumbnails',
+					'ids'  => implode( ',', $_REQUEST['media'] ),
+				),
 				admin_url( 'tools.php' )
-			) );
+			)
+		);
 
 		exit();
 	}
