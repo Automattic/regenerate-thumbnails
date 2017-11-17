@@ -257,7 +257,7 @@ class RegenerateThumbnails_Regenerator {
 
 				wp_delete_file( $wp_upload_dir . $file );
 			}
-		} else {
+		} elseif ( is_array( $old_metadata ) && is_array( $old_metadata['sizes'] ) ) {
 			// If not deleting, rename any size conflicts to avoid them being lost if the file still exists.
 			foreach ( $old_metadata['sizes'] as $old_size => $old_size_data ) {
 				if ( empty( $new_metadata['sizes'][ $old_size ] ) ) {
