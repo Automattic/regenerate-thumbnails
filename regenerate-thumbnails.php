@@ -213,6 +213,9 @@ class RegenerateThumbnails {
 					'RegenerateThumbnailsForXFeaturedImagesOnly' => __( 'Regenerate Thumbnails For The {attachmentCount} Featured Images Only', 'regenerate-thumbnails' ),
 					'thumbnailSizes'                             => __( 'Thumbnail Sizes', 'regenerate-thumbnails' ),
 					'thumbnailSizesDescription'                  => __( 'These are all of the thumbnail sizes that are currently registered:', 'regenerate-thumbnails' ),
+					'alternatives'                               => __( 'Alternatives', 'regenerate-thumbnails' ),
+					'alternativesText1'                          => __( 'If you have <a href="{url-cli}">command-line</a> access to your site\'s server, consider using <a href="{url-wpcli}">WP-CLI</a> instead of this tool. It has a built-in <a href="{url-wpcli-regenerate}">regenerate command</a> that works similarly to this tool but should be significantly faster since it\'s a command-line tool.', 'regenerate-thumbnails' ),
+					'alternativesText2'                          => __( 'Another alternative is to use the <a href="{url-photon}">Photon</a> functionality that comes with the <a href="{url-jetpack}">Jetpack</a> plugin. It generates thumbnails on-demand using WordPress.com\'s infrastructure.', 'regenerate-thumbnails' ),
 				),
 				'RegenerateSingle'   => array(
 					/* translators: Admin screen title. */
@@ -229,6 +232,8 @@ class RegenerateThumbnails {
 					'unregisteredSizes'        => __( 'The attachment says it also has these thumbnail sizes but they are no longer in use by WordPress. You can probably safely have this plugin delete them, especially if you have this plugin update any posts that make use of this attachment.', 'regenerate-thumbnails' ),
 				),
 				'RegenerateMultiple' => array(
+					'errorsEncountered'  => __( 'Errors Encountered', 'regenerate-thumbnails' ),
+					'regenerationLog'    => __( 'Regeneration Log', 'regenerate-thumbnails' ),
 					'pause'              => __( 'Pause', 'regenerate-thumbnails' ),
 					'resume'             => __( 'Resume', 'regenerate-thumbnails' ),
 					'logRegeneratedItem' => __( 'Regenerated {name}', 'regenerate-thumbnails' ),

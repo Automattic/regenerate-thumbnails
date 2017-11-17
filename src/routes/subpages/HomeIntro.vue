@@ -73,6 +73,10 @@
 				:textProportional="regenerateThumbnails.l10n.common.thumbnailSizeItemIsProportional"
 			></li>
 		</ul>
+
+		<h2>{{ regenerateThumbnails.l10n.Home.alternatives }}</h2>
+		<p v-html="alternativesText1"></p>
+		<p v-html="alternativesText2"></p>
 	</div>
 </template>
 
@@ -92,8 +96,23 @@
 				checkboxDeleteOld       : regenerateThumbnails.options.deleteOldThumbnails,
 			}
 		},
+		computed  : {
+			alternativesText1() {
+				return this.regenerateThumbnails.l10n.Home.alternativesText1.formatUnicorn({
+					'url-cli'             : 'https://en.wikipedia.org/wiki/Command-line_interface',
+					'url-wpcli'           : 'https://wp-cli.org/',
+					'url-wpcli-regenerate': 'https://developer.wordpress.org/cli/commands/media/regenerate/',
+				});
+			},
+			alternativesText2() {
+				return this.regenerateThumbnails.l10n.Home.alternativesText2.formatUnicorn({
+					'url-photon' : 'https://jetpack.com/support/photon/',
+					'url-jetpack': 'https://jetpack.com/',
+				});
+			}
+		},
 		created() {
-			if ( this.regenerateThumbnails.data.thumbnailIDs ) {
+			if (this.regenerateThumbnails.data.thumbnailIDs) {
 				return;
 			}
 

@@ -12,12 +12,15 @@
 			<p><strong>{{ finishedMessage }}</strong></p>
 
 			<div v-if="errorItems" id="regenerate-thumbnails-error-log">
+				<h2 class="title">{{ regenerateThumbnails.l10n.RegenerateMultiple.errorsEncountered }}</h2>
+
 				<ol>
 					<li v-for="errorItem in errorItems" :key="errorItem.id" v-html="errorItem.message"></li>
 				</ol>
 			</div>
 		</div>
 
+		<h2 class="title">{{ regenerateThumbnails.l10n.RegenerateMultiple.regenerationLog }}</h2>
 		<div id="regenerate-thumbnails-log">
 			<ol v-if="logItems" :start="listStart">
 				<li v-for="logItem in logItems" :key="logItem.id" v-html="logItem.message"></li>
