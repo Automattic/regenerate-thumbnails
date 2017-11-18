@@ -1,4 +1,10 @@
 <?php
+/**
+ * Attachment thumbnail regeneration management.
+ *
+ * @package RegenerateThumbnails
+ * @since 3.0.0
+ */
 
 /**
  * Regenerates the thumbnails for a given attachment.
@@ -60,7 +66,7 @@ class RegenerateThumbnails_Regenerator {
 			);
 		}
 
-		// We can only regenerate thumbnails for attachments
+		// We can only regenerate thumbnails for attachments.
 		if ( 'attachment' !== get_post_type( $attachment ) ) {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_not_attachment',
@@ -127,6 +133,7 @@ class RegenerateThumbnails_Regenerator {
 			$error = new WP_Error(
 				'regenerate_thumbnails_regenerator_file_not_found',
 				sprintf(
+					/* translators: The relative upload path to the attachment. */
 					__( "The fullsize image file cannot be found in your uploads directory at <code>%s</code>. Without it, new thumbnail images can't be generated.", 'regenerate-thumbnails' ),
 					_wp_relative_upload_path( $this->fullsizepath )
 				),
@@ -196,7 +203,7 @@ class RegenerateThumbnails_Regenerator {
 		$wp_upload_dir = dirname( $fullsizepath ) . DIRECTORY_SEPARATOR;
 
 		if ( $args['delete_unregistered_thumbnail_files'] ) {
-			// Delete old sizes that are still in the metadata
+			// Delete old sizes that are still in the metadata.
 			$intermediate_image_sizes = get_intermediate_image_sizes();
 			foreach ( $old_metadata['sizes'] as $old_size => $old_size_data ) {
 				if ( in_array( $old_size, $intermediate_image_sizes ) ) {
@@ -210,7 +217,7 @@ class RegenerateThumbnails_Regenerator {
 
 			$relative_path = dirname( $new_metadata['file'] ) . DIRECTORY_SEPARATOR;
 
-			// It's possible to upload an image with a filename like image-123x456.jpg and it shouldn't be deleted
+			// It's possible to upload an image with a filename like image-123x456.jpg and it shouldn't be deleted.
 			$whitelist = $wpdb->get_col( $wpdb->prepare( "
 				SELECT
 					meta_value
@@ -304,7 +311,7 @@ class RegenerateThumbnails_Regenerator {
 
 		$metadata = wp_get_attachment_metadata( $this->attachment->ID );
 
-		// This is based on WP_Image_Editor_GD::multi_resize() and others
+		// This is based on WP_Image_Editor_GD::multi_resize() and others.
 		foreach ( $sizes as $size => $size_data ) {
 			if ( empty( $metadata['sizes'][ $size ] ) ) {
 				continue;
@@ -427,7 +434,7 @@ class RegenerateThumbnails_Regenerator {
 				'post_type'              => $args['post_type'],
 				's'                      => 'wp-image-' . $this->attachment->ID,
 
-				// For faster queries
+				// For faster queries.
 				'update_post_meta_cache' => false,
 				'update_post_term_cache' => false,
 			) );
@@ -440,9 +447,10 @@ class RegenerateThumbnails_Regenerator {
 
 			foreach ( $posts as $post ) {
 				$content = $post->post_content;
-				$search  = $replace = array();
+				$search  = array();
+				$replace = array();
 
-				// Find all <img> tags for this attachment and update them
+				// Find all <img> tags for this attachment and update them.
 				preg_match_all(
 					'#<img [^>]+wp-image-' . $this->attachment->ID . '[^>]+/>#i',
 					$content,
@@ -474,9 +482,10 @@ class RegenerateThumbnails_Regenerator {
 					}
 				}
 				$content = str_replace( $search, $replace, $content );
-				$search  = $replace = array();
+				$search  = array();
+				$replace = array();
 
-				// Update the width in any [caption] shortcodes
+				// Update the width in any [caption] shortcodes.
 				preg_match_all(
 					'#\[caption id="attachment_' . $this->attachment->ID . '"([^\]]+)? width="[^"]+"\]([^\[]+)size-([^" ]+)([^\[]+)\[\/caption\]#i',
 					$content,
@@ -535,7 +544,7 @@ class RegenerateThumbnails_Regenerator {
 
 		$response = array(
 			'name'               => $this->attachment->post_title,
-			'fullsizeurl'        => wp_get_attachment_url( $this->attachment->ID ), // We can only guarantee that the fullsize image file exists
+			'fullsizeurl'        => wp_get_attachment_url( $this->attachment->ID ), // We can only guarantee that the fullsize image file exists.
 			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . basename( $fullsizepath ),
 			'edit_url'           => get_edit_post_link( $this->attachment->ID, 'raw' ),
 			'width'              => $metadata['width'],
@@ -544,7 +553,7 @@ class RegenerateThumbnails_Regenerator {
 			'unregistered_sizes' => array(),
 		);
 
-		// Check the status of all currently registered sizes
+		// Check the status of all currently registered sizes.
 		$registered_sizes = RegenerateThumbnails()->get_thumbnail_sizes();
 		foreach ( $registered_sizes as $size ) {
 			$thumbnail = $this->get_thumbnail( $editor, $metadata['width'], $metadata['height'], $size['width'], $size['height'], $size['crop'] );
@@ -562,14 +571,13 @@ class RegenerateThumbnails_Regenerator {
 
 		$wp_upload_dir = dirname( $fullsizepath ) . DIRECTORY_SEPARATOR;
 
-		// Look at the attachment metadata and see if we have any extra files from sizes that are no longer registered
+		// Look at the attachment metadata and see if we have any extra files from sizes that are no longer registered.
 		foreach ( $metadata['sizes'] as $label => $size ) {
 			if ( ! file_exists( $wp_upload_dir . $size['file'] ) ) {
 				continue;
 			}
 
 			// An unregistered size could match a registered size's dimensions. Ignore these.
-			// @todo: check to see if we'd be wrongly deleting these in the regeneration method
 			foreach ( $response['registered_sizes'] as $registered_size ) {
 				if ( $size['file'] === $registered_size['filename'] ) {
 					continue 2;
