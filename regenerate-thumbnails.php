@@ -171,7 +171,7 @@ class RegenerateThumbnails {
 		if ( ! wp_script_is( 'wp-api-request', 'registered' ) ) {
 			wp_register_script(
 				'wp-api-request',
-				plugins_url( 'includes/api-request.min.js', __FILE__ ),
+				plugins_url( 'js/api-request.min.js', __FILE__ ),
 				array( 'jquery' ),
 				'4.9',
 				true
