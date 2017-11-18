@@ -112,24 +112,19 @@ class RegenerateThumbnails_Regenerator {
 	}
 
 	/**
-	 * Helper function to set the fullsizepath class variable.
+	 * Get the path to the fullsize attachment.
 	 *
-	 * Can't be called in the get_instance() because it's static or __construct()
-	 * because the result is needed.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @return true|WP_Error True if the class variable was set, or WP_Error if the fullsize image is missing.
+	 * @return string|WP_Error The path to the fullsize attachment, or a WP_Error object on error.
 	 */
-	public function set_fullsizepath() {
+	public function get_fullsizepath() {
 		if ( $this->fullsizepath ) {
-			return true;
+			return $this->fullsizepath;
 		}
 
 		$this->fullsizepath = get_attached_file( $this->attachment->ID );
 
 		if ( false === $this->fullsizepath || ! file_exists( $this->fullsizepath ) ) {
-			return new WP_Error(
+			$error = new WP_Error(
 				'regenerate_thumbnails_regenerator_file_not_found',
 				sprintf(
 					__( "The fullsize image file cannot be found in your uploads directory at <code>%s</code>. Without it, new thumbnail images can't be generated.", 'regenerate-thumbnails' ),
@@ -141,15 +136,15 @@ class RegenerateThumbnails_Regenerator {
 					'attachment'   => $this->attachment,
 				)
 			);
+
+			$this->fullsizepath = $error;
 		}
 
-		return true;
+		return $this->fullsizepath;
 	}
 
 	/**
 	 * Regenerate the thumbnails for this instance's attachment.
-	 *
-	 * @todo  Additional parameters such as deleting old thumbnails or only regenerating certain sizes.
 	 *
 	 * @since 3.0.0
 	 *
@@ -170,11 +165,11 @@ class RegenerateThumbnails_Regenerator {
 			'delete_unregistered_thumbnail_files' => false,
 		) );
 
-		$set_fullsizepath = $this->set_fullsizepath();
-		if ( is_wp_error( $set_fullsizepath ) ) {
-			$set_fullsizepath->add_data( array( 'attachment' => $this->attachment ) );
+		$fullsizepath = $this->get_fullsizepath();
+		if ( is_wp_error( $fullsizepath ) ) {
+			$fullsizepath->add_data( array( 'attachment' => $this->attachment ) );
 
-			return $set_fullsizepath;
+			return $fullsizepath;
 		}
 
 		$old_metadata = wp_get_attachment_metadata( $this->attachment->ID );
@@ -184,7 +179,7 @@ class RegenerateThumbnails_Regenerator {
 		}
 
 		require_once( ABSPATH . 'wp-admin/includes/admin.php' );
-		$new_metadata = wp_generate_attachment_metadata( $this->attachment->ID, $this->fullsizepath );
+		$new_metadata = wp_generate_attachment_metadata( $this->attachment->ID, $fullsizepath );
 
 		if ( $args['only_regenerate_missing_thumbnails'] ) {
 			// Thumbnail sizes that existed were removed and need to be added back to the metadata.
@@ -198,7 +193,7 @@ class RegenerateThumbnails_Regenerator {
 			remove_filter( 'intermediate_image_sizes_advanced', array( $this, 'filter_image_sizes_to_only_missing_thumbnails' ), 10 );
 		}
 
-		$wp_upload_dir = dirname( $this->fullsizepath ) . DIRECTORY_SEPARATOR;
+		$wp_upload_dir = dirname( $fullsizepath ) . DIRECTORY_SEPARATOR;
 
 		if ( $args['delete_unregistered_thumbnail_files'] ) {
 			// Delete old sizes that are still in the metadata
@@ -244,7 +239,7 @@ class RegenerateThumbnails_Regenerator {
 				$registered_thumbnails[] = $size['file'];
 			}
 
-			$fullsize_parts = pathinfo( $this->fullsizepath );
+			$fullsize_parts = pathinfo( $fullsizepath );
 
 			foreach ( $filelist as $file ) {
 				if ( in_array( $file, $whitelist ) || in_array( $file, $registered_thumbnails ) ) {
@@ -297,12 +292,12 @@ class RegenerateThumbnails_Regenerator {
 			return $sizes;
 		}
 
-		$set_fullsizepath = $this->set_fullsizepath();
-		if ( is_wp_error( $set_fullsizepath ) ) {
+		$fullsizepath = $this->get_fullsizepath();
+		if ( is_wp_error( $fullsizepath ) ) {
 			return $sizes;
 		}
 
-		$editor = wp_get_image_editor( $this->fullsizepath );
+		$editor = wp_get_image_editor( $fullsizepath );
 		if ( is_wp_error( $editor ) ) {
 			return $sizes;
 		}
@@ -382,7 +377,7 @@ class RegenerateThumbnails_Regenerator {
 		list( $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h ) = $dims;
 
 		$suffix   = "{$dst_w}x{$dst_h}";
-		$file_ext = strtolower( pathinfo( $this->fullsizepath, PATHINFO_EXTENSION ) );
+		$file_ext = strtolower( pathinfo( $this->get_fullsizepath(), PATHINFO_EXTENSION ) );
 
 		return array(
 			'filename' => $editor->generate_filename( $suffix, null, $file_ext ),
@@ -522,14 +517,14 @@ class RegenerateThumbnails_Regenerator {
 	 * @return array|WP_Error The attachment name, fullsize URL, registered thumbnail size status, and any unregistered sizes, or WP_Error on error.
 	 */
 	public function get_attachment_info() {
-		$set_fullsizepath = $this->set_fullsizepath();
-		if ( is_wp_error( $set_fullsizepath ) ) {
-			$set_fullsizepath->add_data( array( 'attachment' => $this->attachment ) );
+		$fullsizepath = $this->get_fullsizepath();
+		if ( is_wp_error( $fullsizepath ) ) {
+			$fullsizepath->add_data( array( 'attachment' => $this->attachment ) );
 
-			return $set_fullsizepath;
+			return $fullsizepath;
 		}
 
-		$editor = wp_get_image_editor( $this->fullsizepath );
+		$editor = wp_get_image_editor( $fullsizepath );
 		if ( is_wp_error( $editor ) ) {
 			$editor->add_data( array( 'attachment' => $this->attachment ) );
 
@@ -541,7 +536,7 @@ class RegenerateThumbnails_Regenerator {
 		$response = array(
 			'name'               => $this->attachment->post_title,
 			'fullsizeurl'        => wp_get_attachment_url( $this->attachment->ID ), // We can only guarantee that the fullsize image file exists
-			'relative_path'      => _wp_get_attachment_relative_path( $this->fullsizepath ) . DIRECTORY_SEPARATOR . basename( $this->fullsizepath ),
+			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . basename( $fullsizepath ),
 			'edit_url'           => get_edit_post_link( $this->attachment->ID, 'raw' ),
 			'width'              => $metadata['width'],
 			'height'             => $metadata['height'],
@@ -565,7 +560,7 @@ class RegenerateThumbnails_Regenerator {
 			$response['registered_sizes'][] = $size;
 		}
 
-		$wp_upload_dir = dirname( $this->fullsizepath ) . DIRECTORY_SEPARATOR;
+		$wp_upload_dir = dirname( $fullsizepath ) . DIRECTORY_SEPARATOR;
 
 		// Look at the attachment metadata and see if we have any extra files from sizes that are no longer registered
 		foreach ( $metadata['sizes'] as $label => $size ) {
