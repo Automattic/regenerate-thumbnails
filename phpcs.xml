@@ -2,6 +2,8 @@
 <ruleset name="WordPress Coding Standards for Plugins">
 	<description>Generally-applicable sniffs for WordPress plugins</description>
 
+	<config name="minimum_supported_wp_version" value="4.7" />
+
 	<rule ref="WordPress-Core" />
 	<rule ref="WordPress-Docs" />
 
@@ -17,7 +19,9 @@
 		</properties>
 	</rule>
 
-	<config name="minimum_supported_wp_version" value="4.7"/>
+	<rule ref="WordPress.Arrays.MultipleStatementAlignment">
+		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned" />
+	</rule>
 
 	<!-- Check all PHP files in directory tree by default. -->
 	<arg name="extensions" value="php"/>
@@ -25,6 +29,8 @@
 
 	<!-- Show sniff codes in all reports -->
 	<arg value="s"/>
+
+	<arg name="colors"/>
 
 	<exclude-pattern>/node_modules/*</exclude-pattern>
 	<exclude-pattern>/vendor/*</exclude-pattern>
