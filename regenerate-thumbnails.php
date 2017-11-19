@@ -32,6 +32,11 @@ along with Regenerate Thumbnails. If not, see https://www.gnu.org/licenses/gpl-2
 require( dirname( __FILE__ ) . '/includes/class-regeneratethumbnails-regenerator.php' );
 require( dirname( __FILE__ ) . '/includes/class-regeneratethumbnails-rest-controller.php' );
 
+/**
+ * Main plugin class.
+ *
+ * @since 1.0.0
+ */
 class RegenerateThumbnails {
 	/**
 	 * This plugin's version number. Used for busting caches.
@@ -111,31 +116,31 @@ class RegenerateThumbnails {
 	 * Register all of the needed hooks and actions.
 	 */
 	public function setup() {
-		// Allow people to change what capability is required to use this plugin
+		// Allow people to change what capability is required to use this plugin.
 		$this->capability = apply_filters( 'regenerate_thumbs_cap', $this->capability );
 
-		// Initialize the REST API routes
+		// Initialize the REST API routes.
 		add_action( 'rest_api_init', array( $this, 'rest_api_init' ) );
 
-		// Add a new item to the Tools menu in the admin menu
+		// Add a new item to the Tools menu in the admin menu.
 		add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
 
-		// Load the required JavaScript and CSS
+		// Load the required JavaScript and CSS.
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueues' ) );
 
-		// For the bulk action dropdowns
+		// For the bulk action dropdowns.
 		add_action( 'admin_head-upload.php', array( $this, 'add_bulk_actions_via_javascript' ) );
-		add_action( 'admin_action_bulk_regenerate_thumbnails', array( $this, 'bulk_action_handler' ) ); // Top drowndown
-		add_action( 'admin_action_-1', array( $this, 'bulk_action_handler' ) ); // Bottom dropdown
+		add_action( 'admin_action_bulk_regenerate_thumbnails', array( $this, 'bulk_action_handler' ) ); // Top drowndown.
+		add_action( 'admin_action_-1', array( $this, 'bulk_action_handler' ) ); // Bottom dropdown.
 
-		// Add a regenerate button to the non-modal edit media page
+		// Add a regenerate button to the non-modal edit media page.
 		add_action( 'attachment_submitbox_misc_actions', array( $this, 'add_button_to_media_edit_page' ), 99 );
 
-		// Add a regenerate button to the list of fields in the edit media modal
-		// Ideally this would with the action links but I'm not good enough with JavaScript to do it
+		// Add a regenerate button to the list of fields in the edit media modal.
+		// Ideally this would with the action links but I'm not good enough with JavaScript to do it.
 		add_filter( 'attachment_fields_to_edit', array( $this, 'add_button_to_edit_media_modal_fields_area' ), 99, 2 );
 
-		// Add a regenerate link to actions list in the media list view
+		// Add a regenerate link to actions list in the media list view.
 		add_filter( 'media_row_actions', array( $this, 'add_regenerate_link_to_media_list_view' ), 10, 2 );
 	}
 
@@ -167,7 +172,7 @@ class RegenerateThumbnails {
 			return;
 		}
 
-		// Pre-4.9 compatibility
+		// Pre-4.9 compatibility.
 		if ( ! wp_script_is( 'wp-api-request', 'registered' ) ) {
 			wp_register_script(
 				'wp-api-request',
@@ -197,9 +202,9 @@ class RegenerateThumbnails {
 				'thumbnailSizes' => $this->get_thumbnail_sizes(),
 			),
 			'options' => array(
-				'onlyMissingThumbnails' => apply_filters( 'regenerate_thumbs_options_onlymissingthumbnails', true ),
-				'updatePostContents'    => apply_filters( 'regenerate_thumbs_options_updatepostcontents', true ),
-				'deleteOldThumbnails'   => apply_filters( 'regenerate_thumbs_options_deleteoldthumbnails', false ),
+				'onlyMissingThumbnails' => apply_filters( 'regenerate_thumbnails_options_onlymissingthumbnails', true ),
+				'updatePostContents'    => apply_filters( 'regenerate_thumbnails_options_updatepostcontents', true ),
+				'deleteOldThumbnails'   => apply_filters( 'regenerate_thumbnails_options_deleteoldthumbnails', false ),
 			),
 			'l10n'    => array(
 				'common'             => array(
@@ -264,7 +269,7 @@ class RegenerateThumbnails {
 			),
 		);
 
-		// Bulk regeneration
+		// Bulk regeneration.
 		if ( ! empty( $_GET['ids'] ) ) {
 			$script_data['data']['thumbnailIDs'] = array_map( 'intval', explode( ',', $_GET['ids'] ) );
 
@@ -295,7 +300,7 @@ class RegenerateThumbnails {
 
 		if ( version_compare( $wp_version, '4.7', '<' ) ) {
 			echo '<p>' . sprintf(
-					__( 'This plugin requires WordPress 4.7 or newer. You are on version %1$s. Please <a href="%2$s">upgrade</a>.' ),
+					__( 'This plugin requires WordPress 4.7 or newer. You are on version %1$s. Please <a href="%2$s">upgrade</a>.', 'regenerate-thumbnails' ),
 					esc_html( $wp_version ),
 					esc_url( admin_url( 'update-core.php' ) )
 				) . '</p>';
@@ -367,7 +372,7 @@ class RegenerateThumbnails {
 			return $actions;
 		}
 
-		$actions['regenerate_thumbnails'] = '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+		$actions['regenerate_thumbnails'] = '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" title="' . esc_attr( __( 'Regenerate the thumbnails for this single image', 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
 
 		return $actions;
 	}
@@ -387,7 +392,7 @@ class RegenerateThumbnails {
 		}
 
 		echo '<div class="misc-pub-section misc-pub-regenerate-thumbnails">';
-		echo '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
+		echo '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( 'Regenerate the thumbnails for this single image', 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>';
 		echo '</div>';
 	}
 
@@ -415,7 +420,7 @@ class RegenerateThumbnails {
 		$form_fields['regenerate_thumbnails'] = array(
 			'label'         => '',
 			'input'         => 'html',
-			'html'          => '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( "Regenerate the thumbnails for this single image", 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>',
+			'html'          => '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( 'Regenerate the thumbnails for this single image', 'regenerate-thumbnails' ) ) . '">' . __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ) . '</a>',
 			'show_in_modal' => true,
 			'show_in_edit'  => false,
 		);
