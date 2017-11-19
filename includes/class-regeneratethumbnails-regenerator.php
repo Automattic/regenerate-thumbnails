@@ -1,6 +1,6 @@
 <?php
 /**
- * Attachment thumbnail regeneration management.
+ * Regenerate Thumbnails: Attachment regenerator class
  *
  * @package RegenerateThumbnails
  * @since 3.0.0

@@ -1,4 +1,10 @@
 <?php
+/**
+ * Regenerate Thumbnails: REST API controller class
+ *
+ * @package RegenerateThumbnails
+ * @since 3.0.0
+ */
 
 /**
  * Registers new REST API endpoints.
@@ -164,7 +170,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 				'posts_per_loop' => $request->get_param( 'update_usages_in_posts_posts_per_loop' ),
 			) );
 
-			// If wp_update_post() failed for any posts, return that error
+			// If wp_update_post() failed for any posts, return that error.
 			foreach ( $posts_updated as $post_updated_id => $post_updated_result ) {
 				if ( is_wp_error( $post_updated_result ) ) {
 					return $post_updated_result;
