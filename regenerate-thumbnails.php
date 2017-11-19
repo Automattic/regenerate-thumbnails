@@ -469,7 +469,7 @@ class RegenerateThumbnails {
 			add_query_arg(
 				array(
 					'page' => 'regenerate-thumbnails',
-					'ids'  => implode( ',', $_REQUEST['media'] ),
+					'ids'  => rawurlencode( implode( ',', array_map( 'intval', $_REQUEST['media'] ) ) ),
 				),
 				admin_url( 'tools.php' )
 			)
