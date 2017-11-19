@@ -61,8 +61,10 @@ matrix:
   - php: 5.3
     dist: precise
     env: WP_VERSION=nightly
-#  - php: 7.1
-#    env: WP_VERSION=latest WP_TRAVISCI=phpcs
+  - php: 7.1
+    env: WP_VERSION=latest WP_TRAVISCI=phpcs
+  allow_failures:
+    env: WP_VERSION=latest WP_TRAVISCI=phpcs
   exclude: # WordPress 4.7 doesn't like running unit tests under PHP 7.x, see https://travis-ci.org/Viper007Bond/regenerate-thumbnails/builds/281022291
   - php: '7.0'
     env: WP_VERSION=4.7
@@ -120,7 +122,7 @@ before_script:
 script:
   - |
     # Run PHPUnit in both single site and multisite mode
-    if [[ ! -z "$WP_VERSION" ]] ; then
+    if [[ ! -z "$WP_VERSION" && "$WP_TRAVISCI" != "phpcs" ]] ; then
       phpunit
       WP_MULTISITE=1 phpunit
     fi
