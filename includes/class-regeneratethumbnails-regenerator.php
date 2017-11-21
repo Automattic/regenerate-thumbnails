@@ -535,7 +535,10 @@ class RegenerateThumbnails_Regenerator {
 
 		$editor = wp_get_image_editor( $fullsizepath );
 		if ( is_wp_error( $editor ) ) {
-			$editor->add_data( array( 'attachment' => $this->attachment ) );
+			$editor->add_data( array(
+				'attachment' => $this->attachment,
+				'status'     => 415,
+			) );
 
 			return $editor;
 		}
