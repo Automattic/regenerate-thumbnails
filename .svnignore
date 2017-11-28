@@ -4,6 +4,7 @@
 .idea
 .svnignore
 .travis.yml
+assets
 bin
 composer.json
 LICENSE
