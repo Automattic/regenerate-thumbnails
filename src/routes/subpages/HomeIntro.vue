@@ -130,6 +130,7 @@
 				},
 				type     : 'GET',
 				dataType : 'json',
+				cache    : false,
 				context  : this
 			})
 				.done((data, textStatus, jqXHR) => {
@@ -150,6 +151,7 @@
 				},
 				type     : 'GET',
 				dataType : 'json',
+				cache    : false,
 				context  : this
 			})
 				.done((data, textStatus, jqXHR) => {
