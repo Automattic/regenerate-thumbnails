@@ -278,4 +278,8 @@
 		max-height: 250px;
 		overflow: auto;
 	}
+
+	li {
+		margin-left: 25px;
+	}
 </style>
