@@ -5,7 +5,9 @@ language: php
 dist: trusty
 
 cache:
+  apt: true
   directories:
+    - node_modules
     - vendor
     - $HOME/.composer/cache
 
