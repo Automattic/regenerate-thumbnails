@@ -173,6 +173,68 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 	}
 
+	public function test_regenerate_thumbnails_for_pdf() {
+		$test_pdf = DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf';
+
+		$editor = wp_get_image_editor( $test_pdf );
+		if ( is_wp_error( $editor ) ) {
+			$this->markTestSkipped( "The current image editor doesn't support making thumbnails for PDFs. Please install ImageMagick." );
+		}
+
+		$this->attachment_id = self::factory()->attachment->create_upload_object( $test_pdf );
+		$old_metadata        = wp_get_attachment_metadata( $this->attachment_id );
+
+		$upload_dir = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
+
+		$expected_default_thumbnail_sizes = array(
+			'thumbnail' => array( 116, 150 ),
+			'medium'    => array( 232, 300 ),
+			'large'     => array( 791, 1024 ),
+		);
+
+		// Verify that the default thumbnails were made correctly during initial upload
+		foreach ( $expected_default_thumbnail_sizes as $size => $dims ) {
+			$this->assertFileExists( $upload_dir . "wordpress-gsoc-flyer-pdf-{$dims[0]}x{$dims[1]}.jpg" );
+			$this->assertEquals( $dims[0], $old_metadata['sizes'][ $size ]['width'] );
+			$this->assertEquals( $dims[1], $old_metadata['sizes'][ $size ]['height'] );
+		}
+		$this->assertFileExists( $upload_dir . 'wordpress-gsoc-flyer-pdf.jpg' );
+		$this->assertEquals( 1088, $old_metadata['sizes']['full']['width'] );
+		$this->assertEquals( 1408, $old_metadata['sizes']['full']['height'] );
+
+		// Remove the fullsize thumbnail. It causes "-1" to be added after "pdf" in the filenames.
+		unlink( $upload_dir . 'wordpress-gsoc-flyer-pdf.jpg' );
+
+		// Now change the thumbnail sizes to something other than the defaults
+		foreach ( $this->helper_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
+			add_filter( 'pre_option_' . $filter, $function );
+		};
+
+		// Regenerate the thumbnails!
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $this->attachment_id );
+		$regenerator->regenerate();
+
+		$new_metadata = wp_get_attachment_metadata( $this->attachment_id );
+
+		// Cleanup
+		foreach ( $this->helper_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
+			remove_filter( 'pre_option_' . $filter, $function );
+		}
+
+		$expected_custom_thumbnail_sizes = array(
+			'thumbnail' => array( 77, 100 ),
+			'medium'    => array( 270, 350 ),
+			'large'     => array( 791, 1024 ),
+		);
+
+		// Verify that the new custom thumbnails were made correctly by this plugin
+		foreach ( $expected_custom_thumbnail_sizes as $size => $dims ) {
+			$this->assertFileExists( $upload_dir . "wordpress-gsoc-flyer-pdf-{$dims[0]}x{$dims[1]}.jpg" );
+			$this->assertEquals( $dims[0], $new_metadata['sizes'][ $size ]['width'] );
+			$this->assertEquals( $dims[1], $new_metadata['sizes'][ $size ]['height'] );
+		}
+	}
+
 	public function test_regenerate_thumbnails_skipping_existing_thumbnails() {
 		$this->helper_regenerate_thumbnails_skipping_existing_thumbnails( true );
 	}

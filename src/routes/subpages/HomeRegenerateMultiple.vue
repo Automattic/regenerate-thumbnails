@@ -97,7 +97,7 @@
 					case 'all':
 					default:
 						data._fields = 'id';
-						data.media_type = 'image';
+						data.is_regeneratable = 1;
 						data.exclude_site_icons = 1;
 						data.orderby = 'id';
 						data.order = 'asc';

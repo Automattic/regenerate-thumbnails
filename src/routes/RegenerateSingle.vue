@@ -12,8 +12,8 @@
 			<p v-html="filenameAndDimensions"></p>
 
 			<img
-				v-if="attachmentInfo.fullsizeurl"
-				:src="attachmentInfo.fullsizeurl"
+				v-if="attachmentInfo.preview"
+				:src="attachmentInfo.preview"
 				class="image-preview"
 				:alt="regenerateThumbnails.l10n.RegenerateSingle.preview"
 			/>
@@ -136,11 +136,15 @@
 		},
 		computed  : {
 			filenameAndDimensions() {
-				return this.regenerateThumbnails.l10n.RegenerateSingle.filenameAndDimensions.formatUnicorn({
-					filename: this.attachmentInfo.relative_path,
-					width   : this.attachmentInfo.width,
-					height  : this.attachmentInfo.height,
-				});
+				if ( this.attachmentInfo.width && this.attachmentInfo.height ) {
+					return this.regenerateThumbnails.l10n.RegenerateSingle.filenameAndDimensions.formatUnicorn({
+						filename: this.attachmentInfo.relative_path,
+						width   : this.attachmentInfo.width,
+						height  : this.attachmentInfo.height,
+					});
+				} else {
+					return '<code>' + this.attachmentInfo.relative_path + '</code>';
+				}
 			},
 		},
 		methods   : {

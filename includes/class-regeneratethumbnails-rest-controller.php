@@ -95,6 +95,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	 */
 	public function register_filters() {
 		add_filter( 'rest_attachment_query', array( $this, 'maybe_filter_out_site_icons' ), 10, 2 );
+		add_filter( 'rest_attachment_query', array( $this, 'maybe_filter_mimes_types' ), 10, 2 );
 	}
 
 	/**
@@ -120,6 +121,30 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 			'value'   => 'site-icon',
 			'compare' => 'NOT EXISTS',
 		);
+
+		return $args;
+	}
+
+	/**
+	 * If the is_regeneratable parameter is set on a media (attachment) request,
+	 * filter results to only include images and PDFs.
+	 *
+	 * @param array           $args    Key value array of query var to query value.
+	 * @param WP_REST_Request $request The request used.
+	 *
+	 * @return array Key value array of query var to query value.
+	 */
+	public function maybe_filter_mimes_types( $args, $request ) {
+		if ( empty( $request['is_regeneratable'] ) ) {
+			return $args;
+		}
+
+		$args['post_mime_type'] = array();
+		foreach ( get_allowed_mime_types() as $mime_type ) {
+			if ( 'application/pdf' == $mime_type || 'image/' == substr( $mime_type, 0, 6 ) ) {
+				$args['post_mime_type'][] = $mime_type;
+			}
+		}
 
 		return $args;
 	}

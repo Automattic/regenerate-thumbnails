@@ -356,19 +356,49 @@ class RegenerateThumbnails {
 	}
 
 	/**
+	 * Determines whether an attachment can have its thumbnails regenerated.
+	 *
+	 * This includes checking to see if non-images, such as PDFs, are supported
+	 * by the current image editor.
+	 *
+	 * @param WP_Post $post An attachment's post object.
+	 *
+	 * @return bool Whether the given attachment can have its thumbnails regenerated.
+	 */
+	public function is_regeneratable( $post ) {
+		if ( 'site-icon' === get_post_meta( $post->ID, '_wp_attachment_context', true ) ) {
+			return false;
+		}
+
+		if ( wp_attachment_is_image( $post ) ) {
+			return true;
+		}
+
+		$fullsize = get_attached_file( $post->ID );
+
+		if ( ! $fullsize || ! file_exists( $fullsize ) ) {
+			return false;
+		}
+
+		$editor = wp_get_image_editor( $fullsize );
+
+		if ( is_wp_error( $editor ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
 	 * Adds "Regenerate Thumbnails" below each image in the media library list view.
 	 *
-	 * @param array  $actions An array of current actions.
-	 * @param object $post    The current attachment's post object.
+	 * @param array   $actions An array of current actions.
+	 * @param WP_Post $post    The current attachment's post object.
 	 *
 	 * @return array The new list of actions.
 	 */
 	public function add_regenerate_link_to_media_list_view( $actions, $post ) {
-		if (
-			! current_user_can( $this->capability ) ||
-			! wp_attachment_is_image( $post ) ||
-			'site-icon' === get_post_meta( $post->ID, '_wp_attachment_context', true )
-		) {
+		if ( ! current_user_can( $this->capability ) || ! $this->is_regeneratable( $post ) ) {
 			return $actions;
 		}
 
@@ -383,11 +413,7 @@ class RegenerateThumbnails {
 	public function add_button_to_media_edit_page() {
 		global $post;
 
-		if (
-			! current_user_can( $this->capability ) ||
-			! wp_attachment_is_image( $post ) ||
-			'site-icon' === get_post_meta( $post->ID, '_wp_attachment_context', true )
-		) {
+		if ( ! current_user_can( $this->capability ) || ! $this->is_regeneratable( $post ) ) {
 			return;
 		}
 
@@ -403,17 +429,13 @@ class RegenerateThumbnails {
 	 * in order to be able to do it, so instead I'm adding it to the bottom of the list
 	 * of media fields. Pull requests to improve this are welcome!
 	 *
-	 * @param array  $form_fields An array of existing form fields.
-	 * @param object $post        The current media item, as a post object.
+	 * @param array   $form_fields An array of existing form fields.
+	 * @param WP_Post $post        The current media item, as a post object.
 	 *
 	 * @return array The new array of form fields.
 	 */
 	public function add_button_to_edit_media_modal_fields_area( $form_fields, $post ) {
-		if (
-			! current_user_can( $this->capability ) ||
-			! wp_attachment_is_image( $post ) ||
-			'site-icon' === get_post_meta( $post->ID, '_wp_attachment_context', true )
-		) {
+		if ( ! current_user_can( $this->capability ) || ! $this->is_regeneratable( $post ) ) {
 			return $form_fields;
 		}
 
@@ -491,13 +513,13 @@ class RegenerateThumbnails {
 		foreach ( get_intermediate_image_sizes() as $size ) {
 			$thumbnail_sizes[ $size ]['label'] = $size;
 			if ( in_array( $size, array( 'thumbnail', 'medium', 'medium_large', 'large' ) ) ) {
-				$thumbnail_sizes[ $size ]['width']  = get_option( $size . '_size_w' );
-				$thumbnail_sizes[ $size ]['height'] = get_option( $size . '_size_h' );
+				$thumbnail_sizes[ $size ]['width']  = (int) get_option( $size . '_size_w' );
+				$thumbnail_sizes[ $size ]['height'] = (int) get_option( $size . '_size_h' );
 				$thumbnail_sizes[ $size ]['crop']   = ( 'thumbnail' == $size ) ? (bool) get_option( 'thumbnail_crop' ) : false;
 			} elseif ( ! empty( $_wp_additional_image_sizes ) && ! empty( $_wp_additional_image_sizes[ $size ] ) ) {
-				$thumbnail_sizes[ $size ]['width']  = $_wp_additional_image_sizes[ $size ]['width'];
-				$thumbnail_sizes[ $size ]['height'] = $_wp_additional_image_sizes[ $size ]['height'];
-				$thumbnail_sizes[ $size ]['crop']   = $_wp_additional_image_sizes[ $size ]['crop'];
+				$thumbnail_sizes[ $size ]['width']  = (int) $_wp_additional_image_sizes[ $size ]['width'];
+				$thumbnail_sizes[ $size ]['height'] = (int) $_wp_additional_image_sizes[ $size ]['height'];
+				$thumbnail_sizes[ $size ]['crop']   = (bool) $_wp_additional_image_sizes[ $size ]['crop'];
 			}
 		}
 

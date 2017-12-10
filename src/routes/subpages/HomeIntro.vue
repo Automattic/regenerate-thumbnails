@@ -124,7 +124,7 @@
 				endpoint : 'media',
 				data     : {
 					_fields           : 'id',
-					media_type        : 'image',
+					is_regeneratable  : 1,
 					exclude_site_icons: 1,
 					per_page          : 1,
 				},

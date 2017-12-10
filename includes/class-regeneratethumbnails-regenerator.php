@@ -535,6 +535,11 @@ class RegenerateThumbnails_Regenerator {
 
 		$editor = wp_get_image_editor( $fullsizepath );
 		if ( is_wp_error( $editor ) ) {
+			// Display a more helpful error message.
+			if ( 'image_no_editor' === $editor->get_error_code() ) {
+				$editor = new WP_Error( 'image_no_editor', __( 'The current image editor cannot process this file type.', 'regenerate-thumbnails' ) );
+			}
+
 			$editor->add_data( array(
 				'attachment' => $this->attachment,
 				'status'     => 415,
@@ -545,25 +550,75 @@ class RegenerateThumbnails_Regenerator {
 
 		$metadata = wp_get_attachment_metadata( $this->attachment->ID );
 
+		// PDFs don't have width/height set.
+		$width  = ( isset( $metadata['width'] ) ) ? $metadata['width'] : null;
+		$height = ( isset( $metadata['height'] ) ) ? $metadata['height'] : null;
+
+		require_once( ABSPATH . '/wp-admin/includes/image.php' );
+
+		if ( file_is_displayable_image( $fullsizepath ) ) {
+			$preview = wp_get_attachment_url( $this->attachment->ID );
+		} elseif (
+			is_array( $metadata['sizes']['full'] ) &&
+			file_exists( str_replace(
+				basename( $fullsizepath ),
+				$metadata['sizes']['full']['file'],
+				$fullsizepath
+			) )
+		) {
+			$preview = str_replace(
+				basename( $fullsizepath ),
+				$metadata['sizes']['full']['file'],
+				wp_get_attachment_url( $this->attachment->ID )
+			);
+		} else {
+			$preview = false;
+		}
+
 		$response = array(
 			'name'               => $this->attachment->post_title,
-			'fullsizeurl'        => wp_get_attachment_url( $this->attachment->ID ), // We can only guarantee that the fullsize image file exists.
+			'preview'            => $preview,
 			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . basename( $fullsizepath ),
 			'edit_url'           => get_edit_post_link( $this->attachment->ID, 'raw' ),
-			'width'              => $metadata['width'],
-			'height'             => $metadata['height'],
+			'width'              => $width,
+			'height'             => $height,
 			'registered_sizes'   => array(),
 			'unregistered_sizes' => array(),
 		);
 
-		// Check the status of all currently registered sizes.
-		$registered_sizes = RegenerateThumbnails()->get_thumbnail_sizes();
-		foreach ( $registered_sizes as $size ) {
-			$thumbnail = $this->get_thumbnail( $editor, $metadata['width'], $metadata['height'], $size['width'], $size['height'], $size['crop'] );
+		$wp_upload_dir = dirname( $fullsizepath ) . DIRECTORY_SEPARATOR;
 
-			if ( $thumbnail ) {
-				$size['filename']   = basename( $thumbnail['filename'] );
-				$size['fileexists'] = file_exists( $thumbnail['filename'] );
+		$registered_sizes = RegenerateThumbnails()->get_thumbnail_sizes();
+
+		if ( 'application/pdf' === get_post_mime_type( $this->attachment ) ) {
+			$registered_sizes = array_intersect_key(
+				$registered_sizes,
+				array(
+					'thumbnail' => true,
+					'medium'    => true,
+					'large'     => true,
+				)
+			);
+		}
+
+		// Check the status of all currently registered sizes.
+		foreach ( $registered_sizes as $size ) {
+			// Width and height are needed to generate the thumbnail filename.
+			if ( $width && $height ) {
+				$thumbnail = $this->get_thumbnail( $editor, $width, $height, $size['width'], $size['height'], $size['crop'] );
+
+				if ( $thumbnail ) {
+					$size['filename']   = basename( $thumbnail['filename'] );
+					$size['fileexists'] = file_exists( $thumbnail['filename'] );
+				} else {
+					$size['filename']   = false;
+					$size['fileexists'] = false;
+				}
+			}
+			// No width and height? Let's see if there's a filename in the metadata.
+			elseif ( ! empty( $metadata['sizes'][ $size['label'] ]['file'] ) ) {
+				$size['filename']   = basename( $metadata['sizes'][ $size['label'] ]['file'] );
+				$size['fileexists'] = file_exists( $wp_upload_dir . $metadata['sizes'][ $size['label'] ]['file'] );
 			} else {
 				$size['filename']   = false;
 				$size['fileexists'] = false;
@@ -572,7 +627,15 @@ class RegenerateThumbnails_Regenerator {
 			$response['registered_sizes'][] = $size;
 		}
 
-		$wp_upload_dir = dirname( $fullsizepath ) . DIRECTORY_SEPARATOR;
+		if ( ! $width && ! $height && is_array( $metadata['sizes']['full'] ) ) {
+			$response['registered_sizes'][] = array(
+				'label'      => 'full',
+				'width'      => $metadata['sizes']['full']['width'],
+				'height'     => $metadata['sizes']['full']['height'],
+				'filename'   => $metadata['sizes']['full']['file'],
+				'fileexists' => file_exists( $wp_upload_dir . $metadata['sizes']['full']['file'] ),
+			);
+		}
 
 		// Look at the attachment metadata and see if we have any extra files from sizes that are no longer registered.
 		foreach ( $metadata['sizes'] as $label => $size ) {
