@@ -64,11 +64,11 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		parent::tearDown();
 	}
 
-	public function _create_attachment() {
+	public function helper_create_attachment() {
 		return self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/33772.jpg' );
 	}
 
-	public function _get_custom_thumbnail_size_callbacks() {
+	public function helper_get_custom_thumbnail_size_callbacks() {
 		return array(
 			'thumbnail_size_w'    => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_100' ),
 			'thumbnail_size_h'    => array( 'Regenerate_Thumbnails_Tests_Helper', 'return_int_100' ),
@@ -82,7 +82,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		);
 	}
 
-	public function _get_filemtimes( $upload_dir, $thumbnails ) {
+	public function helper_get_filemtimes( $upload_dir, $thumbnails ) {
 		$filemtimes = array();
 
 		foreach ( $thumbnails as $size => $filename ) {
@@ -123,7 +123,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function test_regenerate_thumbnails_to_new_sizes() {
-		$this->attachment_id = $this->_create_attachment();
+		$this->attachment_id = $this->helper_create_attachment();
 		$old_metadata        = wp_get_attachment_metadata( $this->attachment_id );
 
 		$upload_dir = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
@@ -143,7 +143,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 
 		// Now change the thumbnail sizes to something other than the defaults
-		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
+		foreach ( $this->helper_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
 			add_filter( 'pre_option_' . $filter, $function );
 		};
 
@@ -154,7 +154,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$new_metadata = wp_get_attachment_metadata( $this->attachment_id );
 
 		// Cleanup
-		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
+		foreach ( $this->helper_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
 			remove_filter( 'pre_option_' . $filter, $function );
 		}
 
@@ -174,15 +174,15 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function test_regenerate_thumbnails_skipping_existing_thumbnails() {
-		$this->_regenerate_thumbnails_skipping_existing_thumbnails_helper( true );
+		$this->helper_regenerate_thumbnails_skipping_existing_thumbnails( true );
 	}
 
 	public function test_regenerate_thumbnails_without_skipping_existing_thumbnails() {
-		$this->_regenerate_thumbnails_skipping_existing_thumbnails_helper( false );
+		$this->helper_regenerate_thumbnails_skipping_existing_thumbnails( false );
 	}
 
-	public function _regenerate_thumbnails_skipping_existing_thumbnails_helper( $only_regenerate_missing_thumbnails ) {
-		$this->attachment_id = $this->_create_attachment();
+	public function helper_regenerate_thumbnails_skipping_existing_thumbnails( $only_regenerate_missing_thumbnails ) {
+		$this->attachment_id = $this->helper_create_attachment();
 
 		// These are the expected thumbnail filenames
 		$thumbnails = array(
@@ -193,7 +193,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		);
 
 		$upload_dir = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
-		$filemtimes = $this->_get_filemtimes( $upload_dir, $thumbnails );
+		$filemtimes = $this->helper_get_filemtimes( $upload_dir, $thumbnails );
 
 		// Delete some of the thumbnail files
 		$missing_thumbnails = array( 'medium', 'large' );
@@ -227,19 +227,19 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function test_delete_unregistered_thumbnail_files_no() {
-		$this->_delete_unregistered_thumbnail_files_helper( false );
+		$this->helper_delete_unregistered_thumbnail_files( false );
 	}
 
 	public function test_delete_unregistered_thumbnail_files_yes() {
-		$this->_delete_unregistered_thumbnail_files_helper( true );
+		$this->helper_delete_unregistered_thumbnail_files( true );
 	}
 
-	public function _delete_unregistered_thumbnail_files_helper( $delete_unregistered_thumbnail_files ) {
+	public function helper_delete_unregistered_thumbnail_files( $delete_unregistered_thumbnail_files ) {
 		add_image_size( 'regenerate-thumbnails-test-inmeta', 521, 567 );
 		add_image_size( 'regenerate-thumbnails-test-notinmeta', 621, 667 );
 
 		// Both test thumbnails will be created on upload
-		$this->attachment_id = $this->_create_attachment();
+		$this->attachment_id = $this->helper_create_attachment();
 		$old_metadata        = wp_get_attachment_metadata( $this->attachment_id );
 
 		copy( DIR_TESTDATA . '/images/33772.jpg', DIR_TESTDATA . '/images/33772-123x456.jpg' );
@@ -297,7 +297,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function test_verify_that_site_icons_are_not_regenerated() {
-		$this->attachment_id = $this->_create_attachment();
+		$this->attachment_id = $this->helper_create_attachment();
 
 		// See wp_ajax_crop_image()
 
@@ -324,7 +324,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 
 		$upload_dir = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
 
-		$filemtimes = $this->_get_filemtimes( $upload_dir, $thumbnails );
+		$filemtimes = $this->helper_get_filemtimes( $upload_dir, $thumbnails );
 
 		// Sleep to make sure that filemtime() will change if the thumbnail files do
 		sleep( 1 );
@@ -346,7 +346,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function test_update_usages_in_posts() {
-		$this->attachment_id = $this->_create_attachment();
+		$this->attachment_id = $this->helper_create_attachment();
 
 		$thumbnail_thumbnail = image_downsize( $this->attachment_id, 'thumbnail' );
 		$thumbnail_medium    = image_downsize( $this->attachment_id, 'medium' );
@@ -366,7 +366,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			) );
 		}
 
-		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
+		foreach ( $this->helper_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
 			add_filter( 'pre_option_' . $filter, $function );
 		};
 
@@ -374,7 +374,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$regenerator->regenerate();
 		$regenerator->update_usages_in_posts();
 
-		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
+		foreach ( $this->helper_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
 			remove_filter( 'pre_option_' . $filter, $function );
 		}
 
@@ -399,13 +399,13 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 	}
 
-	public function _get_current_thumbnail_statuses() {
+	public function helper_get_current_thumbnail_statuses() {
 		$attachment   = get_post( $this->attachment_id );
 		$fullsizepath = get_attached_file( $this->attachment_id );
 
 		return array(
 			'name'               => $attachment->post_title,
-			'fullsizeurl'        => wp_get_attachment_url( $this->attachment_id ),
+			'preview'            => wp_get_attachment_url( $this->attachment_id ),
 			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . '33772.jpg',
 			'edit_url'           => get_edit_post_link( $attachment->ID, 'raw' ),
 			'width'              => 1920,
@@ -455,23 +455,23 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		) );
 		wp_set_current_user( $admin_id );
 
-		$this->attachment_id = $this->_create_attachment();
+		$this->attachment_id = $this->helper_create_attachment();
 
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $this->attachment_id );
 		$statuses    = $regenerator->get_attachment_info();
 
-		$this->assertSame( $statuses, $this->_get_current_thumbnail_statuses() );
+		$this->assertSame( $statuses, $this->helper_get_current_thumbnail_statuses() );
 	}
 
 	public function test_get_current_thumbnail_statuses_with_unregistered_size() {
 		add_image_size( 'regenerate-thumbnails-test', 500, 500 );
-		$this->attachment_id = $this->_create_attachment();
+		$this->attachment_id = $this->helper_create_attachment();
 		remove_image_size( 'regenerate-thumbnails-test' );
 
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $this->attachment_id );
 		$statuses    = $regenerator->get_attachment_info();
 
-		$expected_statuses = $this->_get_current_thumbnail_statuses();
+		$expected_statuses = $this->helper_get_current_thumbnail_statuses();
 
 		$expected_statuses['unregistered_sizes'][] = array(
 			'label'      => 'regenerate-thumbnails-test',
@@ -485,21 +485,21 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function test_get_current_thumbnail_statuses_with_changed_sizes() {
-		$this->attachment_id = $this->_create_attachment();
+		$this->attachment_id = $this->helper_create_attachment();
 
 		// Now change the thumbnail sizes to something other than the defaults
-		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
+		foreach ( $this->helper_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
 			add_filter( 'pre_option_' . $filter, $function );
 		};
 
 		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $this->attachment_id );
 		$statuses    = $regenerator->get_attachment_info();
 
-		foreach ( $this->_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
+		foreach ( $this->helper_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
 			remove_filter( 'pre_option_' . $filter, $function );
 		}
 
-		$expected_statuses = $this->_get_current_thumbnail_statuses();
+		$expected_statuses = $this->helper_get_current_thumbnail_statuses();
 
 		$expected_statuses['registered_sizes'] = array(
 			array(
