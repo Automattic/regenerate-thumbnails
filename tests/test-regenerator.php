@@ -173,16 +173,17 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 	}
 
-	public function test_imagemagick_installed() {
-		$this->assertTrue( class_exists( 'Imagick' ) );
-	}
-
 	public function test_regenerate_thumbnails_for_pdf() {
+		$force_imagick_function = function( $editors ) {
+			return array( 'WP_Image_Editor_Imagick' );
+		};
+		add_filter( 'wp_image_editors', $force_imagick_function );
+
 		$test_pdf = DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf';
 
 		$editor = wp_get_image_editor( $test_pdf );
 		if ( is_wp_error( $editor ) ) {
-			$this->markTestSkipped( "The current image editor doesn't support making thumbnails for PDFs. Please install ImageMagick." );
+			//$this->markTestSkipped( "The current image editor doesn't support making thumbnails for PDFs. Please install ImageMagick." );
 		}
 
 		$this->attachment_id = self::factory()->attachment->create_upload_object( $test_pdf );
@@ -221,6 +222,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$new_metadata = wp_get_attachment_metadata( $this->attachment_id );
 
 		// Cleanup
+		remove_filter( 'wp_image_editors', $force_imagick_function );
 		foreach ( $this->helper_get_custom_thumbnail_size_callbacks() as $filter => $function ) {
 			remove_filter( 'pre_option_' . $filter, $function );
 		}
