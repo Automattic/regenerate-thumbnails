@@ -10,6 +10,12 @@ cache:
     - node_modules
     - vendor
     - $HOME/.composer/cache
+    - $HOME/opt/$TRAVIS_PHP_VERSION
+
+addons:
+  apt:
+    packages:
+    - bc
 
 # Only run tests on the development branch, not master yet
 branches:
@@ -90,7 +96,7 @@ before_script:
   - |
     # Install WordPress and PHPUnit
     if [[ ! -z "$WP_VERSION" ]] ; then
-      bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+      bash tests/bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
       case "$TRAVIS_PHP_VERSION" in
         7.2|7.1|7.0|nightly)
           echo "Using PHPUnit 6.x"
@@ -115,6 +121,12 @@ before_script:
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
       composer global require wp-coding-standards/wpcs
       phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+    fi
+  - |
+    # Install ImageMagick and Imagick for PHP >= 5.4:
+    if (( $(echo "$TRAVIS_PHP_VERSION > 5.4" | bc -l) )); then
+      echo "Installing ImageMagick and Imagick..."
+      bash tests/bin/install-imagick.sh
     fi
 
 script:
