@@ -173,6 +173,10 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 	}
 
+	public function test_imagemagick_installed() {
+		$this->assertTrue( class_exists( 'Imagick' ) );
+	}
+
 	public function test_regenerate_thumbnails_for_pdf() {
 		$test_pdf = DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf';
 
