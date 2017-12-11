@@ -122,12 +122,6 @@ before_script:
       composer global require wp-coding-standards/wpcs
       phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
     fi
-  - |
-    # Install ImageMagick and Imagick for PHP >= 5.4
-    if (( $(echo "$TRAVIS_PHP_VERSION >= 5.4" | bc -l) )); then
-      #echo "Installing ImageMagick and Imagick..."
-      #bash tests/bin/install-imagick.sh
-    fi
 
 script:
   - |
