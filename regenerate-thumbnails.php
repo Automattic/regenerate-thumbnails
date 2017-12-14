@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Description:  Regenerate the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.
 Plugin URI:   https://alex.blog/wordpress-plugins/regenerate-thumbnails/
-Version:      3.0.0 Beta
+Version:      3.0.0
 Author:       Alex Mills (Viper007Bond)
 Author URI:   https://alex.blog/
 Text Domain:  regenerate-thumbnails
@@ -43,7 +43,7 @@ class RegenerateThumbnails {
 	 *
 	 * @var string
 	 */
-	public $version = '3.0.0-alpha';
+	public $version = '3.0.0';
 
 	/**
 	 * The menu ID of this plugin, as returned by add_management_page().
@@ -73,15 +73,14 @@ class RegenerateThumbnails {
 	 * @see    RegenerateThumbnails()
 	 *
 	 * @access private
-	 * @var RegenerateThumbnails
+	 * @var    RegenerateThumbnails
 	 */
 	private static $instance;
 
 	/**
 	 * Constructor. Doesn't actually do anything as instance() creates the class instance.
 	 */
-	private function __construct() {
-	}
+	private function __construct() {}
 
 	/**
 	 * Prevents the class from being cloned.
