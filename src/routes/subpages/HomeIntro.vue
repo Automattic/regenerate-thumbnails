@@ -116,8 +116,6 @@
 				return;
 			}
 
-			// TODO: Probably better to preload this rather than fetch via AJAX
-
 			// Update button with total attachment count
 			wp.apiRequest({
 				namespace: 'wp/v2',
