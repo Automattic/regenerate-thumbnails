@@ -1,5 +1,5 @@
 {
-  "name":        "Viper007Bond/regenerate-thumbnails",
+  "name":        "viper007bond/regenerate-thumbnails",
   "description": "Regenerate the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.",
   "homepage":    "https://alex.blog/wordpress-plugins/regenerate-thumbnails/",
   "type":        "wordpress-plugin",
