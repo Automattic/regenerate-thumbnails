@@ -88,7 +88,7 @@ if (process.env.NODE_ENV === 'production') {
 			path.resolve(__dirname, './dist'),
 		]),
 		new webpack.optimize.UglifyJsPlugin({
-			sourceMap: true,
+			sourceMap: false,
 			compress : {
 				warnings: false
 			}
