@@ -22,11 +22,11 @@ This is useful for situations such as:
 
 = Alternatives =
 
-** WP-CLI **
+**WP-CLI**
 
 If you have command line access to your server, I highly recommend using [WP-CLI](https://wp-cli.org/) instead of this plugin as it's faster (no HTTP requests overhead) and can be run inside of a `screen` for those with many thumbnails. For details, see the documentation of its [`media regenerate` command](https://developer.wordpress.org/cli/commands/media/regenerate/).
 
-** Jetpack's Photon Module **
+**Jetpack's Photon Module**
 
 [Jetpack](https://jetpack.com/) is a plugin by Automattic, makers of WordPress.com. It gives your self-hosted WordPress site some of the functionality that is available to WordPress.com-hosted sites.
 
