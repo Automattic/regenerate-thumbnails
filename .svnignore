@@ -1,4 +1,5 @@
 .babelrc
+.editorconfig
 .git
 .gitignore
 .idea
@@ -6,14 +7,17 @@
 .travis.yml
 assets
 bin
+browsersync-config.json
 composer.json
+composer.lock
 LICENSE
 node_modules
 package.json
-phpcs.xml.dist
+phpcs.xml
 phpunit.xml.dist
 README.md
 src
 tests
 vendor
 webpack.config.js
+yarn.lock
