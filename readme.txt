@@ -36,9 +36,11 @@ I personally use Photon on my own website.
 
 *Disclaimer: I work for Automattic but I would recommend Photon even if I didn't.*
 
-= Found A Bug? Want To Contribute Code? =
+= Need Help? Found A Bug? Want To Contribute Code? =
 
-This plugin is developed on [GitHub](https://github.com/Viper007Bond/regenerate-thumbnails).
+Support for this plugin is provided via the [WordPress.org forums](https://wordpress.org/support/plugin/regenerate-thumbnails).
+
+The source code for this plugin is available on [GitHub](https://github.com/Viper007Bond/regenerate-thumbnails).
 
 == Installation ==
 
@@ -50,24 +52,17 @@ This plugin is developed on [GitHub](https://github.com/Viper007Bond/regenerate-
 
 == Screenshots ==
 
-1. The plugin at work regenerating thumbnails
-2. You can resize single images by hovering over their row in the Media Library
-2. You can resize specific multiples images using the checkboxes and the "Bulk Actions" dropdown
+1. The main plugin interface.
+2. Regenerating in progress.
+3. Interface for regenerating a single attachment.
+4. Individual images can be regenerated from the media library in list view.
+5. They can also be regenerated from the edit attachment screen.
 
 == ChangeLog ==
 
 = Version 3.0.0 =
 
-Major rewrite.
-
-* Add a Regenerate Thumbnails button to the Edit Media submit metabox. Props ironprogrammer on GitHub.
-
-Plus some technical stuff:
-
-* Use the copy of jQuery UI Progressbar that's bundled with WordPress.
-* When regenerating a specific set of image ID(s), use a nonce that is specific to those ID(s) for better security.
-* Rewritten to better use PHP5 standards and to be a singleton.
-* PHPDoc class method documentation.
+Complete rewrite from scratch using Vue.js and the WordPress REST API.
 
 = Version 2.2.4 =
 
