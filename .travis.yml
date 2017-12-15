@@ -17,11 +17,6 @@ addons:
     packages:
     - bc
 
-# Only run tests on the development branch, not master yet
-branches:
-  only:
-    - /^dev\/.*$/
-
 # Test against these versions of PHP.
 # Some additional PHP versions are also included in the matrix below.
 php:
