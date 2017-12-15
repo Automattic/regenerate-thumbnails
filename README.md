@@ -1,9 +1,9 @@
 # Regenerate Thumbnails
 
-[![WordPress](https://img.shields.io/wordpress/plugin/dt/regenerate-thumbnails.svg)](https://wordpress.org/plugins/regenerate-thumbnails/)
-[![WordPress rating](https://img.shields.io/wordpress/plugin/r/regenerate-thumbnails.svg)](https://wordpress.org/support/plugin/regenerate-thumbnails/reviews/)
+[![Travis CI Build Status](https://travis-ci.org/Viper007Bond/regenerate-thumbnails.svg?branch=dev%2Fv3-rewrite)](https://travis-ci.org/Viper007Bond/regenerate-thumbnails)
+[![WordPress Plugin Downloads](https://img.shields.io/wordpress/plugin/dt/regenerate-thumbnails.svg)](https://wordpress.org/plugins/regenerate-thumbnails/)
+[![WordPress Plugin Rating](https://img.shields.io/wordpress/plugin/r/regenerate-thumbnails.svg)](https://wordpress.org/support/plugin/regenerate-thumbnails/reviews/)
 
-*This `master` branch is the stable version. A complete rewrite is currently underway in the [`dev/v3-rewrite`](https://github.com/Viper007Bond/regenerate-thumbnails/tree/dev/v3-rewrite) branch.*
 
 Regenerate Thumbnails is a WordPress plugin that will regenerate all thumbnail sizes for one or more images that have been uploaded to your WordPress Media Library.
 
@@ -28,3 +28,56 @@ If you have command line access to your server, I highly recommend using [WP-CLI
 I personally use Photon on my own website.
 
 *Disclaimer: I work for Automattic but I would recommend Photon even if I didn't.*
+
+## Building The Plugin
+
+The latest release can be [downloaded from WordPress.org](https://wordpress.org/plugins/regenerate-thumbnails/), but if you wish to build your own copy, here's how:
+
+1. Make sure you have [Node.js](https://nodejs.org/) installed.
+
+2. Clone this repository inside your `plugins` directory:
+	```
+	$ git clone https://github.com/Viper007Bond/regenerate-thumbnails.git
+	$ cd regenerate-thumbnails
+	```
+
+3. Install [yarn](https://www.npmjs.com/package/yarn) package:
+	```
+	npm install -g yarn
+	```
+
+4. Install the other dependencies:
+	```
+	yarn
+	```
+
+5. Build the plugin's JavaScript file in production mode:
+	```
+	yarn build
+	```
+
+6. Activate the plugin and visit Tools → Regenerate Thumbnails.
+
+### Development Mode
+
+If you're looking to make modifications to this plugin's Vue.js code, run the following command:
+
+```
+yarn watch
+```
+
+This will do the following things:
+
+* Automatically rebuild the `build.js` file whenever any of the source files change.
+* Put Vue.js in development mode which will allow you to use [a browser extension](https://github.com/vuejs/vue-devtools#vue-devtools) to help with debugging.
+* Spawn a [Browsersync](https://www.browsersync.io/) server at [http://localhost:3030/](http://localhost:3030/) that will load a proxied version of your development WordPress install that automatically refresh the page in your browser when changes are made to files. Also if you open the site in multiple browsers, it will sync your navigation and scrolling between them. By default, this assumes that your WordPress install lives at `localhost`. If this is not the case (for example you're using [Varying Vagrant Vagrants](https://varyingvagrantvagrants.org/)), then edit `browsersync-config.json`.
+
+Alternatively if you just want to manually build a development copy of the Javascript, then run this command:
+
+```
+yarn dev
+```
+
+## Unit Tests
+
+To run the [PHPUnit](https://phpunit.de/) unit tests, first run the `install-wp-tests.sh` script from the `bin` directory. Then simply run `phpunit` from the plugin's root directory.

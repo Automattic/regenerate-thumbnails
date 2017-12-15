@@ -1,0 +1,6 @@
+{
+  "WordPressInstallURL": "http://localhost",
+
+  "proxyHost": "localhost",
+  "proxyPort": 3000
+}
