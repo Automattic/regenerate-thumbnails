@@ -20,6 +20,8 @@ This is useful for situations such as:
 * You've changed the dimensions of an existing thumbnail size, for example via Settings → Media.
 * You've switched to a new WordPress theme that uses featured images of a different size.
 
+It also offers the ability to delete old, unused thumbnails as well as update the content of posts to use the new thumbnail sizes.
+
 = Alternatives =
 
 **WP-CLI**
