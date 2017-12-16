@@ -86,7 +86,7 @@
 				let endpoint = 'media';
 				let data = {
 					page    : page,
-					per_page: 5,
+					per_page: 25,
 				};
 
 				switch (vue.settings.regenerateWhat) {
