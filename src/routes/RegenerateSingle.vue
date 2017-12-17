@@ -188,7 +188,7 @@
 						event.target.innerText = regenerateThumbnails.l10n.RegenerateSingle.errorRegenerating;
 						this.regenerationError = this.regenerateThumbnails.l10n.RegenerateSingle.errorRegeneratingMessage.formatUnicorn(jqXHR.responseJSON);
 
-						console.log('ERROR!', jqXHR, textStatus, errorThrown);
+						console.log('Regenerate Thumbnails: There was an error regenerating this attachment.', jqXHR, textStatus, errorThrown);
 					});
 			},
 			checkUpdatePosts(event) {
