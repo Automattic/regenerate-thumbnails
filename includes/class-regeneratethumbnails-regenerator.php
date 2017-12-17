@@ -550,6 +550,21 @@ class RegenerateThumbnails_Regenerator {
 
 		$metadata = wp_get_attachment_metadata( $this->attachment->ID );
 
+		if ( false === $metadata ) {
+			return new WP_Error(
+				'regenerate_thumbnails_regenerator_no_metadata',
+				__( 'Unable to load the metadata for this attachment.', 'regenerate-thumbnails' ),
+				array(
+					'status'     => 404,
+					'attachment' => $this->attachment,
+				)
+			);
+		}
+
+		if ( ! isset( $metadata['sizes'] ) ) {
+			$metadata['sizes'] = array();
+		}
+
 		// PDFs don't have width/height set.
 		$width  = ( isset( $metadata['width'] ) ) ? $metadata['width'] : null;
 		$height = ( isset( $metadata['height'] ) ) ? $metadata['height'] : null;
