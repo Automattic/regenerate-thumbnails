@@ -538,4 +538,4 @@ function RegenerateThumbnails() {
 /**
  * Initialize this plugin once all other plugins have finished loading.
  */
-add_action( 'plugins_loaded', 'RegenerateThumbnails' );
+add_action( 'init', 'RegenerateThumbnails' );
