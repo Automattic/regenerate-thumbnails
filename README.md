@@ -43,7 +43,7 @@ The latest release can be [downloaded from WordPress.org](https://wordpress.org/
 	$ cd regenerate-thumbnails
 	```
 
-3. Install [yarn](https://www.npmjs.com/package/yarn) package:
+3. Install [yarn](https://yarnpkg.com/) package:
 	```
 	npm install -g yarn
 	```
