@@ -61,7 +61,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 						'validate_callback' => array( $this, 'is_array' ),
 					),
 					'update_usages_in_posts_posts_per_loop' => array(
-						'description'       => __( "Posts to process per loop. This is control memory usage and you likely don't need to adjust this.", 'regenerate-thumbnails' ),
+						'description'       => __( "Posts to process per loop. This is to control memory usage and you likely don't need to adjust this.", 'regenerate-thumbnails' ),
 						'type'              => 'integer',
 						'default'           => 10,
 						'sanitize_callback' => 'absint',
@@ -196,7 +196,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 			) );
 
 			// If wp_update_post() failed for any posts, return that error.
-			foreach ( $posts_updated as $post_updated_id => $post_updated_result ) {
+			foreach ( $posts_updated as $post_updated_result ) {
 				if ( is_wp_error( $post_updated_result ) ) {
 					return $post_updated_result;
 				}

@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="WordPress Coding Standards for Plugins">
-	<description>Generally-applicable sniffs for WordPress plugins</description>
-
+<ruleset name="Regenerate Thumbnails">
 	<config name="minimum_supported_wp_version" value="4.7" />
 
 	<rule ref="WordPress-Core" />
@@ -22,6 +20,8 @@
 	<rule ref="WordPress.Arrays.MultipleStatementAlignment">
 		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned" />
 	</rule>
+
+	<rule ref="VariableAnalysis" />
 
 	<!-- Check all PHP files in directory tree by default. -->
 	<arg name="extensions" value="php"/>

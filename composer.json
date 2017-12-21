@@ -21,6 +21,7 @@
   "require-dev": {
     "phpunit/phpunit": "^6.5",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.4.3",
-    "wp-coding-standards/wpcs": "^0.14.0"
+    "wp-coding-standards/wpcs": "^0.14.0",
+    "sirbrillig/phpcs-variable-analysis": "^2.0"
   }
 }

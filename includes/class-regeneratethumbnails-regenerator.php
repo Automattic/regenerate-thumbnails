@@ -381,7 +381,7 @@ class RegenerateThumbnails_Regenerator {
 			return false;
 		}
 
-		list( $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h ) = $dims;
+		list( , , , , $dst_w, $dst_h ) = $dims;
 
 		$suffix   = "{$dst_w}x{$dst_h}";
 		$file_ext = strtolower( pathinfo( $this->get_fullsizepath(), PATHINFO_EXTENSION ) );
@@ -629,9 +629,7 @@ class RegenerateThumbnails_Regenerator {
 					$size['filename']   = false;
 					$size['fileexists'] = false;
 				}
-			}
-			// No width and height? Let's see if there's a filename in the metadata.
-			elseif ( ! empty( $metadata['sizes'][ $size['label'] ]['file'] ) ) {
+			} elseif ( ! empty( $metadata['sizes'][ $size['label'] ]['file'] ) ) {
 				$size['filename']   = basename( $metadata['sizes'][ $size['label'] ]['file'] );
 				$size['fileexists'] = file_exists( $wp_upload_dir . $metadata['sizes'][ $size['label'] ]['file'] );
 			} else {
