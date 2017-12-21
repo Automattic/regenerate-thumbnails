@@ -407,9 +407,11 @@ class RegenerateThumbnails_Regenerator {
 	 *     @type int   $posts_per_loop How many posts to query at a time to keep memory usage down. You shouldn't need to modify this.
 	 * }
 	 *
-	 * @return array List of post IDs that were modified. The key is the post ID and the value is either the post ID again or a WP_Error object if wp_update_post() failed.
+	 * @return array|WP_Error List of post IDs that were modified. The key is the post ID and the value is either the post ID again or a WP_Error object if wp_update_post() failed.
 	 */
 	public function update_usages_in_posts( $args = array() ) {
+		return array();
+
 		$args = wp_parse_args( $args, array(
 			'post_type'      => array(),
 			'post_ids'       => array(),

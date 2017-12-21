@@ -408,6 +408,8 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	}
 
 	public function test_update_usages_in_posts() {
+		$this->markTestSkipped( 'Temporarily disabled while the functionality is reworked.' );
+
 		$this->attachment_id = $this->helper_create_attachment();
 
 		$thumbnail_thumbnail = image_downsize( $this->attachment_id, 'thumbnail' );

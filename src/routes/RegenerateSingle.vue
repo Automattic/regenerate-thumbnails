@@ -29,7 +29,7 @@
 				</label>
 			</p>
 
-			<p>
+			<p style="display:none">
 				<label>
 					<input
 						type="checkbox"
@@ -40,7 +40,7 @@
 				</label>
 			</p>
 
-			<p>
+			<p style="display:none">
 				<label>
 					<input
 						type="checkbox"

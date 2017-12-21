@@ -202,7 +202,7 @@ class RegenerateThumbnails {
 			),
 			'options' => array(
 				'onlyMissingThumbnails' => apply_filters( 'regenerate_thumbnails_options_onlymissingthumbnails', true ),
-				'updatePostContents'    => apply_filters( 'regenerate_thumbnails_options_updatepostcontents', true ),
+				'updatePostContents'    => apply_filters( 'regenerate_thumbnails_options_updatepostcontents', false ),
 				'deleteOldThumbnails'   => apply_filters( 'regenerate_thumbnails_options_deleteoldthumbnails', false ),
 			),
 			'l10n'    => array(
