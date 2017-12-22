@@ -259,7 +259,7 @@ class RegenerateThumbnails_Regenerator {
 
 				wp_delete_file( $wp_upload_dir . $file );
 			}
-		} elseif ( is_array( $old_metadata ) && is_array( $old_metadata['sizes'] ) ) {
+		} elseif ( ! empty( $old_metadata ) && ! empty( $old_metadata['sizes'] ) && is_array( $old_metadata['sizes'] ) ) {
 			// If not deleting, rename any size conflicts to avoid them being lost if the file still exists.
 			foreach ( $old_metadata['sizes'] as $old_size => $old_size_data ) {
 				if ( empty( $new_metadata['sizes'][ $old_size ] ) ) {
@@ -410,6 +410,7 @@ class RegenerateThumbnails_Regenerator {
 	 * @return array|WP_Error List of post IDs that were modified. The key is the post ID and the value is either the post ID again or a WP_Error object if wp_update_post() failed.
 	 */
 	public function update_usages_in_posts( $args = array() ) {
+		// Temporarily disabled until it can be even better tested for edge cases
 		return array();
 
 		$args = wp_parse_args( $args, array(
