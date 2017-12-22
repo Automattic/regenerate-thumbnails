@@ -85,7 +85,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 	public function test_regenerate_logged_out() {
 		wp_set_current_user( 0 );
 
-		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
+		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
 		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
@@ -94,7 +94,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 	public function test_regenerate_without_permission() {
 		wp_set_current_user( self::$contributor_id );
 
-		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
+		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
 		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
@@ -103,7 +103,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 	public function test_regenerator_with_permission() {
 		wp_set_current_user( self::$superadmin_id );
 
-		$request  = new WP_REST_Request( 'POST', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
+		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
 		$this->assertResponseStatus( 200, $response );
