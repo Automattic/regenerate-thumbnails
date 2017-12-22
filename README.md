@@ -43,10 +43,7 @@ The latest release can be [downloaded from WordPress.org](https://wordpress.org/
 	$ cd regenerate-thumbnails
 	```
 
-3. Install [yarn](https://yarnpkg.com/) package:
-	```
-	npm install -g yarn
-	```
+3. Install [yarn](https://yarnpkg.com/) package manager. It's like npm but better.
 
 4. Install the other dependencies:
 	```
