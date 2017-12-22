@@ -152,7 +152,7 @@
 						delete_unregistered_thumbnail_files: vue.settings.deleteOld,
 						update_usages_in_posts             : vue.settings.updatePosts,
 					},
-					type     : 'POST',
+					type     : 'GET',
 					dataType : 'json',
 					context  : vue,
 				})

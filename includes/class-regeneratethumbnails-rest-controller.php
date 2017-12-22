@@ -29,7 +29,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 	public function register_routes() {
 		register_rest_route( $this->namespace, '/regenerate/(?P<id>[\d]+)', array(
 			array(
-				'methods'             => WP_REST_Server::EDITABLE,
+				'methods'             => WP_REST_Server::ALLMETHODS,
 				'callback'            => array( $this, 'regenerate_item' ),
 				'permission_callback' => array( $this, 'permissions_check' ),
 				'args'                => array(
