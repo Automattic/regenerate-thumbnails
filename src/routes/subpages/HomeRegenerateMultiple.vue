@@ -173,26 +173,33 @@
 
 						let item = {};
 
+						// Make the attachment ID clickable
+						let a = document.createElement('a');
+						a.href = vue.regenerateThumbnails.data.genericEditURL + attachment.id;
+						a.textContent = attachment.id;
+						let clickableID = a.outerHTML;
+
 						if (
-							typeof jqXHR !== undefined &&
-							typeof jqXHR.responseJSON !== undefined
+							jqXHR !== undefined &&
+							jqXHR.responseJSON !== undefined
 						) {
 							if (
-								typeof jqXHR.responseJSON.data !== undefined &&
-								typeof jqXHR.responseJSON.data.attachment !== undefined
+								jqXHR.responseJSON.data !== undefined &&
+								jqXHR.responseJSON.data.attachment !== undefined
 							) {
 								item = {
 									id     : jqXHR.responseJSON.data.attachment.ID,
 									message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
-										name  : 'Attachment ID ' + attachment.id + ': ' + jqXHR.responseJSON.data.attachment.post_title,
+										id    : clickableID,
+										name  : jqXHR.responseJSON.data.attachment.post_title,
 										reason: jqXHR.responseJSON.message,
 									}),
 								};
 							} else {
 								item = {
 									id     : attachment.id,
-									message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
-										name  : 'Attachment ID ' + attachment.id,
+									message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItemNoName.formatUnicorn({
+										id    : clickableID,
 										reason: jqXHR.responseJSON.message,
 									}),
 								};
@@ -200,8 +207,8 @@
 						} else {
 							item = {
 								id     : attachment.id,
-								message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
-									name  : 'Attachment ID ' + attachment.id,
+								message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItemNoName.formatUnicorn({
+									id    : clickableID,
 									reason: errorThrown,
 								}),
 							};
