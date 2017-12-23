@@ -62,9 +62,21 @@ The source code for this plugin is available on [GitHub](https://github.com/Vipe
 
 == ChangeLog ==
 
+= Version 3.0.1 =
+
+* Temporarily disable the update post functionality. I tested it a lot but it seems there's still some bugs.
+* Temporarily disable the delete old thumbnails functionality. It seems to work fine but without the update post functionality, it's not as useful.
+* Try to more gracefully handle cases where there's missing metadata for attachments.
+* Wait until `init` to initialize the plugin so themes can filter the plugin's capability. `plugins_loaded` is too early.
+* Fix a JavaScript error that would cause the whole regeneration process to stop if an individual image returned non-JSON, such as a 500 error code.
+* Accept GET requests for the regenerate REST API endpoint instead of just POSTs. For some reasons some people's sites are using GET despite the code saying use POST.
+* Make the attachment ID clickable in error messages.
+* Fetch 25 attachments at a time instead of 5. I was using 5 for testing.
+* PHP notice fixes.
+
 = Version 3.0.0 =
 
-Complete rewrite from scratch using Vue.js and the WordPress REST API.
+* Complete rewrite from scratch using Vue.js and the WordPress REST API.
 
 = Version 2.2.4 =
 
