@@ -172,25 +172,41 @@
 						console.log('Regenerate Thumbnails: Error while trying to regenerate attachment ID ' + attachment.id, jqXHR, textStatus, errorThrown);
 
 						let item = {};
-						if (undefined !== jqXHR.responseJSON.data.attachment) {
-							item = {
-								id     : jqXHR.responseJSON.data.attachment.ID,
-								message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
-									name  : jqXHR.responseJSON.data.attachment.post_title,
-									reason: jqXHR.responseJSON.message,
-								}),
-							};
+
+						if (
+							typeof jqXHR !== undefined &&
+							typeof jqXHR.responseJSON !== undefined
+						) {
+							if (
+								typeof jqXHR.responseJSON.data !== undefined &&
+								typeof jqXHR.responseJSON.data.attachment !== undefined
+							) {
+								item = {
+									id     : jqXHR.responseJSON.data.attachment.ID,
+									message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
+										name  : 'Attachment ID ' + attachment.id + ': ' + jqXHR.responseJSON.data.attachment.post_title,
+										reason: jqXHR.responseJSON.message,
+									}),
+								};
+							} else {
+								item = {
+									id     : attachment.id,
+									message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
+										name  : 'Attachment ID ' + attachment.id,
+										reason: jqXHR.responseJSON.message,
+									}),
+								};
+							}
 						} else {
 							item = {
 								id     : attachment.id,
 								message: vue.regenerateThumbnails.l10n.RegenerateMultiple.logSkippedItem.formatUnicorn({
 									name  : 'Attachment ID ' + attachment.id,
-									reason: jqXHR.responseJSON.message,
+									reason: errorThrown,
 								}),
 							};
 						}
 
-						console.log(item);
 						vue.logItems.push(item);
 						vue.errorItems.push(item);
 					})
