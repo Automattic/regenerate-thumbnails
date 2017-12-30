@@ -381,13 +381,19 @@ class RegenerateThumbnails {
 			return false;
 		}
 
-		$editor = wp_get_image_editor( $fullsize );
+		$image_editor_args = array(
+			'path'    => $fullsize,
+			'methods' => array( 'resize' )
+		);
 
-		if ( is_wp_error( $editor ) ) {
-			return false;
+		$file_info = wp_check_filetype( $image_editor_args['path'] );
+		// If $file_info['type'] is false, then we let the editor attempt to
+		// figure out the file type, rather than forcing a failure based on extension.
+		if ( isset( $file_info ) && $file_info['type'] ) {
+			$image_editor_args['mime_type'] = $file_info['type'];
 		}
 
-		return true;
+		return (bool) _wp_image_editor_choose( $image_editor_args );
 	}
 
 	/**
