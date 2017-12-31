@@ -88,7 +88,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
-		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+		$this->assertErrorResponse( 'rest_forbidden', $response, rest_authorization_required_code() );
 	}
 
 	public function test_regenerate_without_permission() {
@@ -97,7 +97,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/regenerate/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
-		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+		$this->assertErrorResponse( 'rest_forbidden', $response, rest_authorization_required_code() );
 	}
 
 	public function test_regenerator_with_permission() {
@@ -115,7 +115,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/attachmentinfo/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
-		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+		$this->assertErrorResponse( 'rest_forbidden', $response, rest_authorization_required_code() );
 	}
 
 	public function test_attachmentinfo_without_permission() {
@@ -124,7 +124,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/attachmentinfo/' . $this->attachment_id );
 		$response = $this->server->dispatch( $request );
 
-		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+		$this->assertErrorResponse( 'rest_forbidden', $response, rest_authorization_required_code() );
 	}
 
 	public function test_attachmentinfo_with_permission() {
@@ -142,7 +142,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/featuredimages' );
 		$response = $this->server->dispatch( $request );
 
-		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+		$this->assertErrorResponse( 'rest_forbidden', $response, rest_authorization_required_code() );
 	}
 
 	public function test_featuredimages_without_permission() {
@@ -151,7 +151,7 @@ class Regenerate_Thumbnails_Tests_REST_API extends WP_Test_REST_TestCase {
 		$request  = new WP_REST_Request( 'GET', '/regenerate-thumbnails/v1/featuredimages' );
 		$response = $this->server->dispatch( $request );
 
-		$this->assertErrorResponse( 'rest_forbidden', $response, 403 );
+		$this->assertErrorResponse( 'rest_forbidden', $response, rest_authorization_required_code() );
 	}
 
 	public function test_featuredimages() {
