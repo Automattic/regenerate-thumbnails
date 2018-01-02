@@ -180,12 +180,15 @@
 						let clickableID = a.outerHTML;
 
 						if (
-							jqXHR !== undefined &&
-							jqXHR.responseJSON !== undefined
+							jqXHR !== null &&
+							jqXHR.hasOwnProperty('responseJSON') &&
+							jqXHR.responseJSON !== null
 						) {
 							if (
-								jqXHR.responseJSON.data !== undefined &&
-								jqXHR.responseJSON.data.attachment !== undefined
+								jqXHR.responseJSON.hasOwnProperty('data') &&
+								jqXHR.responseJSON.data !== null &&
+								jqXHR.responseJSON.data.hasOwnProperty('attachment') &&
+								jqXHR.responseJSON.data.attachment !== null
 							) {
 								item = {
 									id     : jqXHR.responseJSON.data.attachment.ID,
