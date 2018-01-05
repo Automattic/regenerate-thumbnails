@@ -158,10 +158,12 @@
 				})
 					.done((result, textStatus, jqXHR) => {
 						// Make the attachment name clickable
-						let a = document.createElement('a');
-						a.href = result.edit_url;
-						a.textContent = result.name;
-						result.name = a.outerHTML;
+						if ( result.edit_url !== null ) {
+							let a = document.createElement('a');
+							a.href = result.edit_url;
+							a.textContent = result.name;
+							result.name = a.outerHTML;
+						}
 
 						vue.logItems.push({
 							id     : result.id,
