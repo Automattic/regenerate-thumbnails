@@ -1,9 +1,21 @@
 <?xml version="1.0"?>
 <ruleset name="Regenerate Thumbnails">
 	<config name="minimum_supported_wp_version" value="4.7" />
+	<config name="testVersion" value="5.2-"/>
 
 	<rule ref="WordPress-Core" />
 	<rule ref="WordPress-Docs" />
+	<rule ref="WordPress-Extra" />
+	<rule ref="VariableAnalysis" />
+
+	<rule ref="PHPCompatibility">
+		<!-- I'm not using namespaces and it's picking up the class variable from the REST controller -->
+		<exclude name="PHPCompatibility.PHP.NewKeywords.t_namespaceFound" />
+	</rule>
+
+	<rule ref="WordPress.Arrays">
+		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned" />
+	</rule>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
@@ -16,12 +28,6 @@
 			<property name="prefixes" type="array" value="RegenerateThumbnails" />
 		</properties>
 	</rule>
-
-	<rule ref="WordPress.Arrays.MultipleStatementAlignment">
-		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned" />
-	</rule>
-
-	<rule ref="VariableAnalysis" />
 
 	<!-- Check all PHP files in directory tree by default. -->
 	<arg name="extensions" value="php"/>
