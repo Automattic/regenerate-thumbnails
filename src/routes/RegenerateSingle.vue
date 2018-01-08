@@ -167,10 +167,8 @@
 					namespace: 'regenerate-thumbnails/v1',
 					endpoint : 'regenerate/' + this.id,
 					data     : {
-						regeneration_args     : {
-							only_regenerate_missing_thumbnails : this.regenerateThumbnails.options.onlyMissingThumbnails,
-							delete_unregistered_thumbnail_files: this.regenerateThumbnails.options.deleteOldThumbnails,
-						},
+						only_regenerate_missing_thumbnails : this.regenerateThumbnails.options.onlyMissingThumbnails,
+						delete_unregistered_thumbnail_files: this.regenerateThumbnails.options.deleteOldThumbnails,
 						update_usages_in_posts: this.regenerateThumbnails.options.updatePostContents,
 					},
 					type     : 'POST',
