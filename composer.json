@@ -4,7 +4,7 @@
   "homepage":    "https://alex.blog/wordpress-plugins/regenerate-thumbnails/",
   "type":        "wordpress-plugin",
   "keywords":    ["wordpress", "plugin", "thumbnails"],
-  "license":     "GPL-2.0+",
+  "license":     "GPL-2.0-or-later",
   "authors": [
     {
       "name": "Alex Mills (Viper007Bond)",
