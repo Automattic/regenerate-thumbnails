@@ -13,9 +13,15 @@
     "url": "https://github.com/Viper007Bond/regenerate-thumbnails/issues"
   },
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
-    "watch": "cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
-    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
+    "dev": "yarn install-if-deps-outdated && cross-env NODE_ENV=development webpack --progress --hide-modules",
+    "watch": "yarn install-if-deps-outdated && cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
+    "build": "yarn install-if-deps-outdated && cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "install-if-deps-outdated": "( yarn check 2> /dev/null || yarn install --check-files ) && ( check-node-version --package --print || exit 0 )",
+    "distclean": "rm -rf node_modules && rm -rf dist && yarn cache clean"
+  },
+  "engines": {
+    "node": ">=8",
+    "yarn": "^1.3.2"
   },
   "dependencies": {
     "vue": "^2.5.13",
@@ -27,6 +33,7 @@
     "babel-preset-env": "^1.6.1",
     "browser-sync": "^2.23.6",
     "browser-sync-webpack-plugin": "^1.2.0",
+    "check-node-version": "^3.2.0",
     "clean-webpack-plugin": "^0.1.18",
     "cross-env": "^5.1.3",
     "css-loader": "^0.28.9",
