@@ -512,6 +512,43 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		);
 	}
 
+	/**
+	 * self::factory()->attachment->create_upload_object() uses basename() instead of wp_basename()
+	 *
+	 * @link https://core.trac.wordpress.org/ticket/43170
+	 *
+	 * @see WP_UnitTest_Factory_For_Attachment::create_upload_object()
+	 */
+	public function helper_create_upload_object_utf8( $file, $parent = 0 ) {
+		$contents = file_get_contents( $file );
+		$upload   = wp_upload_bits( wp_basename( $file ), null, $contents );
+
+		$type = '';
+		if ( ! empty( $upload['type'] ) ) {
+			$type = $upload['type'];
+		} else {
+			$mime = wp_check_filetype( $upload['file'] );
+			if ( $mime ) {
+				$type = $mime['type'];
+			}
+		}
+
+		$attachment = array(
+			'post_title'     => wp_basename( $upload['file'] ),
+			'post_content'   => '',
+			'post_type'      => 'attachment',
+			'post_parent'    => $parent,
+			'post_mime_type' => $type,
+			'guid'           => $upload['url'],
+		);
+
+		// Save the data
+		$id = wp_insert_attachment( $attachment, $upload['file'], $parent );
+		wp_update_attachment_metadata( $id, wp_generate_attachment_metadata( $id, $upload['file'] ) );
+
+		return $id;
+	}
+
 	public function test_get_current_thumbnail_statuses_normal() {
 		// To get edit_url to work correctly
 		$admin_id = self::factory()->user->create( array(
@@ -525,6 +562,24 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$statuses    = $regenerator->get_attachment_info();
 
 		$this->assertSame( $statuses, $this->helper_get_current_thumbnail_statuses() );
+	}
+
+	/**
+	 * @link https://github.com/Viper007Bond/regenerate-thumbnails/issues/62
+	 */
+	public function test_get_current_thumbnail_statuses_utf8_filename() {
+		$test_file_path = get_temp_dir() . '麻美.jpg';
+		copy( DIR_TESTDATA . '/images/33772.jpg', $test_file_path );
+		$this->assertFileExists( $test_file_path );
+
+		$this->attachment_id = $this->helper_create_upload_object_utf8( $test_file_path );
+
+		$fullsizepath = get_attached_file( $this->attachment_id );
+
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $this->attachment_id );
+		$statuses    = $regenerator->get_attachment_info();
+
+		$this->assertSame( $statuses['relative_path'], _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . '麻美.jpg' );
 	}
 
 	public function test_get_current_thumbnail_statuses_with_unregistered_size() {

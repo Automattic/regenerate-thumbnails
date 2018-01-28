@@ -579,13 +579,13 @@ class RegenerateThumbnails_Regenerator {
 		} elseif (
 			is_array( $metadata['sizes']['full'] ) &&
 			file_exists( str_replace(
-				basename( $fullsizepath ),
+				wp_basename( $fullsizepath ),
 				$metadata['sizes']['full']['file'],
 				$fullsizepath
 			) )
 		) {
 			$preview = str_replace(
-				basename( $fullsizepath ),
+				wp_basename( $fullsizepath ),
 				$metadata['sizes']['full']['file'],
 				wp_get_attachment_url( $this->attachment->ID )
 			);
@@ -596,7 +596,7 @@ class RegenerateThumbnails_Regenerator {
 		$response = array(
 			'name'               => ( $this->attachment->post_title ) ? $this->attachment->post_title : sprintf( __( 'Attachment %d', 'regenerate-thumbnails' ), $this->attachment->ID ),
 			'preview'            => $preview,
-			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . basename( $fullsizepath ),
+			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . wp_basename( $fullsizepath ),
 			'edit_url'           => get_edit_post_link( $this->attachment->ID, 'raw' ),
 			'width'              => $width,
 			'height'             => $height,
@@ -626,14 +626,14 @@ class RegenerateThumbnails_Regenerator {
 				$thumbnail = $this->get_thumbnail( $editor, $width, $height, $size['width'], $size['height'], $size['crop'] );
 
 				if ( $thumbnail ) {
-					$size['filename']   = basename( $thumbnail['filename'] );
+					$size['filename']   = wp_basename( $thumbnail['filename'] );
 					$size['fileexists'] = file_exists( $thumbnail['filename'] );
 				} else {
 					$size['filename']   = false;
 					$size['fileexists'] = false;
 				}
 			} elseif ( ! empty( $metadata['sizes'][ $size['label'] ]['file'] ) ) {
-				$size['filename']   = basename( $metadata['sizes'][ $size['label'] ]['file'] );
+				$size['filename']   = wp_basename( $metadata['sizes'][ $size['label'] ]['file'] );
 				$size['fileexists'] = file_exists( $wp_upload_dir . $metadata['sizes'][ $size['label'] ]['file'] );
 			} else {
 				$size['filename']   = false;
