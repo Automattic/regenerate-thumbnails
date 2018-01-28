@@ -136,7 +136,7 @@
 		},
 		computed  : {
 			filenameAndDimensions() {
-				if ( this.attachmentInfo.width && this.attachmentInfo.height ) {
+				if (this.attachmentInfo.width && this.attachmentInfo.height) {
 					return this.regenerateThumbnails.l10n.RegenerateSingle.filenameAndDimensions.formatUnicorn({
 						filename: this.attachmentInfo.relative_path,
 						width   : this.attachmentInfo.width,
@@ -169,7 +169,7 @@
 					data     : {
 						only_regenerate_missing_thumbnails : this.regenerateThumbnails.options.onlyMissingThumbnails,
 						delete_unregistered_thumbnail_files: this.regenerateThumbnails.options.deleteOldThumbnails,
-						update_usages_in_posts: this.regenerateThumbnails.options.updatePostContents,
+						update_usages_in_posts             : this.regenerateThumbnails.options.updatePostContents,
 					},
 					type     : 'POST',
 					dataType : 'json',
