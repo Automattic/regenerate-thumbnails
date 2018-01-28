@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "184c7fe98ed72bd568cf882e7b3aa863",
+    "content-hash": "727df8543faa93105028a9ac4fb53acc",
     "packages": [
         {
             "name": "composer/installers",
@@ -453,16 +453,16 @@
         },
         {
             "name": "phpdocumentor/reflection-docblock",
-            "version": "4.2.0",
+            "version": "4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpDocumentor/ReflectionDocBlock.git",
-                "reference": "66465776cfc249844bde6d117abff1d22e06c2da"
+                "reference": "94fd0001232e47129dd3504189fa1c7225010d08"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/66465776cfc249844bde6d117abff1d22e06c2da",
-                "reference": "66465776cfc249844bde6d117abff1d22e06c2da",
+                "url": "https://api.github.com/repos/phpDocumentor/ReflectionDocBlock/zipball/94fd0001232e47129dd3504189fa1c7225010d08",
+                "reference": "94fd0001232e47129dd3504189fa1c7225010d08",
                 "shasum": ""
             },
             "require": {
@@ -500,7 +500,7 @@
                 }
             ],
             "description": "With this component, a library can provide support for annotations via DocBlocks or otherwise retrieve information that is embedded in a DocBlock.",
-            "time": "2017-11-27T17:38:31+00:00"
+            "time": "2017-11-30T07:14:17+00:00"
         },
         {
             "name": "phpdocumentor/type-resolver",
@@ -1003,6 +1003,51 @@
                 "xunit"
             ],
             "time": "2018-01-06T05:45:45+00:00"
+        },
+        {
+            "name": "poststatus/wptest",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/poststatus/wptest.git",
+                "reference": "a72f8137a89c22b194b04350b9d9d9c1a153b76f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/poststatus/wptest/zipball/a72f8137a89c22b194b04350b9d9d9c1a153b76f",
+                "reference": "a72f8137a89c22b194b04350b9d9d9c1a153b76f",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Michael Novotny",
+                    "email": "manovotny@gmail.com",
+                    "homepage": "http://manovotny.com",
+                    "role": "Developer"
+                },
+                {
+                    "name": "Brian Krogsgard",
+                    "email": "brian@poststatus.com",
+                    "homepage": "https://poststatus.com/",
+                    "role": "Developer"
+                }
+            ],
+            "description": "WP Test - The Best Tests For WordPress.",
+            "homepage": "http://wptest.io",
+            "keywords": [
+                "data",
+                "export",
+                "import",
+                "tests",
+                "unit tests",
+                "wordpress"
+            ],
+            "time": "2017-02-05T16:19:21+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",
@@ -1840,7 +1885,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "poststatus/wptest": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
