@@ -594,7 +594,7 @@ class RegenerateThumbnails_Regenerator {
 		}
 
 		$response = array(
-			'name'               => $this->attachment->post_title,
+			'name'               => ( $this->attachment->post_title ) ? $this->attachment->post_title : sprintf( __( 'Attachment %d', 'regenerate-thumbnails' ), $this->attachment->ID ),
 			'preview'            => $preview,
 			'relative_path'      => _wp_get_attachment_relative_path( $fullsizepath ) . DIRECTORY_SEPARATOR . basename( $fullsizepath ),
 			'edit_url'           => get_edit_post_link( $this->attachment->ID, 'raw' ),
