@@ -62,6 +62,14 @@ The source code for this plugin is available on [GitHub](https://github.com/Vipe
 
 == ChangeLog ==
 
+= Version 3.0.2 =
+
+* Fix slowdown in certain cases in the media library.
+* Fix not being able to regenerate existing thumbnails for single images. Props @idofri.
+* Fix JavaScript error that could occur if the REST API response was unexpected (empty or PHP error).
+* Fix bug related to multibyte filenames.
+* If an image is used as the featured image on multiple posts, only regenerate it once instead of once per post.
+
 = Version 3.0.1 =
 
 * Temporarily disable the update post functionality. I tested it a lot but it seems there's still some bugs.
