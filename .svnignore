@@ -21,3 +21,4 @@ tests
 vendor
 webpack.config.js
 yarn.lock
+yarn-error.log
