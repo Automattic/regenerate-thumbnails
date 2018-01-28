@@ -1,6 +1,6 @@
 # Regenerate Thumbnails
 
-[![Travis CI Build Status](https://travis-ci.org/Viper007Bond/regenerate-thumbnails.svg?branch=dev%2Fv3-rewrite)](https://travis-ci.org/Viper007Bond/regenerate-thumbnails)
+[![Travis CI Build Status](https://travis-ci.org/Viper007Bond/regenerate-thumbnails.svg)](https://travis-ci.org/Viper007Bond/regenerate-thumbnails)
 [![WordPress Plugin Downloads](https://img.shields.io/wordpress/plugin/dt/regenerate-thumbnails.svg)](https://wordpress.org/plugins/regenerate-thumbnails/)
 [![WordPress Plugin Rating](https://img.shields.io/wordpress/plugin/r/regenerate-thumbnails.svg)](https://wordpress.org/support/plugin/regenerate-thumbnails/reviews/)
 
