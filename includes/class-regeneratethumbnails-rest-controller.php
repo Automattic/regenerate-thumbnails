@@ -242,7 +242,7 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 		$per_page = $request->get_param( 'per_page' );
 
 		$featured_image_ids = $wpdb->get_results( $wpdb->prepare(
-			"SELECT SQL_CALC_FOUND_ROWS meta_value AS id FROM wp_postmeta WHERE meta_key = '_thumbnail_id' GROUP BY meta_value ORDER BY MIN(meta_id) LIMIT %d OFFSET %d",
+			"SELECT SQL_CALC_FOUND_ROWS meta_value AS id FROM {$wpdb->postmeta} WHERE meta_key = '_thumbnail_id' GROUP BY meta_value ORDER BY MIN(meta_id) LIMIT %d OFFSET %d",
 			$per_page,
 			( $per_page * $page ) - $per_page
 		) );
