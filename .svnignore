@@ -5,7 +5,7 @@
 .idea
 .svnignore
 .travis.yml
-assets
+.wordpress-org
 bin
 browsersync-config.json
 composer.json
