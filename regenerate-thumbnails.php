@@ -29,8 +29,8 @@ along with Regenerate Thumbnails. If not, see https://www.gnu.org/licenses/gpl-2
 
 **************************************************************************/
 
-require( dirname( __FILE__ ) . '/includes/class-regeneratethumbnails-regenerator.php' );
-require( dirname( __FILE__ ) . '/includes/class-regeneratethumbnails-rest-controller.php' );
+require dirname( __FILE__ ) . '/includes/class-regeneratethumbnails-regenerator.php';
+require dirname( __FILE__ ) . '/includes/class-regeneratethumbnails-rest-controller.php';
 
 /**
  * Main plugin class.
