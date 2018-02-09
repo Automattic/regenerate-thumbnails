@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # ImageMagick version to use
-IMAGEMAGICK_VERSION='7.0.7-14'
+IMAGEMAGICK_VERSION='7.0.7-22'
 
 install_imagemagick() {
 	curl -O "https://www.imagemagick.org/download/releases/ImageMagick-$IMAGEMAGICK_VERSION.tar.gz" -f
