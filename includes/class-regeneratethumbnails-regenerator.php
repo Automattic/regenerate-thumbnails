@@ -1,6 +1,6 @@
 <?php
 /**
- * Regenerate Thumbnails: Attachment regenerator class
+ * Regenerate Thumbnails: Attachment regenerator class.
  *
  * @package RegenerateThumbnails
  * @since 3.0.0
@@ -410,9 +410,6 @@ class RegenerateThumbnails_Regenerator {
 	 * @return array|WP_Error List of post IDs that were modified. The key is the post ID and the value is either the post ID again or a WP_Error object if wp_update_post() failed.
 	 */
 	public function update_usages_in_posts( $args = array() ) {
-		// Temporarily disabled until it can be even better tested for edge cases
-		return array();
-
 		$args = wp_parse_args( $args, array(
 			'post_type'      => array(),
 			'post_ids'       => array(),

@@ -15,7 +15,7 @@
 			</label>
 		</p>
 
-		<p style="display:none">
+		<p>
 			<label>
 				<input
 					type="checkbox"
@@ -27,7 +27,7 @@
 			</label>
 		</p>
 
-		<p style="display:none">
+		<p>
 			<label>
 				<input
 					type="checkbox"
