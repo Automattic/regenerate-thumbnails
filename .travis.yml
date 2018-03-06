@@ -132,4 +132,5 @@ script:
     fi
   - |
     # Make sure the Vue.js code builds
+    npm install --global yarn
     yarn build
