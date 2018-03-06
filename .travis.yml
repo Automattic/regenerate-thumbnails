@@ -64,6 +64,8 @@ matrix:
   - php: 5.3
     dist: precise
     env: WP_VERSION=nightly
+  - php: 7.2
+    env: BUILD_JS=1
   exclude: # WordPress 4.7 doesn't like running unit tests under PHP 7.x, see https://travis-ci.org/Viper007Bond/regenerate-thumbnails/builds/281022291
   - php: '7.0'
     env: WP_VERSION=4.7
@@ -132,5 +134,6 @@ script:
     fi
   - |
     # Make sure the Vue.js code builds
-    npm install --global yarn
-    yarn build
+    if [[ "$BUILD_JS" == "1" ]] ; then
+      yarn build
+    fi
