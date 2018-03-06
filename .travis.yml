@@ -130,3 +130,6 @@ script:
     if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
       phpcs
     fi
+  - |
+    # Make sure the Vue.js code builds
+    yarn build
