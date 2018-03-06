@@ -16,7 +16,7 @@
     "dev": "yarn install-if-deps-outdated && cross-env NODE_ENV=development webpack --progress --hide-modules",
     "watch": "yarn install-if-deps-outdated && cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
     "build": "yarn install-if-deps-outdated && cross-env NODE_ENV=production webpack --progress --hide-modules",
-    "install-if-deps-outdated": "( yarn check || yarn install --check-files ) && ( check-node-version --package --print || exit 0 )",
+    "install-if-deps-outdated": "( yarn check 2> /dev/null || yarn install --check-files ) && ( check-node-version --package --print || exit 0 )",
     "distclean": "rm -rf node_modules && rm -rf dist && yarn cache clean"
   },
   "engines": {
