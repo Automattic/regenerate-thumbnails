@@ -13,9 +13,9 @@
     "url": "https://github.com/Viper007Bond/regenerate-thumbnails/issues"
   },
   "scripts": {
-    "dev": "yarn install-if-deps-outdated && cross-env NODE_ENV=development webpack --progress --hide-modules",
+    "build": "yarn install-if-deps-outdated && cross-env NODE_ENV=development webpack --progress --hide-modules",
     "watch": "yarn install-if-deps-outdated && cross-env NODE_ENV=development webpack --watch --progress --hide-modules",
-    "build": "yarn install-if-deps-outdated && cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "build-production": "yarn install-if-deps-outdated && cross-env NODE_ENV=production webpack --progress --hide-modules",
     "install-if-deps-outdated": "( yarn check 2> /dev/null || yarn install --check-files ) && ( check-node-version --package --print || exit 0 )",
     "distclean": "rm -rf node_modules && rm -rf dist && yarn cache clean"
   },
@@ -24,24 +24,24 @@
     "yarn": "^1.3.0"
   },
   "dependencies": {
-    "vue": "^2.5.13",
+    "vue": "^2.5.16",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
+    "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.6.1",
     "browser-sync": "^2.23.6",
-    "browser-sync-webpack-plugin": "^2.0.1",
+    "browser-sync-webpack-plugin": "^2.2.1",
     "check-node-version": "^3.2.0",
-    "clean-webpack-plugin": "^0.1.18",
-    "cross-env": "^5.1.3",
-    "css-loader": "^0.28.9",
-    "file-loader": "^1.1.6",
+    "clean-webpack-plugin": "^0.1.19",
+    "cross-env": "^5.1.4",
+    "css-loader": "^0.28.11",
+    "file-loader": "^1.1.11",
     "node-sass": "^4.7.2",
-    "sass-loader": "^6.0.6",
-    "vue-loader": "^14.1.1",
-    "vue-template-compiler": "^2.5.13",
-    "webpack": "^3.11.0"
+    "sass-loader": "^6.0.7",
+    "vue-loader": "^14.2.1",
+    "vue-template-compiler": "^2.5.16",
+    "webpack": "<4"
   }
 }

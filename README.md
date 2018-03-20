@@ -52,7 +52,7 @@ The latest release can be [downloaded from WordPress.org](https://wordpress.org/
 
 5. Build the plugin's JavaScript file in production mode:
 	```
-	yarn build
+	yarn build-production
 	```
 
 6. Activate the plugin and visit Tools → Regenerate Thumbnails.
@@ -74,7 +74,7 @@ This will do the following things:
 Alternatively if you just want to manually build a development copy of the Javascript, then run this command:
 
 ```
-yarn dev
+yarn build
 ```
 
 ## Unit Tests
