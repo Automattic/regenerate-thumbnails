@@ -1,9 +1,10 @@
 # Regenerate Thumbnails
 
-[![Travis CI Build Status](https://travis-ci.org/Viper007Bond/regenerate-thumbnails.svg)](https://travis-ci.org/Viper007Bond/regenerate-thumbnails)
-[![WordPress Plugin Downloads](https://img.shields.io/wordpress/plugin/dt/regenerate-thumbnails.svg)](https://wordpress.org/plugins/regenerate-thumbnails/)
-[![WordPress Plugin Rating](https://img.shields.io/wordpress/plugin/r/regenerate-thumbnails.svg)](https://wordpress.org/support/plugin/regenerate-thumbnails/reviews/)
-
+[![Travis CI Build Status](https://img.shields.io/travis/Viper007Bond/regenerate-thumbnails/master.svg?style=flat-square)](https://travis-ci.org/Viper007Bond/regenerate-thumbnails)
+[![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/regenerate-thumbnails.svg?style=flat-square)](https://wordpress.org/plugins/regenerate-thumbnails/)
+[![WordPress Tested](https://img.shields.io/wordpress/v/regenerate-thumbnails.svg?style=flat-square)](https://wordpress.org/plugins/regenerate-thumbnails/)
+[![WordPress Plugin Downloads](https://img.shields.io/wordpress/plugin/dt/regenerate-thumbnails.svg?style=flat-square)](https://wordpress.org/plugins/regenerate-thumbnails/advanced/)
+[![WordPress Plugin Rating](https://img.shields.io/wordpress/plugin/r/regenerate-thumbnails.svg?style=flat-square)](https://wordpress.org/support/plugin/regenerate-thumbnails/reviews/)
 
 Regenerate Thumbnails is a WordPress plugin that will regenerate all thumbnail sizes for one or more images that have been uploaded to your WordPress Media Library.
 
