@@ -1,7 +1,5 @@
 # Regenerate Thumbnails
 
-[![Greenkeeper badge](https://badges.greenkeeper.io/Viper007Bond/regenerate-thumbnails.svg)](https://greenkeeper.io/)
-
 [![Travis CI Build Status](https://img.shields.io/travis/Viper007Bond/regenerate-thumbnails/master.svg?style=flat-square)](https://travis-ci.org/Viper007Bond/regenerate-thumbnails)
 [![WordPress Plugin Version](https://img.shields.io/wordpress/plugin/v/regenerate-thumbnails.svg?style=flat-square)](https://wordpress.org/plugins/regenerate-thumbnails/)
 [![WordPress Tested](https://img.shields.io/wordpress/v/regenerate-thumbnails.svg?style=flat-square)](https://wordpress.org/plugins/regenerate-thumbnails/)
