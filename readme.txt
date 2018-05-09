@@ -62,6 +62,10 @@ The source code for this plugin is available on [GitHub](https://github.com/Vipe
 
 == ChangeLog ==
 
+= Version 3.1.0 =
+
+* Re-enable the ability to delete old, unregistered thumbnail files. It was temporarily disabled until I was more confident in the separate update post functionality but fixing that is turning out to be rather complicated.
+
 = Version 3.0.2 =
 
 * Fix slowdown in certain cases in the media library.
