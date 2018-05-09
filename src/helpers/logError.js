@@ -6,6 +6,7 @@ function logError( vue, attachmentID, jqXHR, textStatus, errorThrown ) {
 	// Make the attachment ID clickable
 	let a = document.createElement('a');
 	a.href = vue.regenerateThumbnails.data.genericEditURL + attachmentID;
+	a.target = '_blank';
 	a.textContent = attachmentID;
 	let clickableID = a.outerHTML;
 

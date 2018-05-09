@@ -167,6 +167,7 @@
 						if ( result.edit_url !== null ) {
 							let a = document.createElement('a');
 							a.href = result.edit_url;
+							a.target = '_blank';
 							a.textContent = result.name;
 							result.name = a.outerHTML;
 						}
