@@ -5,7 +5,7 @@
 Plugin Name:  Regenerate Thumbnails
 Description:  Regenerate the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.
 Plugin URI:   https://alex.blog/wordpress-plugins/regenerate-thumbnails/
-Version:      3.0.2
+Version:      3.1.0
 Author:       Alex Mills (Viper007Bond)
 Author URI:   https://alex.blog/
 Text Domain:  regenerate-thumbnails
@@ -43,7 +43,7 @@ class RegenerateThumbnails {
 	 *
 	 * @var string
 	 */
-	public $version = '3.0.2';
+	public $version = '3.1.0';
 
 	/**
 	 * The menu ID of this plugin, as returned by add_management_page().
@@ -211,7 +211,7 @@ class RegenerateThumbnails {
 					'regenerateThumbnails'                      => __( 'Regenerate Thumbnails', 'regenerate-thumbnails' ),
 					'loading'                                   => __( 'Loading…', 'regenerate-thumbnails' ),
 					'onlyRegenerateMissingThumbnails'           => __( 'Skip regenerating existing correctly sized thumbnails (faster).', 'regenerate-thumbnails' ),
-					'deleteOldThumbnails'                       => __( "Delete thumbnail files for old unregistered sizes in order to free up server space. You risk broken images if you do this so it's strongly recommended that you update the content of posts to reduce the risk.", 'regenerate-thumbnails' ),
+					'deleteOldThumbnails'                       => __( "Delete thumbnail files for old unregistered sizes in order to free up server space. This may result in broken images in your posts and pages.", 'regenerate-thumbnails' ),
 					'thumbnailSizeItemWithCropMethodNoFilename' => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod})', 'regenerate-thumbnails' ),
 					'thumbnailSizeItemWithCropMethod'           => __( '<strong>{label}:</strong> {width}×{height} pixels ({cropMethod}) <code>{filename}</code>', 'regenerate-thumbnails' ),
 					'thumbnailSizeItemWithoutCropMethod'        => __( '<strong>{label}:</strong> {width}×{height} pixels <code>{filename}</code>', 'regenerate-thumbnails' ),
