@@ -122,8 +122,8 @@ script:
   - |
     # Run PHPUnit in both single site and multisite mode
     if [[ ! -z "$WP_VERSION" && "$WP_TRAVISCI" != "phpcs" ]] ; then
-      phpunit
-      WP_MULTISITE=1 phpunit
+      phpunit --verbose
+      WP_MULTISITE=1 phpunit --verbose
     fi
   - |
     # Run PHP_CodeSniffer coding standards if it's requested for this test
