@@ -356,7 +356,18 @@ class RegenerateThumbnails_Regenerator {
 			}
 		}
 
-		return $sizes;
+		/**
+		 * Filters the list of missing thumbnail sizes if you want to add/remove any.
+		 *
+		 * @since 3.1.0
+		 *
+		 * @param array  $sizes             An associative array of image sizes that are missing.
+		 * @param array  $fullsize_metadata An associative array of fullsize image metadata: width, height, file.
+		 * @param object $this              The current instance of this class.
+		 *
+		 * @return array An associative array of image sizes.
+		 */
+		return apply_filters( 'regenerate_thumbnails_missing_thumbnails', $sizes, $fullsize_metadata, $this );
 	}
 
 	/**
