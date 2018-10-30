@@ -359,7 +359,7 @@ class RegenerateThumbnails_Regenerator {
 		/**
 		 * Filters the list of missing thumbnail sizes if you want to add/remove any.
 		 *
-		 * @since 3.0.3
+		 * @since 3.1.0
 		 *
 		 * @param array  $sizes             An associative array of image sizes that are missing.
 		 * @param array  $fullsize_metadata An associative array of fullsize image metadata: width, height, file.
