@@ -97,7 +97,7 @@ before_script:
     if [[ ! -z "$WP_VERSION" ]] ; then
       bash tests/bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
       case "$TRAVIS_PHP_VERSION" in
-        7.2|7.1|7.0|nightly)
+        7.3|7.2|7.1|7.0|nightly)
           echo "Using PHPUnit 6.x"
           composer global require "phpunit/phpunit:^6"
           ;;
