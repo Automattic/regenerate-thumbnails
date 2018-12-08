@@ -26,12 +26,14 @@ php:
   - '7.0'
   - 7.1
   - 7.2
+  - 7.3
   - nightly
 
 # Test against these versions of WordPress.
 env:
   - WP_VERSION=4.7 # Plugin minimum version
   - WP_VERSION=4.8
+  - WP_VERSION=4.9
   - WP_VERSION=latest
   - WP_VERSION=nightly
 
@@ -70,6 +72,8 @@ matrix:
   - php: 7.1
     env: WP_VERSION=4.7
   - php: 7.2
+    env: WP_VERSION=4.7
+  - php: 7.3
     env: WP_VERSION=4.7
   - php: nightly
     env: WP_VERSION=4.7
