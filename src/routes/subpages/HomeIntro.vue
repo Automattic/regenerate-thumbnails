@@ -27,7 +27,7 @@
 			</label>
 		</p>
 
-		<p>
+		<p style="display:none">
 			<label>
 				<input
 					type="checkbox"
@@ -179,7 +179,7 @@
 
 				// Check the update posts checkbox when the delete checkbox is checked
 				if ('checkboxDeleteOld' === prop && this[prop]) {
-					//this.checkboxUpdatePosts = true;
+					this.checkboxUpdatePosts = true;
 				}
 			},
 		},

@@ -5,7 +5,7 @@
 .idea
 .svnignore
 .travis.yml
-.wordpress-org
+assets
 bin
 browsersync-config.json
 composer.json
@@ -21,4 +21,3 @@ tests
 vendor
 webpack.config.js
 yarn.lock
-yarn-error.log

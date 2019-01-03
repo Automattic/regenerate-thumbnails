@@ -2,7 +2,7 @@
 Contributors: Viper007Bond
 Tags: thumbnail, thumbnails, post thumbnail, post thumbnails
 Requires at least: 4.7
-Tested up to: 5.0
+Tested up to: 4.9
 Requires PHP: 5.2.4
 Stable tag: trunk
 License: GPLv2 or later
@@ -20,7 +20,7 @@ This is useful for situations such as:
 * You've changed the dimensions of an existing thumbnail size, for example via Settings → Media.
 * You've switched to a new WordPress theme that uses featured images of a different size.
 
-It also offers the ability to delete old, unused thumbnails in order to free up server space.
+It also offers the ability to delete old, unused thumbnails as well as update the content of posts to use the new thumbnail sizes.
 
 = Alternatives =
 
@@ -52,12 +52,6 @@ The source code for this plugin is available on [GitHub](https://github.com/Vipe
 4. Click activate.
 5. Navigate to Tools → Regenerate Thumbnails.
 
-== Frequently Asked Questions ==
-
-= Is this plugin [GDPR](https://en.wikipedia.org/wiki/General_Data_Protection_Regulation) compliant? =
-
-This plugin does not log nor transmit any user data. Infact it doesn't even do anything on the user-facing part of your website, only in the admin area. This means it should be compliant but I'm not a lawyer.
-
 == Screenshots ==
 
 1. The main plugin interface.
@@ -67,10 +61,6 @@ This plugin does not log nor transmit any user data. Infact it doesn't even do a
 5. They can also be regenerated from the edit attachment screen.
 
 == ChangeLog ==
-
-= Version 3.1.0 =
-
-* Re-enable the ability to delete old, unregistered thumbnail files. It was temporarily disabled until I was more confident in the separate update post functionality but fixing that is turning out to be rather complicated.
 
 = Version 3.0.2 =
 

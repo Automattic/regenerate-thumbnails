@@ -40,7 +40,7 @@
 				</label>
 			</p>
 
-			<p>
+			<p style="display:none">
 				<label>
 					<input
 						type="checkbox"
@@ -191,7 +191,7 @@
 			},
 			checkUpdatePosts(event) {
 				if (event.target.checked) {
-					//document.getElementById('regenthumbs-regenopt-updateposts').checked = true;
+					document.getElementById('regenthumbs-regenopt-updateposts').checked = true;
 				}
 			},
 		},
