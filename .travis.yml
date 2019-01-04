@@ -77,10 +77,14 @@ matrix:
     env: WP_VERSION=4.7
   - php: 7.3
     env: WP_VERSION=4.8
+  - php: 7.3
+    env: WP_VERSION=4.9
   - php: nightly
     env: WP_VERSION=4.7
   - php: nightly
     env: WP_VERSION=4.8
+  - php: nightly
+    env: WP_VERSION=4.9
 
 before_script:
   - |
