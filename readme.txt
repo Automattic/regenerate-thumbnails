@@ -68,6 +68,11 @@ This plugin does not log nor transmit any user data. Infact it doesn't even do a
 
 == ChangeLog ==
 
+= Version 3.1.0 =
+
+* Bring back the ability to delete old, unregistered thumbnail sizes. Support for updating post contents is still disabled (too buggy).
+* Various code improvements including string localization disambiguation.
+
 = Version 3.0.2 =
 
 * Fix slowdown in certain cases in the media library.
