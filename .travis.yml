@@ -26,12 +26,14 @@ php:
   - '7.0'
   - 7.1
   - 7.2
+  - 7.3
   - nightly
 
 # Test against these versions of WordPress.
 env:
   - WP_VERSION=4.7 # Plugin minimum version
   - WP_VERSION=4.8
+  - WP_VERSION=4.9
   - WP_VERSION=latest
   - WP_VERSION=nightly
 
@@ -64,15 +66,25 @@ matrix:
   - php: 5.3
     dist: precise
     env: WP_VERSION=nightly
-  exclude: # WordPress 4.7 doesn't like running unit tests under PHP 7.x, see https://travis-ci.org/Viper007Bond/regenerate-thumbnails/builds/281022291
+  exclude: # PHP 7.x doesn't play nice with older versions of WordPress and/or PHPUnit
   - php: '7.0'
     env: WP_VERSION=4.7
   - php: 7.1
     env: WP_VERSION=4.7
   - php: 7.2
     env: WP_VERSION=4.7
+  - php: 7.3
+    env: WP_VERSION=4.7
+  - php: 7.3
+    env: WP_VERSION=4.8
+  - php: 7.3
+    env: WP_VERSION=4.9
   - php: nightly
     env: WP_VERSION=4.7
+  - php: nightly
+    env: WP_VERSION=4.8
+  - php: nightly
+    env: WP_VERSION=4.9
 
 before_script:
   - |
@@ -93,7 +105,7 @@ before_script:
     if [[ ! -z "$WP_VERSION" ]] ; then
       bash tests/bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
       case "$TRAVIS_PHP_VERSION" in
-        7.2|7.1|7.0|nightly)
+        7.3|7.2|7.1|7.0|nightly)
           echo "Using PHPUnit 6.x"
           composer global require "phpunit/phpunit:^6"
           ;;
@@ -122,8 +134,8 @@ script:
   - |
     # Run PHPUnit in both single site and multisite mode
     if [[ ! -z "$WP_VERSION" && "$WP_TRAVISCI" != "phpcs" ]] ; then
-      phpunit
-      WP_MULTISITE=1 phpunit
+      phpunit --verbose
+      WP_MULTISITE=1 phpunit --verbose
     fi
   - |
     # Run PHP_CodeSniffer coding standards if it's requested for this test

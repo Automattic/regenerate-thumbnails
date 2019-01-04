@@ -356,7 +356,18 @@ class RegenerateThumbnails_Regenerator {
 			}
 		}
 
-		return $sizes;
+		/**
+		 * Filters the list of missing thumbnail sizes if you want to add/remove any.
+		 *
+		 * @since 3.1.0
+		 *
+		 * @param array  $sizes             An associative array of image sizes that are missing.
+		 * @param array  $fullsize_metadata An associative array of fullsize image metadata: width, height, file.
+		 * @param object $this              The current instance of this class.
+		 *
+		 * @return array An associative array of image sizes.
+		 */
+		return apply_filters( 'regenerate_thumbnails_missing_thumbnails', $sizes, $fullsize_metadata, $this );
 	}
 
 	/**
@@ -553,7 +564,7 @@ class RegenerateThumbnails_Regenerator {
 
 		$metadata = wp_get_attachment_metadata( $this->attachment->ID );
 
-		if ( false === $metadata ) {
+		if ( false === $metadata || ! is_array( $metadata ) ) {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_no_metadata',
 				__( 'Unable to load the metadata for this attachment.', 'regenerate-thumbnails' ),
@@ -574,23 +585,23 @@ class RegenerateThumbnails_Regenerator {
 
 		require_once( ABSPATH . '/wp-admin/includes/image.php' );
 
+		$preview = false;
 		if ( file_is_displayable_image( $fullsizepath ) ) {
 			$preview = wp_get_attachment_url( $this->attachment->ID );
 		} elseif (
+			is_array( $metadata['sizes'] ) &&
 			is_array( $metadata['sizes']['full'] ) &&
-			file_exists( str_replace(
-				wp_basename( $fullsizepath ),
-				$metadata['sizes']['full']['file'],
-				$fullsizepath
-			) )
+			! empty( $metadata['sizes']['full']['file'] )
 		) {
 			$preview = str_replace(
 				wp_basename( $fullsizepath ),
 				$metadata['sizes']['full']['file'],
 				wp_get_attachment_url( $this->attachment->ID )
 			);
-		} else {
-			$preview = false;
+
+			if ( ! file_exists( $preview ) ) {
+				$preview = false;
+			}
 		}
 
 		$response = array(
