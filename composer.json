@@ -19,11 +19,11 @@
     "composer/installers": "~1.0"
   },
   "require-dev": {
-    "phpunit/phpunit": "^6.5",
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.4.3",
-    "wp-coding-standards/wpcs": "^0.14.0",
-    "sirbrillig/phpcs-variable-analysis": "^2.0",
-    "wimg/php-compatibility": "^8.1",
-    "poststatus/wptest": "dev-master"
+    "phpunit/phpunit": "*",
+    "dealerdirect/phpcodesniffer-composer-installer": "*",
+    "wp-coding-standards/wpcs": "*",
+    "sirbrillig/phpcs-variable-analysis": "*",
+    "poststatus/wptest": "dev-master",
+    "phpcompatibility/php-compatibility": "*"
   }
 }
