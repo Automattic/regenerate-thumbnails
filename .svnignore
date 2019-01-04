@@ -3,6 +3,7 @@
 .git
 .gitignore
 .idea
+.phpcs.xml.dist
 .svnignore
 .travis.yml
 .wordpress-org
@@ -13,7 +14,6 @@ composer.lock
 LICENSE
 node_modules
 package.json
-phpcs.xml
 phpunit.xml.dist
 README.md
 src
