@@ -13,10 +13,6 @@
 		<exclude name="PHPCompatibility.PHP.NewKeywords.t_namespaceFound" />
 	</rule>
 
-	<rule ref="WordPress.Arrays">
-		<exclude name="WordPress.Arrays.MultipleStatementAlignment.DoubleArrowNotAligned" />
-	</rule>
-
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array" value="regenerate-thumbnails" />
