@@ -66,7 +66,7 @@ matrix:
   - php: 5.3
     dist: precise
     env: WP_VERSION=nightly
-  exclude: # WordPress 4.7 doesn't like running unit tests under PHP 7.x, see https://travis-ci.org/Viper007Bond/regenerate-thumbnails/builds/281022291
+  exclude: # PHP 7.x doesn't play nice with older versions of WordPress and/or PHPUnit
   - php: '7.0'
     env: WP_VERSION=4.7
   - php: 7.1
@@ -75,8 +75,12 @@ matrix:
     env: WP_VERSION=4.7
   - php: 7.3
     env: WP_VERSION=4.7
+  - php: 7.3
+    env: WP_VERSION=4.8
   - php: nightly
     env: WP_VERSION=4.7
+  - php: nightly
+    env: WP_VERSION=4.8
 
 before_script:
   - |
