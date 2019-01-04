@@ -29,9 +29,6 @@ along with Regenerate Thumbnails. If not, see https://www.gnu.org/licenses/gpl-2
 
 **************************************************************************/
 
-require dirname( __FILE__ ) . '/includes/class-regeneratethumbnails-regenerator.php';
-require dirname( __FILE__ ) . '/includes/class-regeneratethumbnails-rest-controller.php';
-
 /**
  * Main plugin class.
  *
@@ -115,6 +112,14 @@ class RegenerateThumbnails {
 	 * Register all of the needed hooks and actions.
 	 */
 	public function setup() {
+		// Prevent fatals on old versions of WordPress
+		if ( ! class_exists( 'WP_REST_Controller' ) ) {
+			return;
+		}
+
+		require dirname( __FILE__ ) . '/includes/class-regeneratethumbnails-regenerator.php';
+		require dirname( __FILE__ ) . '/includes/class-regeneratethumbnails-rest-controller.php';
+
 		// Allow people to change what capability is required to use this plugin.
 		$this->capability = apply_filters( 'regenerate_thumbs_cap', $this->capability );
 
