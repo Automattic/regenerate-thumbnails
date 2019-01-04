@@ -56,7 +56,7 @@
 
 			<p class="submit">
 				<button class="button button-primary button-hero" v-on:click="regenerate">
-					{{ regenerateThumbnails.l10n.common.regenerateThumbnails }}
+					{{ regenerateThumbnails.l10n.RegenerateSingle.regenerateThumbnails }}
 				</button>
 			</p>
 
