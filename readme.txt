@@ -46,7 +46,7 @@ I personally use Photon on my own website.
 
 Support for this plugin is provided via the [WordPress.org forums](https://wordpress.org/support/plugin/regenerate-thumbnails).
 
-The source code for this plugin is available on [GitHub](https://github.com/Viper007Bond/regenerate-thumbnails).
+The source code for this plugin is available on [GitHub](https://github.com/automattic/regenerate-thumbnails).
 
 == Installation ==
 

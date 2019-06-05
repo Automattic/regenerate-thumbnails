@@ -7,10 +7,10 @@
   "license": "GPL-2.0+",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Viper007Bond/regenerate-thumbnails.git"
+    "url": "git+https://github.com/automattic/regenerate-thumbnails.git"
   },
   "bugs": {
-    "url": "https://github.com/Viper007Bond/regenerate-thumbnails/issues"
+    "url": "https://github.com/automattic/regenerate-thumbnails/issues"
   },
   "scripts": {
     "build": "yarn install-if-deps-outdated && cross-env NODE_ENV=development webpack --progress --hide-modules",
