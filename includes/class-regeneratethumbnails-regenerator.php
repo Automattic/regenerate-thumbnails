@@ -127,7 +127,11 @@ class RegenerateThumbnails_Regenerator {
 			return $this->fullsizepath;
 		}
 
-		$this->fullsizepath = get_attached_file( $this->attachment->ID );
+		if ( function_exists( 'wp_get_original_image_path' ) ) {
+			$this->fullsizepath = wp_get_original_image_path( $this->attachment->ID );
+		} else {
+			$this->fullsizepath = get_attached_file( $this->attachment->ID );
+		}
 
 		if ( false === $this->fullsizepath || ! file_exists( $this->fullsizepath ) ) {
 			$error = new WP_Error(
