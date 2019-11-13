@@ -2,9 +2,9 @@
 Contributors: Viper007Bond
 Tags: thumbnail, thumbnails, post thumbnail, post thumbnails
 Requires at least: 4.7
-Tested up to: 5.1.1
+Tested up to: 5.3
 Requires PHP: 5.2.4
-Stable tag: 3.1.1
+Stable tag: 3.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,9 @@ This plugin does not log nor transmit any user data. Infact it doesn't even do a
 5. They can also be regenerated from the edit attachment screen.
 
 == ChangeLog ==
+
+= Version 3.1.2 =
+* Use wp_get_original_image_path() in WordPress 5.3
 
 = Version 3.1.1 =
 
@@ -178,4 +181,4 @@ Lots of new features!
 * Initial release.
 
 = Upgrade Notice =
-Bugfix release
+Support for WordPress 5.3
