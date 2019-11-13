@@ -392,7 +392,11 @@ class RegenerateThumbnails {
 			return true;
 		}
 
-		$fullsize = get_attached_file( $post->ID );
+		if ( function_exists( 'wp_get_original_image_path' ) ) {
+			$fullsize = wp_get_original_image_path( $post->ID );
+		} else {
+			$fullsize = get_attached_file( $post->ID );
+		}
 
 		if ( ! $fullsize || ! file_exists( $fullsize ) ) {
 			return false;
