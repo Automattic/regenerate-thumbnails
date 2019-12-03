@@ -40,7 +40,7 @@ The latest release can be [downloaded from WordPress.org](https://wordpress.org/
 
 2. Clone this repository inside your `plugins` directory:
 	```
-	$ git clone https://github.com/Viper007Bond/regenerate-thumbnails.git
+	$ git clone https://github.com/automattic/regenerate-thumbnails.git
 	$ cd regenerate-thumbnails
 	```
 

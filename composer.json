@@ -1,5 +1,5 @@
 {
-  "name":        "viper007bond/regenerate-thumbnails",
+  "name":        "automattic/regenerate-thumbnails",
   "description": "Regenerate the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.",
   "homepage":    "https://alex.blog/wordpress-plugins/regenerate-thumbnails/",
   "type":        "wordpress-plugin",
@@ -12,7 +12,7 @@
     }
   ],
   "support": {
-    "issues": "https://github.com/Viper007Bond/regenerate-thumbnails/issues"
+    "issues": "https://github.com/automattic/regenerate-thumbnails/issues"
   },
   "require": {
     "php": ">=5.2.4",
