@@ -3,6 +3,7 @@ const path = require('path');
 const webpack = require('webpack');
 const BrowserSyncPlugin = require('browser-sync-webpack-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
 	entry      : './src/main.js',
@@ -76,7 +77,7 @@ module.exports = {
 };
 
 if (process.env.NODE_ENV === 'production') {
-	module.exports.devtool = '#source-map';
+	module.exports.devtool = false;
 	// http://vue-loader.vuejs.org/en/workflow/production.html
 	module.exports.plugins = (module.exports.plugins || []).concat([
 		new webpack.DefinePlugin({
@@ -87,14 +88,17 @@ if (process.env.NODE_ENV === 'production') {
 		new CleanWebpackPlugin([
 			path.resolve(__dirname, './dist'),
 		]),
-		new webpack.optimize.UglifyJsPlugin({
-			sourceMap: false,
-			compress : {
-				warnings: false
-			}
-		}),
 		new webpack.LoaderOptionsPlugin({
 			minimize: true
 		})
-	])
+	]);
+
+	module.exports.optimization = {
+		minimize: true,
+		minimizer: [
+			new TerserPlugin({
+				sourceMap: false
+			})
+		],
+	};
 }
