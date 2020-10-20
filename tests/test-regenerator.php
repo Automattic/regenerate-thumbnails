@@ -241,9 +241,9 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 
 		// Verify that the new custom thumbnails were made correctly by this plugin
 		foreach ( $expected_custom_thumbnail_sizes as $size => $dims ) {
-			$this->assertFileExists( $upload_dir . "wordpress-gsoc-flyer-pdf-{$dims[0]}x{$dims[1]}.jpg" );
-			$this->assertEquals( $dims[0], $new_metadata['sizes'][ $size ]['width'] );
-			$this->assertEquals( $dims[1], $new_metadata['sizes'][ $size ]['height'] );
+			$this->assertFileExists( $upload_dir . "wordpress-gsoc-flyer-pdf-{$dims[0]}x{$dims[1]}.jpg", 'File exists' );
+			$this->assertEquals( $dims[0], $new_metadata['sizes'][ $size ]['width'], 'Image width' );
+			$this->assertEquals( $dims[1], $new_metadata['sizes'][ $size ]['height'], 'Image height' );
 		}
 	}
 
@@ -541,6 +541,22 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 					'filename'   => '33772-1024x576.jpg',
 					'fileexists' => true,
 				),
+				array(
+					'label'      => '1536x1536',
+					'width'      => 1536,
+					'height'     => 1536,
+					'crop'       => false,
+					'filename'   => '33772-1536x864.jpg',
+					'fileexists' => true,
+				),
+				array(
+					'label'      => '2048x2048',
+					'width'      => 2048,
+					'height'     => 2048,
+					'crop'       => false,
+					'filename'   => false,
+					'fileexists' => false,
+				),
 			),
 			'unregistered_sizes' => array(),
 		);
@@ -691,16 +707,25 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 				'filename'   => '33772-1500x844.jpg',
 				'fileexists' => false,
 			),
+			array(
+				'label'      => '1536x1536',
+				'width'      => 1536,
+				'height'     => 1536,
+				'crop'       => false,
+				'filename'   => '33772-1536x864.jpg',
+				'fileexists' => true,
+			),
+			array(
+				'label'      => '2048x2048',
+				'width'      => 2048,
+				'height'     => 2048,
+				'crop'       => false,
+				'filename'   => false,
+				'fileexists' => false,
+			),
 		);
 
 		$expected_statuses['unregistered_sizes'] = array(
-			array(
-				'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'thumbnail' ),
-				'width'      => 150,
-				'height'     => 150,
-				'filename'   => '33772-150x150.jpg',
-				'fileexists' => true,
-			),
 			array(
 				'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'medium' ),
 				'width'      => 300,
@@ -709,17 +734,24 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 				'fileexists' => true,
 			),
 			array(
-				'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'medium_large' ),
-				'width'      => 768,
-				'height'     => 432,
-				'filename'   => '33772-768x432.jpg',
-				'fileexists' => true,
-			),
-			array(
 				'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'large' ),
 				'width'      => 1024,
 				'height'     => 576,
 				'filename'   => '33772-1024x576.jpg',
+				'fileexists' => true,
+			),
+			array(
+				'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'thumbnail' ),
+				'width'      => 150,
+				'height'     => 150,
+				'filename'   => '33772-150x150.jpg',
+				'fileexists' => true,
+			),
+			array(
+				'label'      => sprintf( __( '%s (old)', 'regenerate-thumbnails' ), 'medium_large' ),
+				'width'      => 768,
+				'height'     => 432,
+				'filename'   => '33772-768x432.jpg',
 				'fileexists' => true,
 			),
 		);
