@@ -141,6 +141,10 @@ class RegenerateThumbnails_REST_Controller extends WP_REST_Controller {
 
 		$args['post_mime_type'] = array();
 		foreach ( get_allowed_mime_types() as $mime_type ) {
+			if ( 'image/svg+xml' === $mime_type ) {
+				continue;
+			}
+
 			if ( 'application/pdf' == $mime_type || 'image/' == substr( $mime_type, 0, 6 ) ) {
 				$args['post_mime_type'][] = $mime_type;
 			}
