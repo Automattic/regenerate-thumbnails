@@ -4,7 +4,7 @@ Tags: thumbnail, thumbnails, post thumbnail, post thumbnails
 Requires at least: 4.7
 Tested up to: 5.4
 Requires PHP: 5.2.4
-Stable tag: 3.1.3
+Stable tag: 3.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
