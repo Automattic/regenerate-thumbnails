@@ -4,7 +4,7 @@ Tags: thumbnail, thumbnails, post thumbnail, post thumbnails
 Requires at least: 4.7
 Tested up to: 5.4
 Requires PHP: 5.2.4
-Stable tag: 3.1.3
+Stable tag: 3.1.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,7 +17,7 @@ Regenerate Thumbnails allows you to regenerate all thumbnail sizes for one or mo
 This is useful for situations such as:
 
 * A new thumbnail size has been added and you want past uploads to have a thumbnail in that size.
-* You've changed the dimensions of an existing thumbnail size, for example via Settings → Media.
+* You've changed the dimensions of an existing thumbnail size, for example via Settings â Media.
 * You've switched to a new WordPress theme that uses featured images of a different size.
 
 It also offers the ability to delete old, unused thumbnails in order to free up server space.
@@ -50,11 +50,11 @@ The source code for this plugin is available on [GitHub](https://github.com/auto
 
 == Installation ==
 
-1. Go to your admin area and select Plugins → Add New from the menu.
+1. Go to your admin area and select Plugins â Add New from the menu.
 2. Search for "Regenerate Thumbnails".
 3. Click install.
 4. Click activate.
-5. Navigate to Tools → Regenerate Thumbnails.
+5. Navigate to Tools â Regenerate Thumbnails.
 
 == Frequently Asked Questions ==
 
@@ -71,6 +71,12 @@ This plugin does not log nor transmit any user data. Infact it doesn't even do a
 5. They can also be regenerated from the edit attachment screen.
 
 == ChangeLog ==
+
+= Version 3.1.4 =
+
+* Fix: Don't attempt to regenerate SVG's.
+* Bump tested version.
+* Update dependencies.
 
 = Version 3.1.3 =
 
