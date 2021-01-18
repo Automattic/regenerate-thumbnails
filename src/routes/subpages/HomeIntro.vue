@@ -153,9 +153,6 @@
 				context  : this
 			})
 				.done((data, textStatus, jqXHR) => {
-					this.ButtonAllText = this.regenerateThumbnails.l10n.Home.RegenerateThumbnailsForAllXAttachments.formatUnicorn({
-						'attachmentCount': jqXHR.getResponseHeader('x-wp-total').toLocaleString(),
-					});
 
 					if (jqXHR.getResponseHeader('x-wp-total') < 1) {
 						this.usingFeaturedImages = false;
