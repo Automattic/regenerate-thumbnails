@@ -2,7 +2,7 @@
 Contributors: Viper007Bond
 Tags: thumbnail, thumbnails, post thumbnail, post thumbnails
 Requires at least: 4.7
-Tested up to: 5.6
+Tested up to: 5.7
 Requires PHP: 5.2.4
 Stable tag: 3.1.5
 License: GPLv2 or later
