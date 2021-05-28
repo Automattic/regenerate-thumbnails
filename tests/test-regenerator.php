@@ -181,6 +181,14 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		}
 	}
 
+	public function test_get_fullsizepath_for_pdf() {
+		$test_pdf = DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf';
+		$attachment_id = self::factory()->attachment->create_upload_object( $test_pdf );
+		$regenerator = RegenerateThumbnails_Regenerator::get_instance( $attachment_id );
+		$fullsizepath = $regenerator->get_fullsizepath();
+		$this->assertEquals( get_attached_file( $attachment_id ), $fullsizepath );
+	}
+
 	public function test_regenerate_thumbnails_for_pdf() {
 		$test_pdf = DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf';
 
@@ -192,11 +200,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$this->attachment_id = self::factory()->attachment->create_upload_object( $test_pdf );
 		$old_metadata        = wp_get_attachment_metadata( $this->attachment_id );
 
-		if ( function_exists( 'wp_get_original_image_path' ) ) {
-			$upload_dir = dirname( wp_get_original_image_path( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
-		} else {
-			$upload_dir = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
-		}
+		$upload_dir = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
 
 		$expected_default_thumbnail_sizes = array(
 			'thumbnail' => array( 116, 150 ),
