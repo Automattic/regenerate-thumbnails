@@ -113,7 +113,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 	public function test_missing_original_file() {
 		$this->attachment_id = self::factory()->attachment->create_upload_object( DIR_TESTDATA . '/images/test-image.jpg' );
 
-		if ( function_exists( 'wp_get_original_image_path' ) ) {
+		if ( function_exists( 'wp_get_original_image_path' ) && wp_attachment_is_image( $this->attachment_id ) ) {
 			unlink( wp_get_original_image_path( $this->attachment_id ) );
 		} else {
 			unlink( get_attached_file( $this->attachment_id ) );
@@ -130,7 +130,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$this->attachment_id = $this->helper_create_attachment();
 		$old_metadata        = wp_get_attachment_metadata( $this->attachment_id );
 
-		if ( function_exists( 'wp_get_original_image_path' ) ) {
+		if ( function_exists( 'wp_get_original_image_path' ) && wp_attachment_is_image( $this->attachment_id ) ) {
 			$upload_dir = dirname( wp_get_original_image_path( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
 		} else {
 			$upload_dir = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
@@ -270,7 +270,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			'large'        => '33772-1024x576.jpg',
 		);
 
-		if ( function_exists( 'wp_get_original_image_path' ) ) {
+		if ( function_exists( 'wp_get_original_image_path' ) && wp_attachment_is_image( $this->attachment_id ) ) {
 			$upload_dir = dirname( wp_get_original_image_path( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
 		} else {
 			$upload_dir = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
@@ -330,7 +330,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 		$this->assertArrayHasKey( 'regenerate-thumbnails-test-inmeta', $old_metadata['sizes'] );
 		$this->assertArrayHasKey( 'regenerate-thumbnails-test-notinmeta', $old_metadata['sizes'] );
 
-		if ( function_exists( 'wp_get_original_image_path' ) ) {
+		if ( function_exists( 'wp_get_original_image_path' ) && wp_attachment_is_image( $this->attachment_id ) ) {
 			$thumbnail_file_to_keep = wp_get_original_image_path( $attachment_to_keep_id );
 			$fullsize_image         = wp_get_original_image_path( $this->attachment_id );
 		} else {
@@ -348,7 +348,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 
 		// After this, "inmeta" will be in the meta and "notinmeta" will exist but not be in the meta
 		require_once( ABSPATH . 'wp-admin/includes/admin.php' );
-		if ( function_exists( 'wp_get_original_image_path' ) ) {
+		if ( function_exists( 'wp_get_original_image_path' ) && wp_attachment_is_image( $this->attachment_id ) ) {
 			$step2_metadata = wp_generate_attachment_metadata( $this->attachment_id, wp_get_original_image_path( $this->attachment_id ) );
 		} else {
 			$step2_metadata = wp_generate_attachment_metadata( $this->attachment_id, get_attached_file( $this->attachment_id ) );
@@ -414,7 +414,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 			$thumbnails[ $size ] = $size_data['file'];
 		}
 
-		if ( function_exists( 'wp_get_original_image_path' ) ) {
+		if ( function_exists( 'wp_get_original_image_path' ) && wp_attachment_is_image( $this->attachment_id ) ) {
 			$upload_dir = dirname( wp_get_original_image_path( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
 		} else {
 			$upload_dir = dirname( get_attached_file( $this->attachment_id ) ) . DIRECTORY_SEPARATOR;
@@ -499,7 +499,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 
 	public function helper_get_current_thumbnail_statuses() {
 		$attachment   = get_post( $this->attachment_id );
-		if ( function_exists( 'wp_get_original_image_path' ) ) {
+		if ( function_exists( 'wp_get_original_image_path' ) && wp_attachment_is_image( $this->attachment_id ) ) {
 			$fullsizepath = wp_get_original_image_path( $this->attachment_id );
 		} else {
 			$fullsizepath = get_attached_file( $this->attachment_id );
@@ -612,7 +612,7 @@ class Regenerate_Thumbnails_Tests_Regenerator extends WP_UnitTestCase {
 
 		$this->attachment_id = $this->helper_create_upload_object_utf8( $test_file_path );
 
-		if ( function_exists( 'wp_get_original_image_path' ) ) {
+		if ( function_exists( 'wp_get_original_image_path' ) && wp_attachment_is_image( $this->attachment_id ) ) {
 			$fullsizepath = wp_get_original_image_path( $this->attachment_id );
 		} else {
 			$fullsizepath = get_attached_file( $this->attachment_id );
