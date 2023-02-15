@@ -75,6 +75,8 @@ This plugin does not log nor transmit any user data. Infact it doesn't even do a
 = Version 3.1.5 =
 
 * Fix: Don't overwrite 'All X Attachment' button label with featured images count.
+* Tested successfully with PHP 8.1.
+* Tested successfully with PHP 8.2.
 
 = Version 3.1.4 =
 
