@@ -72,6 +72,10 @@ This plugin does not log nor transmit any user data. Infact it doesn't even do a
 
 == ChangeLog ==
 
+= Version 3.1.6 =
+
+* Fix: Respect "Skip regenerating existing correctly sized thumbnails" setting.
+
 = Version 3.1.5 =
 
 * Fix: Don't overwrite 'All X Attachment' button label with featured images count.
