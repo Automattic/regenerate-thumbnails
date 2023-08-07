@@ -44,6 +44,8 @@ class RegenerateThumbnails_Regenerator {
 	/**
 	 * The metadata for the attachment before the regeneration process starts.
 	 *
+	 * @since 3.1.6
+	 *
 	 * @var array
 	 */
 	private $old_metadata = array();
