@@ -56,8 +56,6 @@ class RegenerateThumbnails_Regenerator {
 	public static function get_instance( $attachment_id ) {
 		$attachment = get_post( $attachment_id );
 
-		do_action( 'regenerate_thumbnails_regenerator', $attachment_id );
-
 		if ( ! $attachment ) {
 			return new WP_Error(
 				'regenerate_thumbnails_regenerator_attachment_doesnt_exist',
@@ -172,6 +170,8 @@ class RegenerateThumbnails_Regenerator {
 	 */
 	public function regenerate( $args = array() ) {
 		global $wpdb;
+
+		do_action( 'regenerate_thumbnails_regenerator', $this->attachment->ID );
 
 		$args = wp_parse_args( $args, array(
 			'only_regenerate_missing_thumbnails'  => true,
