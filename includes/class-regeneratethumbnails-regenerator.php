@@ -42,6 +42,15 @@ class RegenerateThumbnails_Regenerator {
 	public $skipped_thumbnails = array();
 
 	/**
+	 * The metadata for the attachment before the regeneration process starts.
+	 *
+	 * @since 3.1.6
+	 *
+	 * @var array
+	 */
+	private $old_metadata = array();
+
+	/**
 	 * Generates an instance of this class after doing some setup.
 	 *
 	 * MIME type is purposefully not validated in order to be more future proof and
@@ -183,7 +192,7 @@ class RegenerateThumbnails_Regenerator {
 			return $fullsizepath;
 		}
 
-		$old_metadata = wp_get_attachment_metadata( $this->attachment->ID );
+		$this->old_metadata = wp_get_attachment_metadata( $this->attachment->ID );
 
 		if ( $args['only_regenerate_missing_thumbnails'] ) {
 			add_filter( 'intermediate_image_sizes_advanced', array( $this, 'filter_image_sizes_to_only_missing_thumbnails' ), 10, 2 );
@@ -195,8 +204,8 @@ class RegenerateThumbnails_Regenerator {
 		if ( $args['only_regenerate_missing_thumbnails'] ) {
 			// Thumbnail sizes that existed were removed and need to be added back to the metadata.
 			foreach ( $this->skipped_thumbnails as $skipped_thumbnail ) {
-				if ( ! empty( $old_metadata['sizes'][ $skipped_thumbnail ] ) ) {
-					$new_metadata['sizes'][ $skipped_thumbnail ] = $old_metadata['sizes'][ $skipped_thumbnail ];
+				if ( ! empty( $this->old_metadata['sizes'][ $skipped_thumbnail ] ) ) {
+					$new_metadata['sizes'][ $skipped_thumbnail ] = $this->old_metadata['sizes'][ $skipped_thumbnail ];
 				}
 			}
 			$this->skipped_thumbnails = array();
@@ -209,7 +218,7 @@ class RegenerateThumbnails_Regenerator {
 		if ( $args['delete_unregistered_thumbnail_files'] ) {
 			// Delete old sizes that are still in the metadata.
 			$intermediate_image_sizes = get_intermediate_image_sizes();
-			foreach ( $old_metadata['sizes'] as $old_size => $old_size_data ) {
+			foreach ( $this->old_metadata['sizes'] as $old_size => $old_size_data ) {
 				if ( in_array( $old_size, $intermediate_image_sizes ) ) {
 					continue;
 				}
@@ -263,11 +272,11 @@ class RegenerateThumbnails_Regenerator {
 
 				wp_delete_file( $wp_upload_dir . $file );
 			}
-		} elseif ( ! empty( $old_metadata ) && ! empty( $old_metadata['sizes'] ) && is_array( $old_metadata['sizes'] ) ) {
+		} elseif ( ! empty( $this->old_metadata ) && ! empty( $this->old_metadata['sizes'] ) && is_array( $this->old_metadata['sizes'] ) ) {
 			// If not deleting, rename any size conflicts to avoid them being lost if the file still exists.
-			foreach ( $old_metadata['sizes'] as $old_size => $old_size_data ) {
+			foreach ( $this->old_metadata['sizes'] as $old_size => $old_size_data ) {
 				if ( empty( $new_metadata['sizes'][ $old_size ] ) ) {
-					$new_metadata['sizes'][ $old_size ] = $old_metadata['sizes'][ $old_size ];
+					$new_metadata['sizes'][ $old_size ] = $this->old_metadata['sizes'][ $old_size ];
 					continue;
 				}
 
@@ -313,7 +322,7 @@ class RegenerateThumbnails_Regenerator {
 			return $sizes;
 		}
 
-		$metadata = wp_get_attachment_metadata( $this->attachment->ID );
+		$metadata = $this->old_metadata;
 
 		// This is based on WP_Image_Editor_GD::multi_resize() and others.
 		foreach ( $sizes as $size => $size_data ) {
@@ -344,6 +353,7 @@ class RegenerateThumbnails_Regenerator {
 				$size_data['height'],
 				$size_data['crop']
 			);
+
 
 			// The false check filters out thumbnails that would be larger than the fullsize image.
 			// The size comparison makes sure that the size is also correct.
