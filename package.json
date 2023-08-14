@@ -1,6 +1,6 @@
 {
   "name": "regenerate-thumbnails",
-  "version": "3.1.5",
+  "version": "3.1.6",
   "description": "A WordPress plugin for regenerating the thumbnails for one or more of your image uploads. Useful when changing their sizes or your theme.",
   "homepage": "https://alex.blog/wordpress-plugins/regenerate-thumbnails/",
   "author": "Alex Mills (Viper007Bond)",
