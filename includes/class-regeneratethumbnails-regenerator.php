@@ -180,7 +180,7 @@ class RegenerateThumbnails_Regenerator {
 	public function regenerate( $args = array() ) {
 		global $wpdb;
 
-		do_action( 'regenerate_thumbnails_regenerator', $this->attachment->ID );
+		do_action( 'regenerate_thumbnails_regenerator_pre_regenerate', $this->attachment->ID );
 
 		$args = wp_parse_args( $args, array(
 			'only_regenerate_missing_thumbnails'  => true,
