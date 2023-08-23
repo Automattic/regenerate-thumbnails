@@ -6,3 +6,4 @@
 /tests/rest-api.http
 /vendor/
 /yarn-error.log
+.DS_Store
