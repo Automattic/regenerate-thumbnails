@@ -17,7 +17,7 @@ Regenerate Thumbnails allows you to regenerate all thumbnail sizes for one or mo
 This is useful for situations such as:
 
 * A new thumbnail size has been added and you want past uploads to have a thumbnail in that size.
-* You've changed the dimensions of an existing thumbnail size, for example via Settings â Media.
+* You've changed the dimensions of an existing thumbnail size, for example via Settings => Media.
 * You've switched to a new WordPress theme that uses featured images of a different size.
 
 It also offers the ability to delete old, unused thumbnails in order to free up server space.
