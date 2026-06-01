@@ -317,11 +317,11 @@ class RegenerateThumbnails {
 		echo '<h1>' . esc_html_x( 'Regenerate Thumbnails', 'admin page title', 'regenerate-thumbnails' ) . '</h1>';
 
 		if ( version_compare( $wp_version, '4.7', '<' ) ) {
-			echo '<p>' . sprintf(
-					__( 'This plugin requires WordPress 4.7 or newer. You are on version %1$s. Please <a href="%2$s">upgrade</a>.', 'regenerate-thumbnails' ),
-					esc_html( $wp_version ),
-					esc_url( admin_url( 'update-core.php' ) )
-				) . '</p>';
+			echo '<p>' . wp_kses_post( sprintf(
+				__( 'This plugin requires WordPress 4.7 or newer. You are on version %1$s. Please <a href="%2$s">upgrade</a>.', 'regenerate-thumbnails' ),
+				esc_html( $wp_version ),
+				esc_url( admin_url( 'update-core.php' ) )
+			)) . '</p>';
 		} else {
 
 			?>
@@ -446,7 +446,7 @@ class RegenerateThumbnails {
 		}
 
 		echo '<div class="misc-pub-section misc-pub-regenerate-thumbnails">';
-		echo '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( 'Regenerate the thumbnails for this single image', 'regenerate-thumbnails' ) ) . '">' . _x( 'Regenerate Thumbnails', 'action for a single image', 'regenerate-thumbnails' ) . '</a>';
+		echo '<a href="' . esc_url( $this->create_page_url( $post->ID ) ) . '" class="button-secondary button-large" title="' . esc_attr( __( 'Regenerate the thumbnails for this single image', 'regenerate-thumbnails' ) ) . '">' . esc_html( _x( 'Regenerate Thumbnails', 'action for a single image', 'regenerate-thumbnails' ) ) . '</a>';
 		echo '</div>';
 	}
 
