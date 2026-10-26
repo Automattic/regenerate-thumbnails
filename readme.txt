@@ -4,7 +4,7 @@ Tags: thumbnail, thumbnails, post thumbnail, post thumbnails
 Requires at least: 4.7
 Tested up to: 7.1
 Requires PHP: 5.2.4
-Stable tag: 3.1.6
+Stable tag: 3.1.7
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -71,6 +71,11 @@ This plugin does not log nor transmit any user data. Infact it doesn't even do a
 5. They can also be regenerated from the edit attachment screen.
 
 == ChangeLog ==
+
+= Version 3.1.7 =
+
+* New: Add `regenerate_thumbnails_regenerator_pre_regenerate` action that fires before an attachment's thumbnails are regenerated.
+* Dev: Update JavaScript build dependencies to address security alerts.
 
 = Version 3.1.6 =
 
