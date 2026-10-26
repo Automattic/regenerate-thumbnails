@@ -180,6 +180,13 @@ class RegenerateThumbnails_Regenerator {
 	public function regenerate( $args = array() ) {
 		global $wpdb;
 
+		/**
+		 * Fires before the thumbnails for an attachment are regenerated.
+		 *
+		 * @since 3.1.7
+		 *
+		 * @param int $attachment_id The ID of the attachment being regenerated.
+		 */
 		do_action( 'regenerate_thumbnails_regenerator_pre_regenerate', $this->attachment->ID );
 
 		$args = wp_parse_args( $args, array(
